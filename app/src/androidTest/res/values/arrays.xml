@@ -58,6 +58,9 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="standalone_data_with_exif_byte_order_ii">
         <!--Whether thumbnail exists-->
@@ -102,6 +105,9 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="jpeg_with_exif_byte_order_mm">
         <!--Whether thumbnail exists-->
@@ -146,6 +152,9 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="standalone_data_with_exif_byte_order_mm">
         <!--Whether thumbnail exists-->
@@ -190,6 +199,9 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="dng_with_exif_with_xmp">
         <!--Whether thumbnail exists-->
@@ -234,6 +246,9 @@
         <item>true</item>
         <item>826</item>
         <item>10067</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="jpeg_with_exif_with_xmp">
         <!--Whether thumbnail exists-->
@@ -278,6 +293,9 @@
         <item>true</item>
         <item>1809</item>
         <item>13197</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="png_with_exif_byte_order_ii">
         <!--Whether thumbnail exists-->
@@ -319,9 +337,12 @@
         <item>50</item>
         <item>6</item>
         <item>0</item>
-        <item>false</item>
-        <item>0</item>
-        <item>0</item>
+        <item>true</item>
+        <item>352</item>
+        <item>1409</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="webp_with_exif">
         <!--Whether thumbnail exists-->
@@ -366,6 +387,9 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
     </array>
     <array name="heic_with_exif">
         <!--Whether thumbnail exists-->
@@ -410,5 +434,149 @@
         <item>false</item>
         <item>0</item>
         <item>0</item>
+        <item />
+        <item />
+        <item />
+    </array>
+    <array name="jpeg_with_exif_with_photoshop_with_xmp">
+        <!--Whether thumbnail exists-->
+        <item>true</item>
+        <item>464</item>
+        <item>6473</item>
+        <item>127</item>
+        <item>160</item>
+        <item>6473</item>
+        <!--Whether GPS LatLong information exists-->
+        <item>false</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <!--Whether Make information exists-->
+        <item>false</item>
+        <item />
+        <item />
+        <item />
+        <item />
+        <item>0.0</item>
+        <item />
+        <item>0.0</item>
+        <item>0.0</item>
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item>379</item>
+        <item>300</item>
+        <item />
+        <item>1</item>
+        <item />
+        <item>true</item>
+        <item>15680</item>
+        <item>19087</item>
+        <item>false</item>
+        <item>true</item>
+        <item>true</item>
+    </array>
+    <array name="jpeg_with_icc_with_exif_with_extended_xmp">
+        <!--Whether thumbnail exists-->
+        <item>false</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>false</item>
+        <!--Whether GPS LatLong information exists-->
+        <item>false</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <!--Whether Make information exists-->
+        <item>true</item>
+        <item>170</item>
+        <item>7</item>
+        <item>Google</item>
+        <item>Pixel 3a</item>
+        <item>1.8</item>
+        <item>2021:01:07 11:38:23</item>
+        <item>5.11E-4</item>
+        <item>16.0</item>
+        <item>4440/1000</item>
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item>3024</item>
+        <item>4032</item>
+        <item>63</item>
+        <item>1</item>
+        <item />
+        <item>true</item>
+        <item>955</item>
+        <item>322</item>
+        <item>true</item>
+        <item>true</item>
+        <item>false</item>
+    </array>
+    <array name="webp_with_icc_with_exif_with_xmp">
+        <!--Whether thumbnail exists-->
+        <item>false</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0</item>
+        <item>false</item>
+        <!--Whether GPS LatLong information exists-->
+        <item>false</item>
+        <item>0</item>
+        <item>0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <item>0.0</item>
+        <!--Whether Make information exists-->
+        <item>true</item>
+        <item>3285288</item>
+        <item>7</item>
+        <item>Google</item>
+        <item>Pixel 3a</item>
+        <item>1.8</item>
+        <item>2021:01:07 11:38:23</item>
+        <item>5.11E-4</item>
+        <item>16.0</item>
+        <item>4440/1000</item>
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item />
+        <item>3024</item>
+        <item>4032</item>
+        <item>63</item>
+        <item>1</item>
+        <item />
+        <item>true</item>
+        <item>3286048</item>
+        <item>322</item>
+        <item>false</item>
+        <item>true</item>
+        <item>false</item>
     </array>
 </resources>

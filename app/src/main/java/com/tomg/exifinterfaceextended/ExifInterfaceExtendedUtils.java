@@ -20,30 +20,29 @@ package com.tomg.exifinterfaceextended;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.CRC32;
 
 import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_JPEG;
 import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_PNG;
 import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_WEBP;
 
 class ExifInterfaceExtendedUtils {
-    private static final String TAG = "ExifInterfaceUtils";
+
+    private static final int BUF_SIZE = 8192;
 
     private ExifInterfaceExtendedUtils() {
         // Prevent instantiation
     }
+
     /**
      * Copies all of the bytes from {@code in} to {@code out}. Neither stream is closed.
-     * Returns the total number of bytes transferred.
      */
-    static int copy(InputStream in, OutputStream out) throws IOException {
-        int total = 0;
-        byte[] buffer = new byte[8192];
+    static void copy(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[BUF_SIZE];
         int c;
         while ((c = in.read(buffer)) != -1) {
-            total += c;
             out.write(buffer, 0, c);
         }
-        return total;
     }
 
     /**
@@ -52,9 +51,9 @@ class ExifInterfaceExtendedUtils {
      */
     static void copy(InputStream in, OutputStream out, int numBytes) throws IOException {
         int remainder = numBytes;
-        byte[] buffer = new byte[8192];
+        byte[] buffer = new byte[BUF_SIZE];
         while (remainder > 0) {
-            int bytesToRead = Math.min(remainder, 8192);
+            int bytesToRead = Math.min(remainder, BUF_SIZE);
             int bytesRead = in.read(buffer, 0, bytesToRead);
             if (bytesRead != bytesToRead) {
                 throw new IOException("Failed to copy the given amount of bytes from the input"
@@ -99,19 +98,20 @@ class ExifInterfaceExtendedUtils {
     }
 
     static boolean isSupportedFormatForSavingAttributes(int mimeType) {
-        if (mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP) {
-            return true;
-        }
-        return false;
+        return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
+                || mimeType == IMAGE_TYPE_WEBP;
     }
 
-    static String byteArrayToHexString(byte[] bytes) {
-        StringBuilder sb = new StringBuilder(bytes.length * 2);
-        for (int i = 0; i < bytes.length; i++) {
-            sb.append(String.format("%02x", bytes[i]));
-        }
-        return sb.toString();
+    static boolean isSupportedFormatForSavingIgnoringAttributes(int mimeType) {
+        return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
+                || mimeType == IMAGE_TYPE_WEBP;
+    }
+
+    static int calculateCrc32IntValue(byte[] type, byte[] data) {
+        final CRC32 crc = new CRC32();
+        crc.update(type);
+        crc.update(data);
+        return (int) crc.getValue();
     }
 
     static long parseSubSeconds(String subSec) {
