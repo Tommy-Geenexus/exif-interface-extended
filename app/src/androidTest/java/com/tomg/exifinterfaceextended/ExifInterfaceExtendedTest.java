@@ -100,7 +100,7 @@ public class ExifInterfaceExtendedTest {
             "jpeg_with_datetime_tag_primary_format.jpg";
     private static final String JPEG_WITH_DATETIME_TAG_SECONDARY_FORMAT =
             "jpeg_with_datetime_tag_secondary_format.jpg";
-    private static final String HEIC_WITH_EXIF = "heic_with_exif.heic";
+    private static final String HEIF_WITH_EXIF = "heif_with_exif.heic";
     private static final String JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP =
             "jpeg_with_exif_with_photoshop_with_xmp.jpg";
     private static final String JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
@@ -120,7 +120,7 @@ public class ExifInterfaceExtendedTest {
             raw.webp_lossless_without_exif,
             raw.jpeg_with_datetime_tag_primary_format,
             raw.jpeg_with_datetime_tag_secondary_format,
-            raw.heic_with_exif,
+            raw.heif_with_exif,
             raw.jpeg_with_exif_with_photoshop_with_xmp,
             raw.jpeg_with_icc_with_exif_with_extended_xmp,
             raw.webp_with_icc_with_exif_with_xmp,
@@ -130,7 +130,7 @@ public class ExifInterfaceExtendedTest {
             JPEG_WITH_EXIF_WITH_XMP, PNG_WITH_EXIF_BYTE_ORDER_II, PNG_WITHOUT_EXIF,
             WEBP_WITH_EXIF, WEBP_WITHOUT_EXIF_WITH_ANIM_DATA, WEBP_WITHOUT_EXIF,
             WEBP_WITHOUT_EXIF_WITH_LOSSLESS_ENCODING, JPEG_WITH_DATETIME_TAG_PRIMARY_FORMAT,
-            JPEG_WITH_DATETIME_TAG_SECONDARY_FORMAT, HEIC_WITH_EXIF,
+            JPEG_WITH_DATETIME_TAG_SECONDARY_FORMAT, HEIF_WITH_EXIF,
             JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
             WEBP_WITH_ICC_WITH_EXIF_WITH_XMP
     };
@@ -487,16 +487,22 @@ public class ExifInterfaceExtendedTest {
     }
 
     /**
-     * .heic file is a container for HEIF format images, which ExifInterface supports.
+     * Support for retrieving EXIF from HEIF was added in SDK 28.
      */
     @Test
     @LargeTest
-    public void testHeicFile() throws Throwable {
-        // TODO: Reading HEIC file for SDK < 28 throws an exception. Revisit once issue is solved.
-        //  (b/172025296)
+    public void testHeifFile() throws Throwable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            readFromFilesWithExif(HEIC_WITH_EXIF,
-                    array.heic_with_exif);
+            readFromFilesWithExif(HEIF_WITH_EXIF, array.heif_with_exif);
+        } else {
+            // Make sure that an exception is not thrown and that image length/width tag values
+            // return default values, not the actual values.
+            File imageFile = getFileFromExternalDir(HEIF_WITH_EXIF);
+            ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
+            String defaultTagValue = "0";
+            assertEquals(defaultTagValue,
+                    exif.getAttribute(ExifInterfaceExtended.TAG_IMAGE_LENGTH));
+            assertEquals(defaultTagValue, exif.getAttribute(ExifInterfaceExtended.TAG_IMAGE_WIDTH));
         }
     }
 
