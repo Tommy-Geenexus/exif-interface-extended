@@ -200,13 +200,18 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
 
     @Override
     public int skipBytes(int byteCount) throws IOException {
-        int totalSkip = Math.min(byteCount, mLength - mPosition);
-        int skipped = 0;
-        while (skipped < totalSkip) {
-            skipped += mDataInputStream.skipBytes(totalSkip - skipped);
+        int totalBytesToSkip = Math.min(byteCount, mLength - mPosition);
+        int totalSkipped = 0;
+        while (totalSkipped < totalBytesToSkip) {
+            int skipped = mDataInputStream.skipBytes(totalBytesToSkip - totalSkipped);
+            if (skipped > 0) {
+                totalSkipped += skipped;
+            } else {
+                break;
+            }
         }
-        mPosition += skipped;
-        return skipped;
+        mPosition += totalSkipped;
+        return totalSkipped;
     }
 
     @Override
