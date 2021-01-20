@@ -1,6 +1,6 @@
 /*
  * Copyright 2020 The Android Open Source Project
- * Copyright 2020 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
+ * Copyright 2020-2021 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,23 @@
 
 package com.tomg.exifinterfaceextended;
 
+import android.os.Build;
+import android.system.Os;
+import android.util.Log;
+
+import java.io.Closeable;
+import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.zip.CRC32;
-
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_JPEG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_PNG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IMAGE_TYPE_WEBP;
 
 class ExifInterfaceExtendedUtils {
 
-    private static final int BUF_SIZE = 8192;
+    private static final String TAG = "ExifInterfaceUtils";
+
+    static final int BUF_SIZE = 8192;
 
     private ExifInterfaceExtendedUtils() {
         // Prevent instantiation
@@ -97,16 +102,6 @@ class ExifInterfaceExtendedUtils {
         return true;
     }
 
-    static boolean isSupportedFormatForSavingAttributes(int mimeType) {
-        return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP;
-    }
-
-    static boolean isSupportedFormatForSavingIgnoringAttributes(int mimeType) {
-        return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP;
-    }
-
     static int calculateCrc32IntValue(byte[] type, byte[] data) {
         final CRC32 crc = new CRC32();
         crc.update(type);
@@ -126,5 +121,47 @@ class ExifInterfaceExtendedUtils {
             // Ignored
         }
         return 0L;
+    }
+
+    /**
+     * Closes 'closeable', ignoring any checked exceptions. Does nothing if 'closeable' is null.
+     */
+    static void closeQuietly(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (RuntimeException rethrown) {
+                throw rethrown;
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    /**
+     * Closes a file descriptor that has been duplicated.
+     */
+    static void closeFileDescriptor(FileDescriptor fd) {
+        // Os.dup and Os.close was introduced in API 21 so this method shouldn't be called
+        // in API < 21.
+        if (Build.VERSION.SDK_INT >= 21) {
+            try {
+                Os.close(fd);
+                // Catching ErrnoException will raise error in API < 21
+            } catch (Exception ex) {
+                Log.e(TAG, "Error closing fd.");
+            }
+        } else {
+            Log.e(TAG, "closeFileDescriptor is called in API < 21, which must be wrong.");
+        }
+    }
+
+    /**
+     * {@link Objects#requireNonNull(Object, String)} requires minSdk
+     * {@link android.os.Build.VERSION_CODES#KITKAT}.
+     */
+    static <T> void requireNonNull(T obj, String message) {
+        if (obj == null) {
+            throw new NullPointerException(message);
+        }
     }
 }

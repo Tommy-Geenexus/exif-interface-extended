@@ -1,6 +1,6 @@
 /*
  * Copyright 2018 The Android Open Source Project
- * Copyright 2020 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
+ * Copyright 2020-2021 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,43 +37,22 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     private final DataInputStream mDataInputStream;
     private ByteOrder mByteOrder;
 
-    private final int mLength;
     private int mPosition;
+    private byte[] mSkipBuffer;
 
-    public ByteOrderedDataInputStream(InputStream in) throws IOException {
+    ByteOrderedDataInputStream(byte[] bytes) {
+        this(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
+    }
+
+    ByteOrderedDataInputStream(InputStream in) {
         this(in, ByteOrder.BIG_ENDIAN);
     }
 
-    ByteOrderedDataInputStream(InputStream in, ByteOrder byteOrder) throws IOException {
+    ByteOrderedDataInputStream(InputStream in, ByteOrder byteOrder) {
         mDataInputStream = new DataInputStream(in);
-        mLength = mDataInputStream.available();
+        mDataInputStream.mark(0);
         mPosition = 0;
-        // TODO (b/142218289): Need to handle case where input stream does not support mark
-        mDataInputStream.mark(mLength);
         mByteOrder = byteOrder;
-    }
-
-    public ByteOrderedDataInputStream(byte[] bytes) throws IOException {
-        this(new ByteArrayInputStream(bytes));
-    }
-
-    public void seek(long byteCount) throws IOException {
-        if (mPosition > byteCount) {
-            mPosition = 0;
-            mDataInputStream.reset();
-            // TODO (b/142218289): Need to handle case where input stream does not support mark
-            mDataInputStream.mark(mLength);
-        } else {
-            byteCount -= mPosition;
-        }
-
-        if (skipBytes((int) byteCount) != (int) byteCount) {
-            throw new IOException("Couldn't seek up to the byteCount");
-        }
-    }
-
-    public int peek() {
-        return mPosition;
     }
 
     @Override
@@ -126,31 +105,18 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     @Override
     public void readFully(byte[] buffer, int offset, int length) throws IOException {
         mPosition += length;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
-        if (mDataInputStream.read(buffer, offset, length) != length) {
-            throw new IOException("Couldn't read up to the length of buffer");
-        }
+        mDataInputStream.readFully(buffer, offset, length);
     }
 
     @Override
     public void readFully(byte[] buffer) throws IOException {
         mPosition += buffer.length;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
-        if (mDataInputStream.read(buffer, 0, buffer.length) != buffer.length) {
-            throw new IOException("Couldn't read up to the length of buffer");
-        }
+        mDataInputStream.readFully(buffer);
     }
 
     @Override
     public byte readByte() throws IOException {
         ++mPosition;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
         int ch = mDataInputStream.read();
         if (ch < 0) {
             throw new EOFException();
@@ -161,9 +127,6 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     @Override
     public short readShort() throws IOException {
         mPosition += 2;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
         int ch1 = mDataInputStream.read();
         int ch2 = mDataInputStream.read();
         if ((ch1 | ch2) < 0) {
@@ -180,9 +143,6 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     @Override
     public int readInt() throws IOException {
         mPosition += 4;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
         int ch1 = mDataInputStream.read();
         int ch2 = mDataInputStream.read();
         int ch3 = mDataInputStream.read();
@@ -198,28 +158,38 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
         throw new IOException("Invalid byte order: " + mByteOrder);
     }
 
+    @SuppressWarnings("RedundantThrows")
     @Override
-    public int skipBytes(int byteCount) throws IOException {
-        int totalBytesToSkip = Math.min(byteCount, mLength - mPosition);
+    public int skipBytes(int n) throws IOException {
+        throw new UnsupportedOperationException("skipBytes is currently unsupported");
+    }
+
+    /**
+     * Discards n bytes of data from the input stream. This method will block until either
+     * the full amount has been skipped or the end of the stream is reached, whichever happens
+     * first.
+     */
+    public void skipFully(int n) throws IOException {
         int totalSkipped = 0;
-        while (totalSkipped < totalBytesToSkip) {
-            int skipped = mDataInputStream.skipBytes(totalBytesToSkip - totalSkipped);
-            if (skipped > 0) {
-                totalSkipped += skipped;
-            } else {
-                break;
+        while (totalSkipped < n) {
+            int skipped = (int) mDataInputStream.skip(n - totalSkipped);
+            if (skipped <= 0) {
+                if (mSkipBuffer == null) {
+                    mSkipBuffer = new byte[ExifInterfaceExtendedUtils.BUF_SIZE];
+                }
+                int bytesToSkip = Math.min(ExifInterfaceExtendedUtils.BUF_SIZE, n - totalSkipped);
+                if ((skipped = mDataInputStream.read(mSkipBuffer, 0, bytesToSkip)) == -1) {
+                    throw new EOFException("Reached EOF while skipping " + n + " bytes.");
+                }
             }
+            totalSkipped += skipped;
         }
         mPosition += totalSkipped;
-        return totalSkipped;
     }
 
     @Override
     public int readUnsignedShort() throws IOException {
         mPosition += 2;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
         int ch1 = mDataInputStream.read();
         int ch2 = mDataInputStream.read();
         if ((ch1 | ch2) < 0) {
@@ -240,9 +210,6 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     @Override
     public long readLong() throws IOException {
         mPosition += 8;
-        if (mPosition > mLength) {
-            throw new EOFException();
-        }
         int ch1 = mDataInputStream.read();
         int ch2 = mDataInputStream.read();
         int ch3 = mDataInputStream.read();
@@ -277,8 +244,17 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     }
 
     @Override
-    public synchronized void mark(int readlimit) {
-        mDataInputStream.mark(readlimit);
+    public void mark(int readlimit) {
+        throw new UnsupportedOperationException("Mark is currently unsupported");
+    }
+
+    @Override
+    public void reset() {
+        throw new UnsupportedOperationException("Reset is currently unsupported");
+    }
+
+    public DataInputStream getDataInputStream() {
+        return mDataInputStream;
     }
 
     public ByteOrder getByteOrder() {
@@ -289,11 +265,11 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
         mByteOrder = byteOrder;
     }
 
-    public int getLength() {
-        return mLength;
-    }
-
     public int getPosition() {
         return mPosition;
+    }
+
+    public void setPosition(int position) {
+        mPosition = position;
     }
 }
