@@ -2956,6 +2956,9 @@ public class ExifInterfaceExtended {
     // Maximum size for checking file type signature (see image_type_recognition_lite.cc)
     private static final int SIGNATURE_CHECK_SIZE = 5000;
 
+    @SuppressWarnings("CharsetObjectCanBeUsed")
+    static final Charset ASCII = Charset.forName("US-ASCII");
+
     static final byte[] JPEG_SIGNATURE = new byte[] {
             (byte) 0xff, (byte) 0xd8, (byte) 0xff
     };
@@ -3004,26 +3007,16 @@ public class ExifInterfaceExtended {
     };
     // See PNG (Portable Network Graphics) Specification, Version 1.2,
     // 3.7. eXIf Exchangeable Image File (Exif) Profile
-    private static final byte[] PNG_CHUNK_TYPE_EXIF = new byte[] {
-            (byte) 0x65, (byte) 0x58, (byte) 0x49, (byte) 0x66
-    };
+    private static final byte[] PNG_CHUNK_TYPE_EXIF = "eXIf".getBytes(ASCII);
     // See https://www.w3.org/TR/PNG
-    private static final byte[] PNG_CHUNK_TYPE_ICCP = new byte[] {
-            (byte) 0x69, (byte) 0x43, (byte) 0x43, (byte) 0x50
-    };
+    private static final byte[] PNG_CHUNK_TYPE_ICCP = "iCCP".getBytes(ASCII);
+    private static final byte[] PNG_CHUNK_TYPE_TEXT = "tEXt".getBytes(ASCII);
     // See https://wwwimages2.adobe.com/content/dam/acom/en/devnet/xmp/pdfs/
     // XMP%20SDK%20Release%20cc-2016-08/XMPSpecificationPart3.pdf
-    private static final byte[] PNG_CHUNK_TYPE_ITXT = new byte[] {
-            (byte) 0x69, (byte) 0x54, (byte) 0x58, (byte) 0x74
-    };
-    private static final byte[] PNG_CHUNK_TYPE_IHDR = new byte[] {
-            (byte) 0x49, (byte) 0x48, (byte) 0x44, (byte) 0x52
-    };
-    private static final byte[] PNG_CHUNK_TYPE_IEND = new byte[] {
-            (byte) 0x49, (byte) 0x45, (byte) 0x4e, (byte) 0x44
-    };
-    @SuppressWarnings({"WeakerAccess", "CharsetObjectCanBeUsed"}) /* synthetic access */
-    static final Charset ASCII = Charset.forName("US-ASCII");
+    private static final byte[] PNG_CHUNK_TYPE_ITXT = "iTXt".getBytes(ASCII);
+    private static final byte[] PNG_CHUNK_TYPE_ZTXT = "zTXt".getBytes(ASCII);
+    private static final byte[] PNG_CHUNK_TYPE_IHDR = "IHDR".getBytes(ASCII);
+    private static final byte[] PNG_CHUNK_TYPE_IEND = "IEND".getBytes(ASCII);
     // Identifier for XMP chunk in PNG
     private static final byte[] IDENTIFIER_XMP_CHUNK =
             "XML:com.adobe.xmp\0\0\0\0\0".getBytes(ASCII);
@@ -6549,7 +6542,7 @@ public class ExifInterfaceExtended {
                 // The first chunk must be the IHDR chunk
                 if (bytesRead == PNG_CHUNK_TYPE_IHDR_OFFSET &&
                         !Arrays.equals(type, PNG_CHUNK_TYPE_IHDR)) {
-                    throw new IOException("IHDR chunk should be the first chunk");
+                    throw new IOException("IHDR chunk must be the first chunk");
                 }
 
                 if (Arrays.equals(type, PNG_CHUNK_TYPE_EXIF)) {
@@ -6574,16 +6567,13 @@ public class ExifInterfaceExtended {
                     dataOutputStream.write(exifBytes);
                     dataOutputStream.writeInt(calculateCrc32IntValue(type, data));
                     bytesRead += skip;
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ICCP)) {
+                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ICCP) ||
+                        Arrays.equals(type, PNG_CHUNK_TYPE_TEXT) ||
+                        Arrays.equals(type, PNG_CHUNK_TYPE_ITXT) ||
+                        Arrays.equals(type, PNG_CHUNK_TYPE_ZTXT)) {
                     final int skip = length + PNG_CHUNK_CRC_BYTE_LENGTH;
                     if (dataInputStream.skipBytes(skip) != skip) {
-                        throw new IOException("Failed to skip iCCP PNG chunk");
-                    }
-                    bytesRead += skip;
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ITXT)) {
-                    final int skip = length + PNG_CHUNK_CRC_BYTE_LENGTH;
-                    if (dataInputStream.skipBytes(skip) != skip) {
-                        throw new IOException("Failed to skip iTXt PNG chunk");
+                        throw new IOException("Failed to skip " + new String(type) + " PNG chunk");
                     }
                     bytesRead += skip;
                 } else {
