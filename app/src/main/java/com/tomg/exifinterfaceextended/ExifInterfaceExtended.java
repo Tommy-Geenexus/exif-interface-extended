@@ -3051,6 +3051,9 @@ public class ExifInterfaceExtended {
     private static final byte[] WEBP_CHUNK_TYPE_XMP = "XMP ".getBytes(ASCII);
     private static final HashMap<String, Integer> WEBP_VP8X_CHUNK_ORDER;
     private static final int WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH = 10;
+    private static final int WEBP_CHUNK_TYPE_VP8X_FLAG_ICCP = 1 << 5;
+    private static final int WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF = 1 << 3;
+    private static final int WEBP_CHUNK_TYPE_VP8X_FLAG_XMP = 1 << 2;
     private static final int WEBP_CHUNK_TYPE_BYTE_LENGTH = 4;
     private static final int WEBP_CHUNK_SIZE_BYTE_LENGTH = 4;
 
@@ -6038,6 +6041,9 @@ public class ExifInterfaceExtended {
         int bytesRead = WEBP_FILE_SIZE_BYTE_OFFSET + WEBP_SIGNATURE_2_LENGTH;
         final List<String> chunkTypes = new ArrayList<>();
         boolean hasVp8xChunk = false;
+        boolean iccpFlagSet = false;
+        boolean exifFlagSet = false;
+        boolean xmpFlagSet = false;
 
         try {
             while (true) {
@@ -6063,7 +6069,19 @@ public class ExifInterfaceExtended {
                 final int chunkSize = source.readInt();
                 final int chunkSizePadded = (chunkSize % 2 == 1) ? chunkSize + 1 : chunkSize;
                 bytesRead += WEBP_CHUNK_SIZE_BYTE_LENGTH;
-                if (Arrays.equals(WEBP_CHUNK_TYPE_EXIF, type)) {
+                if (Arrays.equals(WEBP_CHUNK_TYPE_VP8X, type)) {
+                    final byte headerFlags = source.readByte();
+                    // Skip to next chunk
+                    if (source.skipBytes(chunkSizePadded - 1) != chunkSizePadded - 1) {
+                        throw new IOException("Invalid WebP chunk size");
+                    }
+                    hasVp8xChunk = true;
+                    iccpFlagSet = (headerFlags & WEBP_CHUNK_TYPE_VP8X_FLAG_ICCP) != 0;
+                    exifFlagSet = (headerFlags & WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF) != 0;
+                    xmpFlagSet = (headerFlags & WEBP_CHUNK_TYPE_VP8X_FLAG_XMP) != 0;
+                    bytesRead += chunkSizePadded;
+                    chunkTypes.add(new String(type));
+                } else if (Arrays.equals(WEBP_CHUNK_TYPE_EXIF, type) && exifFlagSet) {
                     // TODO: Need to handle potential OutOfMemoryError
                     final byte[] data = new byte[chunkSizePadded];
                     if (source.read(data) != chunkSizePadded) {
@@ -6075,7 +6093,7 @@ public class ExifInterfaceExtended {
                     setThumbnailData(new ByteOrderedDataInputStream(data));
                     bytesRead += chunkSizePadded;
                     chunkTypes.add(new String(type));
-                } else if (Arrays.equals(WEBP_CHUNK_TYPE_XMP, type)) {
+                } else if (Arrays.equals(WEBP_CHUNK_TYPE_XMP, type) && xmpFlagSet) {
                     // TODO: Need to handle potential OutOfMemoryError
                     final byte[] data = new byte[chunkSizePadded];
                     if (source.read(data) != chunkSizePadded) {
@@ -6091,9 +6109,7 @@ public class ExifInterfaceExtended {
                     if (source.skipBytes(chunkSizePadded) != chunkSizePadded) {
                         throw new IOException("Invalid WebP chunk size");
                     }
-                    if (Arrays.equals(WEBP_CHUNK_TYPE_VP8X, type)) {
-                        hasVp8xChunk = true;
-                    } else if (Arrays.equals(WEBP_CHUNK_TYPE_ICCP, type)) {
+                    if (Arrays.equals(WEBP_CHUNK_TYPE_ICCP, type) && iccpFlagSet) {
                         mHasIccProfile = true;
                     }
                     bytesRead += chunkSizePadded;
@@ -6876,16 +6892,16 @@ public class ExifInterfaceExtended {
                 }
                 bytesRead += chunkSizePadded;
                 // Clear ICC flag
-                data[0] &= ~(1 << 5);
+                data[0] &= ~WEBP_CHUNK_TYPE_VP8X_FLAG_ICCP;
                 if (preserveOrientation) {
                     // Set EXIF flag
-                    data[0] |= 1 << 3;
+                    data[0] |=  WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF;
                 } else {
                     // Clear EXIF flag
-                    data[0] &= ~(1 << 3);
+                    data[0] &= ~WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF;
                 }
                 // Clear XMP flag
-                data[0] &= ~(1 << 2);
+                data[0] &= ~WEBP_CHUNK_TYPE_VP8X_FLAG_XMP;
                 // Write the original VP8X chunk
                 nonHeaderOutputStream.write(WEBP_CHUNK_TYPE_VP8X);
                 nonHeaderOutputStream.writeInt(chunkSize);
@@ -6977,7 +6993,7 @@ public class ExifInterfaceExtended {
                 final byte[] data = new byte[WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH];
                 if (preserveOrientation) {
                     // Set EXIF flag
-                    data[0] |= 1 << 3;
+                    data[0] |= WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF;
                 }
                 // Set ALPHA flag
                 data[0] |= alpha << 4;
