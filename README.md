@@ -13,42 +13,44 @@ without major behavioral changes*
 
 
 ## Usage
-`implementation("io.github.tommy-geenexus:exif-interface-extended:1.0.0")`
+```kotlin
+implementation("io.github.tommy-geenexus:exif-interface-extended:1.0.0")
+```
 
 ## API Examples
 
 **Save the JPEG, PNG or WebP image without metadata**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 exifInterfaceExtended.saveExclusive(source, sink, preserveOrientation)
 ```
 
 **Check whether the JPEG, PNG or WebP image has attributes**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 val hasAttributes = exifInterfaceExtended.hasAttributes(ignoreImageWidthAndLength)
 ```
 
 **Check whether the JPEG, PNG or WebP image contains XMP metadata**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 val hasXmp = exifInterfaceExtended.hasXmp()
 ```
 
 **Check whether the JPEG image contains ExtendedXMP metadata**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 val hasExtendedXmp = exifInterfaceExtended.hasExtendedXmp()
 ```
 
 **Check whether the JPEG image contains Photoshop metadata**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 val hasPhotoshopImageResources = exifInterfaceExtended.hasPhotoshopImageResources()
 ```
 
 **Check whether the JPEG, PNG or WebP image contains an embedded ICC profile**
-```
+```kotlin
 val exifInterfaceExtended = ExifInterfaceExtended(source)
 val hasIccProfile = exifInterfaceExtended.hasIccProfile()
 ```
