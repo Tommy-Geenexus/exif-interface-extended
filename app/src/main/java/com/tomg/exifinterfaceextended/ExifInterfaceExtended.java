@@ -5675,6 +5675,9 @@ public class ExifInterfaceExtended {
                 if (DEBUG) {
                     Log.d(TAG, "Heif meta: " + width + "x" + height + ", rotation " + rotation);
                 }
+            } catch (RuntimeException e) {
+                throw new UnsupportedOperationException("Failed to read EXIF from HEIF file. "
+                        + "Given stream is either malformed or unsupported.");
             } finally {
                 retriever.release();
             }
