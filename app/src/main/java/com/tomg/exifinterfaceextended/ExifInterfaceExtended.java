@@ -25,7 +25,6 @@ import android.location.Location;
 import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
-import android.system.Os;
 import android.system.OsConstants;
 import android.util.Log;
 import android.util.Pair;
@@ -3563,8 +3562,7 @@ public class ExifInterfaceExtended {
      *
      * @param fileDescriptor the file descriptor of the image data
      * @throws NullPointerException if file descriptor is null
-     * @throws IOException if an error occurs while duplicating the file descriptor via
-     *         {@link Os#dup(FileDescriptor)}.
+     * @throws IOException if an error occurs while duplicating the file descriptor.
      */
     public ExifInterfaceExtended(@NonNull FileDescriptor fileDescriptor) throws IOException {
         ExifInterfaceExtendedUtils.requireNonNull(fileDescriptor, "fileDescriptor cannot be null");
@@ -3578,7 +3576,7 @@ public class ExifInterfaceExtended {
             // Otherwise, just close the given file descriptor after reading it because the save
             // feature won't be working.
             try {
-                fileDescriptor = Os.dup(fileDescriptor);
+                fileDescriptor = ExifInterfaceExtendedUtils.Api21Impl.dup(fileDescriptor);
                 isFdDuped = true;
             } catch (Exception e) {
                 throw new IOException("Failed to duplicate file descriptor", e);
@@ -4224,7 +4222,7 @@ public class ExifInterfaceExtended {
     private static boolean isSeekableFD(FileDescriptor fd) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
-                Os.lseek(fd, 0, OsConstants.SEEK_CUR);
+                ExifInterfaceExtendedUtils.Api21Impl.lseek(fd, 0, OsConstants.SEEK_CUR);
                 return true;
             } catch (Exception e) {
                 if (DEBUG) {
@@ -4294,7 +4292,8 @@ public class ExifInterfaceExtended {
                 // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
                 // is needed to prevent calling Os.lseek at runtime for SDK < 21.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Os.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
+                    ExifInterfaceExtendedUtils.Api21Impl.lseek(mSeekableFileDescriptor, 0,
+                            OsConstants.SEEK_SET);
                     in = new FileInputStream(mSeekableFileDescriptor);
                 }
             }
@@ -4325,7 +4324,8 @@ public class ExifInterfaceExtended {
                 // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
                 // is needed to prevent calling Os.lseek at runtime for SDK < 21.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    Os.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
+                    ExifInterfaceExtendedUtils.Api21Impl.lseek(mSeekableFileDescriptor, 0,
+                            OsConstants.SEEK_SET);
                     out = new FileOutputStream(mSeekableFileDescriptor);
                 }
             }
@@ -4348,7 +4348,8 @@ public class ExifInterfaceExtended {
                     // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this
                     // check is needed to prevent calling Os.lseek at runtime for SDK < 21.
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        Os.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
+                        ExifInterfaceExtendedUtils.Api21Impl.lseek(mSeekableFileDescriptor, 0,
+                                OsConstants.SEEK_SET);
                         out = new FileOutputStream(mSeekableFileDescriptor);
                     }
                 }
@@ -4534,8 +4535,10 @@ public class ExifInterfaceExtended {
                 // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
                 // is needed to prevent calling Os.lseek and Os.dup at runtime for SDK < 21.
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    newFileDescriptor = Os.dup(mSeekableFileDescriptor);
-                    Os.lseek(newFileDescriptor, 0, OsConstants.SEEK_SET);
+                    newFileDescriptor =
+                            ExifInterfaceExtendedUtils.Api21Impl.dup(mSeekableFileDescriptor);
+                    ExifInterfaceExtendedUtils.Api21Impl.lseek(newFileDescriptor, 0,
+                            OsConstants.SEEK_SET);
                     in = new FileInputStream(newFileDescriptor);
                 }
             }
@@ -5531,7 +5534,8 @@ public class ExifInterfaceExtended {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             MediaMetadataRetriever retriever = new MediaMetadataRetriever();
             try {
-                retriever.setDataSource(new MediaDataSource() {
+                ExifInterfaceExtendedUtils.Api23Impl.setDataSource(retriever,
+                        new MediaDataSource() {
                     long mPosition;
 
                     @Override
