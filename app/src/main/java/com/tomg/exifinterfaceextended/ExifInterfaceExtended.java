@@ -2994,7 +2994,7 @@ public class ExifInterfaceExtended {
             (byte) 0x89, (byte) 0x50, (byte) 0x4e,
             (byte) 0x47, (byte) 0x0d, (byte) 0x0a, (byte) 0x1a, (byte) 0x0a
     };
-    // See PNG (Portable Network Graphics) Specification, Version 1.2,
+    // See "Extensions to the PNG 1.2 Specification, Version 1.5.0",
     // 3.7. eXIf Exchangeable Image File (Exif) Profile
     private static final byte[] PNG_CHUNK_TYPE_EXIF = "eXIf".getBytes(ASCII);
     // See https://www.w3.org/TR/PNG
@@ -4256,7 +4256,9 @@ public class ExifInterfaceExtended {
      * <p>
      * For WebP format, the Exif data will be stored as an Extended File Format, and it may not be
      * supported for older readers.
-     * </p>
+     * <p>
+     * For PNG format, the Exif data will be stored as an "eXIf" chunk as per
+     * "Extensions to the PNG 1.2 Specification, Version 1.5.0".
      */
     public void saveAttributes() throws IOException {
         if (!isSupportedFormatForSavingAttributes(mMimeType)) {
