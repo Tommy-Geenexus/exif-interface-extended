@@ -73,6 +73,10 @@ import java.util.regex.Pattern;
  * Supported for reading: JPEG, PNG, WebP, HEIF, DNG, CR2, NEF, NRW, ARW, RW2, ORF, PEF, SRW, RAF.
  * <p>
  * Supported for writing: JPEG, PNG, WebP, DNG.
+ * <p>
+ * Note: JPEG and HEIF files may contain XMP data either inside the Exif data chunk or outside of
+ * it. This class will search both locations for XMP data, but if XMP data exist both inside and
+ * outside Exif, will favor the XMP data inside Exif over the one outside.
  */
 public class ExifInterfaceExtended {
 
@@ -5820,6 +5824,24 @@ public class ExifInterfaceExtended {
                     // Save offset to EXIF data for handling thumbnail and attribute offsets.
                     mOffsetToExifData = offset;
                     readExifSegment(bytes, IFD_TYPE_PRIMARY);
+                }
+
+                String xmpOffsetStr = retriever.extractMetadata(
+                        MediaMetadataRetriever.METADATA_KEY_XMP_OFFSET);
+                String xmpLengthStr = retriever.extractMetadata(
+                        MediaMetadataRetriever.METADATA_KEY_XMP_LENGTH);
+                if (xmpOffsetStr != null && xmpLengthStr != null) {
+                    int offset = Integer.parseInt(xmpOffsetStr);
+                    int length = Integer.parseInt(xmpLengthStr);
+                    in.seek(offset);
+                    byte[] xmpBytes = new byte[length];
+                    if (in.read(xmpBytes) != length) {
+                        throw new IOException("Failed to read XMP from HEIF");
+                    }
+                    if (getAttribute(TAG_XMP) == null) {
+                        mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP, new ExifAttribute(
+                                IFD_FORMAT_BYTE, xmpBytes.length, offset, xmpBytes));
+                    }
                 }
 
                 if (DEBUG) {

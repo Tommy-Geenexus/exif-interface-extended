@@ -494,7 +494,11 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testHeifFile() throws Throwable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            readFromFilesWithExif(HEIF_WITH_EXIF, array.heif_with_exif);
+            // Reading XMP data from HEIF was added in SDK 31.
+            readFromFilesWithExif(HEIF_WITH_EXIF,
+                    Build.VERSION.SDK_INT >= 31
+                            ? array.heif_with_exif_31_and_above
+                            : array.heif_with_exif);
         } else {
             // Make sure that an exception is not thrown and that image length/width tag values
             // return default values, not the actual values.
