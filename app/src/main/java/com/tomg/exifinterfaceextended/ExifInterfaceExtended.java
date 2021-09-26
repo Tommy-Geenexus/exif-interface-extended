@@ -915,7 +915,6 @@ public class ExifInterfaceExtended {
      *  @deprecated Use {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} instead.
      *  @see #TAG_PHOTOGRAPHIC_SENSITIVITY
      */
-    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated public static final String TAG_ISO_SPEED_RATINGS = "ISOSpeedRatings";
     /**
      *  <p>This tag indicates the sensitivity of the camera or input device when the image was shot.
@@ -1660,6 +1659,7 @@ public class ExifInterfaceExtended {
      *      <li>Default = None</li>
      *  </ul>
      */
+    @SuppressWarnings("unused")
     public static final String TAG_LENS_SERIAL_NUMBER = "LensSerialNumber";
 
     // GPS Attribute Information
@@ -2247,261 +2247,319 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_PLANAR_CONFIGURATION} to denote Chunky format.
      */
+    @SuppressWarnings("unused")
     public static final short FORMAT_CHUNKY = 1;
     /**
      * The constant used by {@link #TAG_PLANAR_CONFIGURATION} to denote Planar format.
      */
+    @SuppressWarnings("unused")
     public static final short FORMAT_PLANAR = 2;
 
     /**
      * The constant used by {@link #TAG_Y_CB_CR_POSITIONING} to denote Centered positioning.
      */
+    @SuppressWarnings("unused")
     public static final short Y_CB_CR_POSITIONING_CENTERED = 1;
     /**
      * The constant used by {@link #TAG_Y_CB_CR_POSITIONING} to denote Co-sited positioning.
      */
+    @SuppressWarnings("unused")
     public static final short Y_CB_CR_POSITIONING_CO_SITED = 2;
 
     /**
      * The constant used to denote resolution unit as inches.
      */
+    @SuppressWarnings("unused")
     public static final short RESOLUTION_UNIT_INCHES = 2;
     /**
      * The constant used to denote resolution unit as centimeters.
      */
+    @SuppressWarnings("unused")
     public static final short RESOLUTION_UNIT_CENTIMETERS = 3;
 
     /**
      * The constant used by {@link #TAG_COLOR_SPACE} to denote sRGB color space.
      */
+    @SuppressWarnings("unused")
     public static final int COLOR_SPACE_S_RGB = 1;
     /**
      * The constant used by {@link #TAG_COLOR_SPACE} to denote Uncalibrated.
      */
+    @SuppressWarnings("unused")
     public static final int COLOR_SPACE_UNCALIBRATED = 65535;
 
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is not defined.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_NOT_DEFINED = 0;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Manual.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_MANUAL = 1;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Normal.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_NORMAL = 2;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is
      * Aperture priority.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_APERTURE_PRIORITY = 3;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is
      * Shutter priority.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_SHUTTER_PRIORITY = 4;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Creative
      * program (biased toward depth of field).
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_CREATIVE = 5;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Action
      * program (biased toward fast shutter speed).
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_ACTION = 6;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Portrait
      * mode (for closeup photos with the background out of focus).
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_PORTRAIT_MODE = 7;
     /**
      * The constant used by {@link #TAG_EXPOSURE_PROGRAM} to denote exposure program is Landscape
      * mode (for landscape photos with the background in focus).
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_PROGRAM_LANDSCAPE_MODE = 8;
 
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is unknown.
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_UNKNOWN = 0;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Standard
      * output sensitivity (SOS).
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_SOS = 1;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Recommended
      * exposure index (REI).
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_REI = 2;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is ISO speed.
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_ISO_SPEED = 3;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Standard
      * output sensitivity (SOS) and recommended exposure index (REI).
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_SOS_AND_REI = 4;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Standard
      * output sensitivity (SOS) and ISO speed.
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_SOS_AND_ISO = 5;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Recommended
      * exposure index (REI) and ISO speed.
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_REI_AND_ISO = 6;
     /**
      * The constant used by {@link #TAG_SENSITIVITY_TYPE} to denote sensitivity type is Standard
      * output sensitivity (SOS) and recommended exposure index (REI) and ISO speed.
      */
+    @SuppressWarnings("unused")
     public static final short SENSITIVITY_TYPE_SOS_AND_REI_AND_ISO = 7;
 
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is unknown.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_UNKNOWN = 0;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is Average.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_AVERAGE = 1;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is
      * CenterWeightedAverage.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_CENTER_WEIGHT_AVERAGE = 2;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is Spot.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_SPOT = 3;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is MultiSpot.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_MULTI_SPOT = 4;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is Pattern.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_PATTERN = 5;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is Partial.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_PARTIAL = 6;
     /**
      * The constant used by {@link #TAG_METERING_MODE} to denote metering mode is other.
      */
+    @SuppressWarnings("unused")
     public static final short METERING_MODE_OTHER = 255;
 
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is unknown.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_UNKNOWN = 0;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Daylight.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_DAYLIGHT = 1;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Fluorescent.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_FLUORESCENT = 2;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Tungsten
      * (incandescent light).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_TUNGSTEN = 3;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Flash.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_FLASH = 4;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Fine weather.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_FINE_WEATHER = 9;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Cloudy weather.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_CLOUDY_WEATHER = 10;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Shade.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_SHADE = 11;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Daylight fluorescent
      * (D 5700 - 7100K).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_DAYLIGHT_FLUORESCENT = 12;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Day white
      * fluorescent (N 4600 - 5500K).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_DAY_WHITE_FLUORESCENT = 13;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Cool white
      * fluorescent (W 3800 - 4500K).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_COOL_WHITE_FLUORESCENT = 14;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is White fluorescent
      * (WW 3250 - 3800K).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_WHITE_FLUORESCENT = 15;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Warm white
      * fluorescent (L 2600 - 3250K).
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_WARM_WHITE_FLUORESCENT = 16;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Standard light A.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_STANDARD_LIGHT_A = 17;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Standard light B.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_STANDARD_LIGHT_B = 18;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is Standard light C.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_STANDARD_LIGHT_C = 19;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is D55.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_D55 = 20;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is D65.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_D65 = 21;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is D75.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_D75 = 22;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is D50.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_D50 = 23;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is ISO studio tungsten.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_ISO_STUDIO_TUNGSTEN = 24;
     /**
      * The constant used by {@link #TAG_LIGHT_SOURCE} to denote light source is other.
      */
+    @SuppressWarnings("unused")
     public static final short LIGHT_SOURCE_OTHER = 255;
 
     /**
      * The flag used by {@link #TAG_FLASH} to indicate whether the flash is fired.
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_FIRED = 0b0000_0001;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate strobe return light is not detected.
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_RETURN_LIGHT_NOT_DETECTED = 0b0000_0100;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate strobe return light is detected.
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_RETURN_LIGHT_DETECTED = 0b0000_0110;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate the camera's flash mode is Compulsory flash
@@ -2510,6 +2568,7 @@ public class ExifInterfaceExtended {
      * @see #FLAG_FLASH_MODE_COMPULSORY_SUPPRESSION
      * @see #FLAG_FLASH_MODE_AUTO
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_MODE_COMPULSORY_FIRING = 0b0000_1000;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate the camera's flash mode is Compulsory flash
@@ -2518,6 +2577,7 @@ public class ExifInterfaceExtended {
      * @see #FLAG_FLASH_MODE_COMPULSORY_FIRING
      * @see #FLAG_FLASH_MODE_AUTO
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_MODE_COMPULSORY_SUPPRESSION = 0b0001_0000;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate the camera's flash mode is Auto.
@@ -2525,95 +2585,115 @@ public class ExifInterfaceExtended {
      * @see #FLAG_FLASH_MODE_COMPULSORY_FIRING
      * @see #FLAG_FLASH_MODE_COMPULSORY_SUPPRESSION
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_MODE_AUTO = 0b0001_1000;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate no flash function is present.
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_NO_FLASH_FUNCTION = 0b0010_0000;
     /**
      * The flag used by {@link #TAG_FLASH} to indicate red-eye reduction is supported.
      */
+    @SuppressWarnings("unused")
     public static final short FLAG_FLASH_RED_EYE_SUPPORTED = 0b0100_0000;
 
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is not
      * defined.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_NOT_DEFINED = 1;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is One-chip
      * color area sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_ONE_CHIP = 2;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is Two-chip
      * color area sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_TWO_CHIP = 3;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is
      * Three-chip color area sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_THREE_CHIP = 4;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is Color
      * sequential area sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_COLOR_SEQUENTIAL = 5;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is Trilinear
      * sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_TRILINEAR = 7;
     /**
      * The constant used by {@link #TAG_SENSING_METHOD} to denote the image sensor type is Color
      * sequential linear sensor.
      */
+    @SuppressWarnings("unused")
     public static final short SENSOR_TYPE_COLOR_SEQUENTIAL_LINEAR = 8;
 
     /**
      * The constant used by {@link #TAG_FILE_SOURCE} to denote the source is other.
      */
+    @SuppressWarnings("unused")
     public static final short FILE_SOURCE_OTHER = 0;
     /**
      * The constant used by {@link #TAG_FILE_SOURCE} to denote the source is scanner of transparent
      * type.
      */
+    @SuppressWarnings("unused")
     public static final short FILE_SOURCE_TRANSPARENT_SCANNER = 1;
     /**
      * The constant used by {@link #TAG_FILE_SOURCE} to denote the source is scanner of reflex type.
      */
+    @SuppressWarnings("unused")
     public static final short FILE_SOURCE_REFLEX_SCANNER = 2;
     /**
      * The constant used by {@link #TAG_FILE_SOURCE} to denote the source is DSC.
      */
+    @SuppressWarnings("unused")
     public static final short FILE_SOURCE_DSC = 3;
 
     /**
      * The constant used by {@link #TAG_SCENE_TYPE} to denote the scene is directly photographed.
      */
+    @SuppressWarnings("unused")
     public static final short SCENE_TYPE_DIRECTLY_PHOTOGRAPHED = 1;
 
     /**
      * The constant used by {@link #TAG_CUSTOM_RENDERED} to denote no special processing is used.
      */
+    @SuppressWarnings("unused")
     public static final short RENDERED_PROCESS_NORMAL = 0;
     /**
      * The constant used by {@link #TAG_CUSTOM_RENDERED} to denote special processing is used.
      */
+    @SuppressWarnings("unused")
     public static final short RENDERED_PROCESS_CUSTOM = 1;
 
     /**
      * The constant used by {@link #TAG_EXPOSURE_MODE} to denote the exposure mode is Auto.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_MODE_AUTO = 0;
     /**
      * The constant used by {@link #TAG_EXPOSURE_MODE} to denote the exposure mode is Manual.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_MODE_MANUAL = 1;
     /**
      * The constant used by {@link #TAG_EXPOSURE_MODE} to denote the exposure mode is Auto bracket.
      */
+    @SuppressWarnings("unused")
     public static final short EXPOSURE_MODE_AUTO_BRACKET = 2;
 
     /**
@@ -2631,112 +2711,136 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_WHITE_BALANCE} to denote the white balance is Auto.
      */
+    @SuppressWarnings("unused")
     public static final short WHITE_BALANCE_AUTO = 0;
     /**
      * The constant used by {@link #TAG_WHITE_BALANCE} to denote the white balance is Manual.
      */
+    @SuppressWarnings("unused")
     public static final short WHITE_BALANCE_MANUAL = 1;
 
     /**
      * The constant used by {@link #TAG_SCENE_CAPTURE_TYPE} to denote the scene capture type is
      * Standard.
      */
+    @SuppressWarnings("unused")
     public static final short SCENE_CAPTURE_TYPE_STANDARD = 0;
     /**
      * The constant used by {@link #TAG_SCENE_CAPTURE_TYPE} to denote the scene capture type is
      * Landscape.
      */
+    @SuppressWarnings("unused")
     public static final short SCENE_CAPTURE_TYPE_LANDSCAPE = 1;
     /**
      * The constant used by {@link #TAG_SCENE_CAPTURE_TYPE} to denote the scene capture type is
      * Portrait.
      */
+    @SuppressWarnings("unused")
     public static final short SCENE_CAPTURE_TYPE_PORTRAIT = 2;
     /**
      * The constant used by {@link #TAG_SCENE_CAPTURE_TYPE} to denote the scene capture type is
      * Night scene.
      */
+    @SuppressWarnings("unused")
     public static final short SCENE_CAPTURE_TYPE_NIGHT = 3;
 
     /**
      * The constant used by {@link #TAG_GAIN_CONTROL} to denote none gain adjustment.
      */
+    @SuppressWarnings("unused")
     public static final short GAIN_CONTROL_NONE = 0;
     /**
      * The constant used by {@link #TAG_GAIN_CONTROL} to denote low gain up.
      */
+    @SuppressWarnings("unused")
     public static final short GAIN_CONTROL_LOW_GAIN_UP = 1;
     /**
      * The constant used by {@link #TAG_GAIN_CONTROL} to denote high gain up.
      */
+    @SuppressWarnings("unused")
     public static final short GAIN_CONTROL_HIGH_GAIN_UP = 2;
     /**
      * The constant used by {@link #TAG_GAIN_CONTROL} to denote low gain down.
      */
+    @SuppressWarnings("unused")
     public static final short GAIN_CONTROL_LOW_GAIN_DOWN = 3;
     /**
      * The constant used by {@link #TAG_GAIN_CONTROL} to denote high gain down.
      */
+    @SuppressWarnings("unused")
     public static final short GAIN_CONTROL_HIGH_GAIN_DOWN = 4;
 
     /**
      * The constant used by {@link #TAG_CONTRAST} to denote normal contrast.
      */
+    @SuppressWarnings("unused")
     public static final short CONTRAST_NORMAL = 0;
     /**
      * The constant used by {@link #TAG_CONTRAST} to denote soft contrast.
      */
+    @SuppressWarnings("unused")
     public static final short CONTRAST_SOFT = 1;
     /**
      * The constant used by {@link #TAG_CONTRAST} to denote hard contrast.
      */
+    @SuppressWarnings("unused")
     public static final short CONTRAST_HARD = 2;
 
     /**
      * The constant used by {@link #TAG_SATURATION} to denote normal saturation.
      */
+    @SuppressWarnings("unused")
     public static final short SATURATION_NORMAL = 0;
     /**
      * The constant used by {@link #TAG_SATURATION} to denote low saturation.
      */
+    @SuppressWarnings("unused")
     public static final short SATURATION_LOW = 0;
     /**
      * The constant used by {@link #TAG_SHARPNESS} to denote high saturation.
      */
+    @SuppressWarnings("unused")
     public static final short SATURATION_HIGH = 0;
 
     /**
      * The constant used by {@link #TAG_SHARPNESS} to denote normal sharpness.
      */
+    @SuppressWarnings("unused")
     public static final short SHARPNESS_NORMAL = 0;
     /**
      * The constant used by {@link #TAG_SHARPNESS} to denote soft sharpness.
      */
+    @SuppressWarnings("unused")
     public static final short SHARPNESS_SOFT = 1;
     /**
      * The constant used by {@link #TAG_SHARPNESS} to denote hard sharpness.
      */
+    @SuppressWarnings("unused")
     public static final short SHARPNESS_HARD = 2;
 
     /**
      * The constant used by {@link #TAG_SUBJECT_DISTANCE_RANGE} to denote the subject distance range
      * is unknown.
      */
+    @SuppressWarnings("unused")
     public static final short SUBJECT_DISTANCE_RANGE_UNKNOWN = 0;
     /**
      * The constant used by {@link #TAG_SUBJECT_DISTANCE_RANGE} to denote the subject distance range
      * is Macro.
      */
+    @SuppressWarnings("unused")
     public static final short SUBJECT_DISTANCE_RANGE_MACRO = 1;
     /**
      * The constant used by {@link #TAG_SUBJECT_DISTANCE_RANGE} to denote the subject distance range
      * is Close view.
      */
+    @SuppressWarnings("unused")
     public static final short SUBJECT_DISTANCE_RANGE_CLOSE_VIEW = 2;
     /**
      * The constant used by {@link #TAG_SUBJECT_DISTANCE_RANGE} to denote the subject distance range
      * is Distant view.
      */
+    @SuppressWarnings("unused")
     public static final short SUBJECT_DISTANCE_RANGE_DISTANT_VIEW = 3;
 
     /**
@@ -2745,6 +2849,7 @@ public class ExifInterfaceExtended {
      * @see #TAG_GPS_LATITUDE_REF
      * @see #TAG_GPS_DEST_LATITUDE_REF
      */
+    @SuppressWarnings("unused")
     public static final String LATITUDE_NORTH = "N";
     /**
      * The constant used by GPS latitude-related tags to denote the latitude is South latitude.
@@ -2752,6 +2857,7 @@ public class ExifInterfaceExtended {
      * @see #TAG_GPS_LATITUDE_REF
      * @see #TAG_GPS_DEST_LATITUDE_REF
      */
+    @SuppressWarnings("unused")
     public static final String LATITUDE_SOUTH = "S";
 
     /**
@@ -2760,6 +2866,7 @@ public class ExifInterfaceExtended {
      * @see #TAG_GPS_LONGITUDE_REF
      * @see #TAG_GPS_DEST_LONGITUDE_REF
      */
+    @SuppressWarnings("unused")
     public static final String LONGITUDE_EAST = "E";
     /**
      * The constant used by GPS longitude-related tags to denote the longitude is West longitude.
@@ -2767,84 +2874,101 @@ public class ExifInterfaceExtended {
      * @see #TAG_GPS_LONGITUDE_REF
      * @see #TAG_GPS_DEST_LONGITUDE_REF
      */
+    @SuppressWarnings("unused")
     public static final String LONGITUDE_WEST = "W";
 
     /**
      * The constant used by {@link #TAG_GPS_ALTITUDE_REF} to denote the altitude is above sea level.
      */
+    @SuppressWarnings("unused")
     public static final short ALTITUDE_ABOVE_SEA_LEVEL = 0;
     /**
      * The constant used by {@link #TAG_GPS_ALTITUDE_REF} to denote the altitude is below sea level.
      */
+    @SuppressWarnings("unused")
     public static final short ALTITUDE_BELOW_SEA_LEVEL = 1;
 
     /**
      * The constant used by {@link #TAG_GPS_STATUS} to denote GPS measurement is in progress.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_MEASUREMENT_IN_PROGRESS = "A";
     /**
      * The constant used by {@link #TAG_GPS_STATUS} to denote GPS measurement is interrupted.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_MEASUREMENT_INTERRUPTED = "V";
 
     /**
      * The constant used by {@link #TAG_GPS_MEASURE_MODE} to denote GPS measurement is
      * 2-dimensional.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_MEASUREMENT_2D = "2";
     /**
      * The constant used by {@link #TAG_GPS_MEASURE_MODE} to denote GPS measurement is
      * 3-dimensional.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_MEASUREMENT_3D = "3";
 
     /**
      * The constant used by {@link #TAG_GPS_SPEED_REF} to denote the speed unit is kilometers per
      * hour.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_SPEED_KILOMETERS_PER_HOUR = "K";
     /**
      * The constant used by {@link #TAG_GPS_SPEED_REF} to denote the speed unit is miles per hour.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_SPEED_MILES_PER_HOUR = "M";
     /**
      * The constant used by {@link #TAG_GPS_SPEED_REF} to denote the speed unit is knots.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_SPEED_KNOTS = "N";
 
     /**
      * The constant used by GPS attributes to denote the direction is true direction.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_DIRECTION_TRUE = "T";
     /**
      * The constant used by GPS attributes to denote the direction is magnetic direction.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_DIRECTION_MAGNETIC = "M";
 
     /**
      * The constant used by {@link #TAG_GPS_DEST_DISTANCE_REF} to denote the distance unit is
      * kilometers.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_DISTANCE_KILOMETERS = "K";
     /**
      * The constant used by {@link #TAG_GPS_DEST_DISTANCE_REF} to denote the distance unit is miles.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_DISTANCE_MILES = "M";
     /**
      * The constant used by {@link #TAG_GPS_DEST_DISTANCE_REF} to denote the distance unit is
      * nautical miles.
      */
+    @SuppressWarnings("unused")
     public static final String GPS_DISTANCE_NAUTICAL_MILES = "N";
 
     /**
      * The constant used by {@link #TAG_GPS_DIFFERENTIAL} to denote no differential correction is
      * applied.
      */
+    @SuppressWarnings("unused")
     public static final short GPS_MEASUREMENT_NO_DIFFERENTIAL = 0;
     /**
      * The constant used by {@link #TAG_GPS_DIFFERENTIAL} to denote differential correction is
      * applied.
      */
+    @SuppressWarnings("unused")
     public static final short GPS_MEASUREMENT_DIFFERENTIAL_CORRECTED = 1;
 
     /**
@@ -2854,6 +2978,7 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_COMPRESSION} to denote the image is huffman compressed.
      */
+    @SuppressWarnings("unused")
     public static final int DATA_HUFFMAN_COMPRESSED = 2;
     /**
      * The constant used by {@link #TAG_COMPRESSION} to denote the image is JPEG.
@@ -2868,15 +2993,18 @@ public class ExifInterfaceExtended {
      * The constant used by {@link #TAG_COMPRESSION}, see DNG Specification 1.4.0.0.
      * Section 3, Compression
      */
+    @SuppressWarnings("unused")
     public static final int DATA_DEFLATE_ZIP = 8;
     /**
      * The constant used by {@link #TAG_COMPRESSION} to denote the image is pack-bits compressed.
      */
+    @SuppressWarnings("unused")
     public static final int DATA_PACK_BITS_COMPRESSED = 32773;
     /**
      * The constant used by {@link #TAG_COMPRESSION}, see DNG Specification 1.4.0.0.
      * Section 3, Compression
      */
+    @SuppressWarnings("unused")
     public static final int DATA_LOSSY_JPEG = 34892;
 
     /**
@@ -2888,6 +3016,7 @@ public class ExifInterfaceExtended {
      * The constant used by {@link #TAG_BITS_PER_SAMPLE}.
      * See JEITA CP-3451C Spec Section 4, Differences from Bilevel Images
      */
+    @SuppressWarnings("unused")
     public static final int[] BITS_PER_SAMPLE_GREYSCALE_1 = new int[] { 4 };
     /**
      * The constant used by {@link #TAG_BITS_PER_SAMPLE}.
@@ -2898,6 +3027,7 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_PHOTOMETRIC_INTERPRETATION}.
      */
+    @SuppressWarnings("unused")
     public static final int PHOTOMETRIC_INTERPRETATION_WHITE_IS_ZERO = 0;
     /**
      * The constant used by {@link #TAG_PHOTOMETRIC_INTERPRETATION}.
@@ -2906,6 +3036,7 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_PHOTOMETRIC_INTERPRETATION}.
      */
+    @SuppressWarnings("unused")
     public static final int PHOTOMETRIC_INTERPRETATION_RGB = 2;
     /**
      * The constant used by {@link #TAG_PHOTOMETRIC_INTERPRETATION}.
@@ -2915,10 +3046,12 @@ public class ExifInterfaceExtended {
     /**
      * The constant used by {@link #TAG_NEW_SUBFILE_TYPE}. See JEITA CP-3451C Spec Section 8.
      */
+    @SuppressWarnings("unused")
     public static final int ORIGINAL_RESOLUTION_IMAGE = 0;
     /**
      * The constant used by {@link #TAG_NEW_SUBFILE_TYPE}. See JEITA CP-3451C Spec Section 8.
      */
+    @SuppressWarnings("unused")
     public static final int REDUCED_RESOLUTION_IMAGE = 1;
 
     /**
@@ -3034,7 +3167,6 @@ public class ExifInterfaceExtended {
     private static final byte[] WEBP_CHUNK_TYPE_VP8 = "VP8 ".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_ICCP = "ICCP".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_ANIM = "ANIM".getBytes(ASCII);
-    private static final byte[] WEBP_CHUNK_TYPE_ALPHA = "ALPH".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_ANMF = "ANMF".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_EXIF = "EXIF".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_XMP = "XMP ".getBytes(ASCII);
@@ -3427,16 +3559,21 @@ public class ExifInterfaceExtended {
 
     // Supported Image File Types
     static final int IMAGE_TYPE_UNKNOWN = 0;
+    @SuppressWarnings("unused")
     static final int IMAGE_TYPE_ARW = 1;
+    @SuppressWarnings("unused")
     static final int IMAGE_TYPE_CR2 = 2;
     static final int IMAGE_TYPE_DNG = 3;
     static final int IMAGE_TYPE_JPEG = 4;
+    @SuppressWarnings("unused")
     static final int IMAGE_TYPE_NEF = 5;
+    @SuppressWarnings("unused")
     static final int IMAGE_TYPE_NRW = 6;
     static final int IMAGE_TYPE_ORF = 7;
     static final int IMAGE_TYPE_PEF = 8;
     static final int IMAGE_TYPE_RAF = 9;
     static final int IMAGE_TYPE_RW2 = 10;
+    @SuppressWarnings("unused")
     static final int IMAGE_TYPE_SRW = 11;
     static final int IMAGE_TYPE_HEIF = 12;
     static final int IMAGE_TYPE_PNG = 13;
@@ -3652,6 +3789,7 @@ public class ExifInterfaceExtended {
      *
      * @param mimeType the string value of mime type
      */
+    @SuppressWarnings("unused")
     public static boolean isSupportedMimeType(@NonNull String mimeType) {
         ExifInterfaceExtendedUtils.requireNonNull(mimeType, "mimeType shouldn't be null");
         switch (mimeType.toLowerCase(Locale.ROOT)) {
@@ -4618,6 +4756,7 @@ public class ExifInterfaceExtended {
      * Returns true if thumbnail image is JPEG Compressed, or false if either thumbnail image does
      * not exist or thumbnail image is uncompressed.
      */
+    @SuppressWarnings("unused")
     public boolean isThumbnailCompressed() {
         if (!mHasThumbnail) {
             return false;
@@ -4919,7 +5058,7 @@ public class ExifInterfaceExtended {
                 if (("+".equals(sign) || "-".equals(sign))
                         && ":".equals(offsetString.substring(3, 4))
                         && hour <= 14 /* max UTC hour value */) {
-                    msecs += (hour * 60 + min) * 60 * 1000 * ("-".equals(sign) ? 1 : -1);
+                    msecs += (hour * 60L + min) * 60 * 1000 * ("-".equals(sign) ? 1 : -1);
                 }
             }
 
