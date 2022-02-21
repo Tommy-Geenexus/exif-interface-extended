@@ -24,6 +24,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * An input stream to parse EXIF data area, which can be written in either little or big endian
@@ -271,5 +272,24 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
 
     public void setPosition(int position) {
         mPosition = position;
+    }
+
+    /** Reads all remaining data. */
+    public byte[] readToEnd() throws IOException {
+        byte[] data = new byte[1024];
+        int bytesRead = 0;
+        while (true) {
+            if (bytesRead == data.length) {
+                data = Arrays.copyOf(data, data.length * 2);
+            }
+            int readResult = mDataInputStream.read(data, bytesRead, data.length - bytesRead);
+            if (readResult != -1) {
+                bytesRead += readResult;
+                mPosition += readResult;
+            } else {
+                break;
+            }
+        }
+        return Arrays.copyOf(data, bytesRead);
     }
 }
