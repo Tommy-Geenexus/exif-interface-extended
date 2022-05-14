@@ -16,6 +16,7 @@ jobs:
         id: setup-java
         uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: "11"
       - name: Instrumentation tests
         uses: reactivecircus/android-emulator-runner@v2
