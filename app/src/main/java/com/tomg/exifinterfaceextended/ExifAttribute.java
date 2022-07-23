@@ -173,7 +173,7 @@ class ExifAttribute {
                 case IFD_FORMAT_SBYTE: {
                     // Exception for GPSAltitudeRef tag
                     if (mBytes.length == 1 && mBytes[0] >= 0 && mBytes[0] <= 1) {
-                        return new String(new char[]{(char) (mBytes[0] + '0')});
+                        return String.valueOf((char) (mBytes[0] + '0'));
                     }
                     return new String(mBytes, ASCII);
                 }

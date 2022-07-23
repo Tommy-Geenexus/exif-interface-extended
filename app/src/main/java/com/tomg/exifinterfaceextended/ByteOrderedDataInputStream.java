@@ -258,10 +258,6 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
         return mDataInputStream;
     }
 
-    public ByteOrder getByteOrder() {
-        return mByteOrder;
-    }
-
     public void setByteOrder(ByteOrder byteOrder) {
         mByteOrder = byteOrder;
     }

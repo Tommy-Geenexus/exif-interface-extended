@@ -919,6 +919,7 @@ public class ExifInterfaceExtended {
      *  @deprecated Use {@link #TAG_PHOTOGRAPHIC_SENSITIVITY} instead.
      *  @see #TAG_PHOTOGRAPHIC_SENSITIVITY
      */
+    @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated public static final String TAG_ISO_SPEED_RATINGS = "ISOSpeedRatings";
     /**
      *  <p>This tag indicates the sensitivity of the camera or input device when the image was shot.
@@ -2134,7 +2135,6 @@ public class ExifInterfaceExtended {
     // TODO: Unhide this when it can be public.
     /**
      * @see #TAG_ORIENTATION
-     * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public static final String TAG_THUMBNAIL_ORIENTATION = "ThumbnailOrientation";
@@ -3073,7 +3073,6 @@ public class ExifInterfaceExtended {
      */
     public static final int STREAM_TYPE_EXIF_DATA_ONLY = 1;
 
-    /** @hide */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({STREAM_TYPE_FULL_IMAGE_DATA, STREAM_TYPE_EXIF_DATA_ONLY})
@@ -3467,7 +3466,6 @@ public class ExifInterfaceExtended {
     // The following values are used for indicating pointers to the other Image File Directories.
 
     // Indices of Exif Ifd tag groups
-    /** @hide */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({IFD_TYPE_PRIMARY, IFD_TYPE_EXIF, IFD_TYPE_GPS, IFD_TYPE_INTEROPERABILITY,
@@ -4956,7 +4954,6 @@ public class ExifInterfaceExtended {
      * Set the date time value.
      *
      * @param timeStamp number of milliseconds since Jan. 1, 1970, midnight local time.
-     * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     public void setDateTime(@NonNull Long timeStamp) {
@@ -4982,8 +4979,6 @@ public class ExifInterfaceExtended {
      * of the string) of {@link ExifInterfaceExtended#TAG_SUBSEC_TIME}.
      *
      * @return null if date time information is unavailable or invalid.
-     *
-     * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
@@ -5001,8 +4996,6 @@ public class ExifInterfaceExtended {
      * of the string) of {@link ExifInterfaceExtended#TAG_SUBSEC_TIME_DIGITIZED}.
      *
      * @return null if digitized date time information is unavailable or invalid.
-     *
-     * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
@@ -5020,8 +5013,6 @@ public class ExifInterfaceExtended {
      * of the string) of {@link ExifInterfaceExtended#TAG_SUBSEC_TIME_ORIGINAL}.
      *
      * @return null if original date time information is unavailable or invalid.
-     *
-     * @hide
      */
     @RestrictTo(RestrictTo.Scope.LIBRARY)
     @Nullable
@@ -5791,9 +5782,9 @@ public class ExifInterfaceExtended {
                     readExifSegment(bytes, IFD_TYPE_PRIMARY);
                 }
 
-                String xmpOffsetStr = retriever.extractMetadata(
+                @SuppressLint("InlinedApi") String xmpOffsetStr = retriever.extractMetadata(
                         MediaMetadataRetriever.METADATA_KEY_XMP_OFFSET);
-                String xmpLengthStr = retriever.extractMetadata(
+                @SuppressLint("InlinedApi") String xmpLengthStr = retriever.extractMetadata(
                         MediaMetadataRetriever.METADATA_KEY_XMP_LENGTH);
                 if (xmpOffsetStr != null && xmpLengthStr != null) {
                     int offset = Integer.parseInt(xmpOffsetStr);
