@@ -72,7 +72,7 @@ import java.util.regex.Pattern;
  * <p>
  * Supported for reading: JPEG, PNG, WebP, HEIF, DNG, CR2, NEF, NRW, ARW, RW2, ORF, PEF, SRW, RAF.
  * <p>
- * Supported for writing: JPEG, PNG, WebP, DNG.
+ * Supported for writing: JPEG, PNG, WebP.
  * <p>
  * Note: JPEG and HEIF files may contain XMP data either inside the Exif data chunk or outside of
  * it. This class will search both locations for XMP data, but if XMP data exist both inside and
@@ -3432,7 +3432,6 @@ public class ExifInterfaceExtended {
             new ExifTag(TAG_Y_CB_CR_SUB_SAMPLING, 530, IFD_FORMAT_USHORT),
             new ExifTag(TAG_Y_CB_CR_POSITIONING, 531, IFD_FORMAT_USHORT),
             new ExifTag(TAG_REFERENCE_BLACK_WHITE, 532, IFD_FORMAT_URATIONAL),
-            new ExifTag(TAG_XMP, 700, IFD_FORMAT_BYTE),
             new ExifTag(TAG_COPYRIGHT, 33432, IFD_FORMAT_STRING),
             new ExifTag(TAG_EXIF_IFD_POINTER, 34665, IFD_FORMAT_ULONG),
             new ExifTag(TAG_GPS_INFO_IFD_POINTER, 34853, IFD_FORMAT_ULONG),
@@ -4383,7 +4382,7 @@ public class ExifInterfaceExtended {
      * other. It's best to use {@link #setAttribute(String,String)} to set all attributes to write
      * and make a single call rather than multiple calls for each attribute.
      * <p>
-     * This method is supported for JPEG, PNG, WebP, and DNG formats.
+     * This method is supported for JPEG, PNG, and WebP formats.
      * <p class="note">
      * Note: after calling this method, any attempts to obtain range information
      * from {@link #getAttributeRange(String)} or {@link #getThumbnailRange()}
@@ -4399,7 +4398,7 @@ public class ExifInterfaceExtended {
     public void saveAttributes() throws IOException {
         if (!isSupportedFormatForSavingAttributes(mMimeType)) {
             throw new IOException("ExifInterface only supports saving attributes for JPEG, PNG, "
-                    + "WebP, and DNG formats.");
+                    + "and WebP formats.");
         }
         if (mSeekableFileDescriptor == null && mFilename == null) {
             throw new IOException(
@@ -4474,10 +4473,6 @@ public class ExifInterfaceExtended {
                 savePngAttributes(bufferedIn, bufferedOut);
             } else if (mMimeType == IMAGE_TYPE_WEBP) {
                 saveWebpAttributes(bufferedIn, bufferedOut);
-            } else if (mMimeType == IMAGE_TYPE_DNG || mMimeType == IMAGE_TYPE_UNKNOWN) {
-                ByteOrderedDataOutputStream dataOutputStream =
-                        new ByteOrderedDataOutputStream(bufferedOut, ByteOrder.BIG_ENDIAN);
-                writeExifSegment(dataOutputStream);
             }
         } catch (Exception e) {
             try {
@@ -8184,8 +8179,7 @@ public class ExifInterfaceExtended {
 
     private static boolean isSupportedFormatForSavingAttributes(int mimeType) {
         return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
-                || mimeType == IMAGE_TYPE_WEBP || mimeType == IMAGE_TYPE_DNG
-                || mimeType == IMAGE_TYPE_UNKNOWN;
+                || mimeType == IMAGE_TYPE_WEBP;
     }
 
     private static boolean isSupportedFormatForSavingIgnoringAttributes(int mimeType) {
