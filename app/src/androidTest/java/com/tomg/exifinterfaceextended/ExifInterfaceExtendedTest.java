@@ -455,6 +455,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testPngWithExif() throws Throwable {
         readFromFilesWithExif(PNG_WITH_EXIF_BYTE_ORDER_II, array.png_with_exif_byte_order_ii);
+        writeToFilesWithExif(PNG_WITH_EXIF_BYTE_ORDER_II, array.png_with_exif_byte_order_ii);
 
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, false);
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, true);
