@@ -392,32 +392,42 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
-    public void testJpegFiles() throws Throwable {
+    public void testJpegWithExifIntelByteOrder() throws Throwable {
         readFromFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_II, array.jpeg_with_exif_byte_order_ii);
         writeToFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_II, array.jpeg_with_exif_byte_order_ii);
 
+        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, false);
+        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testJpegWithExifMotorolaByteOrder() throws Throwable {
         readFromFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_MM, array.jpeg_with_exif_byte_order_mm);
         writeToFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_MM, array.jpeg_with_exif_byte_order_mm);
 
-        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
-        writeToFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
-
-        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP,
-                array.jpeg_with_exif_with_photoshop_with_xmp);
-        readFromFilesWithExif(JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
-                array.jpeg_with_icc_with_exif_with_extended_xmp);
-
-        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, false);
-        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, true);
-
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_MM, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_MM, JPEG_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testJpegWithExifAndXmp() throws Throwable {
+        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
+        writeToFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_XMP, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_XMP, JPEG_TEST, true, true);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testJpegWithExifAndExtendedXmp() throws Throwable {
+        readFromFilesWithExif(JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
+                array.jpeg_with_icc_with_exif_with_extended_xmp);
 
         writeToFilesWithoutMetadata(JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP, JPEG_TEST, true,
                 false);
@@ -427,19 +437,33 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
-    public void testDngFiles() throws Throwable {
+    public void testJpegWithExifAndPhotoshop() throws Throwable {
+        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP,
+                array.jpeg_with_exif_with_photoshop_with_xmp);
+
+        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, false);
+        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testDngWithExifAndXmp() throws Throwable {
         readFromFilesWithExif(DNG_WITH_EXIF_WITH_XMP, array.dng_with_exif_with_xmp);
     }
 
     @Test
     @LargeTest
-    public void testPngFiles() throws Throwable {
+    public void testPngWithExif() throws Throwable {
         readFromFilesWithExif(PNG_WITH_EXIF_BYTE_ORDER_II, array.png_with_exif_byte_order_ii);
-
-        writeToFilesWithoutExif(PNG_WITHOUT_EXIF);
 
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, false);
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testPngWithoutExif() throws Throwable {
+        writeToFilesWithoutExif(PNG_WITHOUT_EXIF);
 
         writeToFilesWithoutMetadata(PNG_WITHOUT_EXIF, PNG_TEST, false, false);
         writeToFilesWithoutMetadata(PNG_WITHOUT_EXIF, PNG_TEST, false, true);
@@ -456,29 +480,48 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
-    public void testWebpFiles() throws Throwable {
+    public void testWebpWithExif() throws Throwable {
         readFromFilesWithExif(WEBP_WITH_EXIF, array.webp_with_exif);
         writeToFilesWithExif(WEBP_WITH_EXIF, array.webp_with_exif);
+
+        writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, false);
+        writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testWebpWithExifAndXmp() throws Throwable {
         readFromFilesWithExif(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
                 array.webp_with_icc_with_exif_with_xmp);
         writeToFilesWithExif(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
                 array.webp_with_icc_with_exif_with_xmp);
 
-        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA);
-        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF);
-        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF_WITH_LOSSLESS_ENCODING);
-
-        writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, false);
-        writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, true);
-
         writeToFilesWithoutMetadata(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP, WEBP_TEST, true, false);
         writeToFilesWithoutMetadata(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP, WEBP_TEST, true, true);
+    }
 
-        writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA, WEBP_TEST, false, false);
-        writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA, WEBP_TEST, false, true);
+    @Test
+    @LargeTest
+    public void testWebpWithoutExif() throws Throwable {
+        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF);
 
         writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF, WEBP_TEST, false, false);
         writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF, WEBP_TEST, false, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testWebpWithoutExifWithAnimData() throws Throwable {
+        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA);
+
+        writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA, WEBP_TEST, false, false);
+        writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA, WEBP_TEST, false, true);
+    }
+
+    @Test
+    @LargeTest
+    public void testWebpWithoutExifWithLosslessEncoding() throws Throwable {
+        writeToFilesWithoutExif(WEBP_WITHOUT_EXIF_WITH_LOSSLESS_ENCODING);
 
         writeToFilesWithoutMetadata(WEBP_WITHOUT_EXIF_WITH_LOSSLESS_ENCODING, WEBP_TEST, false,
                 false);
