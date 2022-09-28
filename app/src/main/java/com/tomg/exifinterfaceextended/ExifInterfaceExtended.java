@@ -6753,7 +6753,7 @@ public class ExifInterfaceExtended {
                     int widthAndHeight = 0;
                     int width = 0;
                     int height = 0;
-                    int alpha = 0;
+                    boolean alpha = false;
                     // Save VP8 frame data for later
                     byte[] vp8Frame = new byte[3];
 
@@ -6786,7 +6786,7 @@ public class ExifInterfaceExtended {
                         width = ((widthAndHeight << 18) >> 18) + 1;
                         height = ((widthAndHeight << 4) >> 18) + 1;
                         // Retrieve alpha bit
-                        alpha = widthAndHeight & (1 << 3);
+                        alpha = (widthAndHeight & (1 << 3)) != 0;
                         bytesToRead -= (1 /* VP8L signature */ + 4);
                     }
 
@@ -6794,10 +6794,12 @@ public class ExifInterfaceExtended {
                     nonHeaderOutputStream.write(WEBP_CHUNK_TYPE_VP8X);
                     nonHeaderOutputStream.writeInt(WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH);
                     byte[] data = new byte[WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH];
+                    // ALPHA flag
+                    if (alpha) {
+                        data[0] = (byte) (data[0] | (1 << 4));
+                    }
                     // EXIF flag
                     data[0] = (byte) (data[0] | (1 << 3));
-                    // ALPHA flag
-                    data[0] = (byte) (data[0] | (alpha << 4));
                     // VP8X stores Width - 1 and Height - 1 values
                     width -= 1;
                     height -= 1;
@@ -6954,7 +6956,7 @@ public class ExifInterfaceExtended {
                 int widthAndHeight = 0;
                 int width = 0;
                 int height = 0;
-                int alpha = 0;
+                boolean alpha = false;
                 // Save VP8 frame data for later
                 final byte[] vp8Frame = new byte[3];
                 if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8)) {
@@ -6985,16 +6987,18 @@ public class ExifInterfaceExtended {
                     width = ((widthAndHeight << 18) >> 18) + 1;
                     height = ((widthAndHeight << 4) >> 18) + 1;
                     // Retrieve alpha bit
-                    alpha = widthAndHeight & (1 << 3);
+                    alpha = (widthAndHeight & (1 << 3)) != 0;
                     bytesToRead -= (1 /* VP8L signature */ + 4);
                 }
                 final byte[] data = new byte[WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH];
+                // ALPHA flag
+                if (alpha) {
+                    data[0] |= 1 << 4;
+                }
                 if (preserveOrientation) {
                     // Set EXIF flag
                     data[0] |= WEBP_CHUNK_TYPE_VP8X_FLAG_EXIF;
                 }
-                // Set ALPHA flag
-                data[0] |= alpha << 4;
                 // VP8X stores Width - 1 and Height - 1 values
                 width -= 1;
                 height -= 1;
