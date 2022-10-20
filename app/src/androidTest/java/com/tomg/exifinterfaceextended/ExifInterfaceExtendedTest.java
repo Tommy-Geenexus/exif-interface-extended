@@ -65,6 +65,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -1601,9 +1602,10 @@ public class ExifInterfaceExtendedTest {
      */
     private void assertBitmapsEquivalent(File expectedImageFile, File actualImageFile) {
         BitmapFactory.Options expectedOptions = new BitmapFactory.Options();
-        Bitmap expectedBitmap = decodeBitmap(expectedImageFile, expectedOptions);
+        Bitmap expectedBitmap = Objects.requireNonNull(
+                decodeBitmap(expectedImageFile, expectedOptions));
         BitmapFactory.Options actualOptions = new BitmapFactory.Options();
-        Bitmap actualBitmap = decodeBitmap(actualImageFile, actualOptions);
+        Bitmap actualBitmap = Objects.requireNonNull(decodeBitmap(actualImageFile, actualOptions));
 
         assertEquals(expectedOptions.outWidth, actualOptions.outWidth);
         assertEquals(expectedOptions.outHeight, actualOptions.outHeight);
