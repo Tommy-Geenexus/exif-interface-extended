@@ -468,8 +468,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithInvalidOffset() throws Throwable {
         readFromFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
-        // Writing doesn't work, because it re-populates the width & length that can't we fail to
-        // read from the original file.
+        writeToFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
     }
 
     @Test

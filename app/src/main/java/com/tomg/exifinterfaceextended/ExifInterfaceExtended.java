@@ -7311,9 +7311,11 @@ public class ExifInterfaceExtended {
                 }
 
                 // Check if the next IFD offset
-                // 1. Is a non-negative value, and
+                // 1. Is a non-negative value (within the length of the input, if known), and
                 // 2. Does not point to a previously read IFD.
-                if (offset > 0L) {
+                if (offset > 0L
+                        && (dataInputStream.length() == ByteOrderedDataInputStream.LENGTH_UNSET
+                                || offset < dataInputStream.length())) {
                     if (!mAttributesOffsets.contains((int) offset)) {
                         dataInputStream.seek(offset);
                         readImageFileDirectory(dataInputStream, nextIfdType);
@@ -7325,7 +7327,12 @@ public class ExifInterfaceExtended {
                     }
                 } else {
                     if (DEBUG) {
-                        Log.d(TAG, "Skip jump into the IFD since its offset is invalid: " + offset);
+                        String message =
+                                "Skip jump into the IFD since its offset is invalid: " + offset;
+                        if (dataInputStream.length() != ByteOrderedDataInputStream.LENGTH_UNSET) {
+                            message += " (total length: " + dataInputStream.length() + ")";
+                        }
+                        Log.d(TAG, message);
                     }
                 }
 

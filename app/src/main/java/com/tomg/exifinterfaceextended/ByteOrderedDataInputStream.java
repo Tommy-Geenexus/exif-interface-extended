@@ -35,14 +35,18 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     private static final ByteOrder LITTLE_ENDIAN = ByteOrder.LITTLE_ENDIAN;
     private static final ByteOrder BIG_ENDIAN = ByteOrder.BIG_ENDIAN;
 
+    public static final int LENGTH_UNSET = -1;
+
     private final DataInputStream mDataInputStream;
     private ByteOrder mByteOrder;
 
     private int mPosition;
     private byte[] mSkipBuffer;
+    private int mLength;
 
     ByteOrderedDataInputStream(byte[] bytes) {
         this(new ByteArrayInputStream(bytes), ByteOrder.BIG_ENDIAN);
+        this.mLength = bytes.length;
     }
 
     ByteOrderedDataInputStream(InputStream in) {
@@ -54,6 +58,9 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
         mDataInputStream.mark(0);
         mPosition = 0;
         mByteOrder = byteOrder;
+        this.mLength = in instanceof ByteOrderedDataInputStream
+                ? ((ByteOrderedDataInputStream) in).length()
+                : LENGTH_UNSET;
     }
 
     @Override
@@ -252,6 +259,12 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
     @Override
     public void reset() {
         throw new UnsupportedOperationException("Reset is currently unsupported");
+    }
+
+    /** Return the total length (in bytes) of the underlying stream if known, otherwise
+     *  {@link #LENGTH_UNSET}. */
+    public int length() {
+        return mLength;
     }
 
     public DataInputStream getDataInputStream() {
