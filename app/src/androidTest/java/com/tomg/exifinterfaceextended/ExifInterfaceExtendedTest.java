@@ -87,6 +87,8 @@ public class ExifInterfaceExtendedTest {
 
     private static final String JPEG_WITH_EXIF_BYTE_ORDER_II = "jpeg_with_exif_byte_order_ii.jpg";
     private static final String JPEG_WITH_EXIF_BYTE_ORDER_MM = "jpeg_with_exif_byte_order_mm.jpg";
+    private static final String JPEG_WITH_EXIF_INVALID_OFFSET = "jpeg_with_exif_invalid_offset.jpg";
+
     private static final String DNG_WITH_EXIF_WITH_XMP = "dng_with_exif_with_xmp.dng";
     private static final String JPEG_WITH_EXIF_WITH_XMP = "jpeg_with_exif_with_xmp.jpg";
     private static final String PNG_WITH_EXIF_BYTE_ORDER_II = "png_with_exif_byte_order_ii.png";
@@ -115,6 +117,7 @@ public class ExifInterfaceExtendedTest {
             raw.jpeg_with_exif_byte_order_mm,
             raw.dng_with_exif_with_xmp,
             raw.jpeg_with_exif_with_xmp,
+            raw.jpeg_with_exif_invalid_offset,
             raw.png_with_exif_byte_order_ii,
             raw.png_without_exif,
             raw.webp_with_exif,
@@ -132,6 +135,7 @@ public class ExifInterfaceExtendedTest {
     private static final String[] IMAGE_FILENAMES = new String[] {
             JPEG_WITH_EXIF_BYTE_ORDER_II,
             JPEG_WITH_EXIF_BYTE_ORDER_MM,
+            JPEG_WITH_EXIF_INVALID_OFFSET,
             DNG_WITH_EXIF_WITH_XMP,
             JPEG_WITH_EXIF_WITH_XMP,
             PNG_WITH_EXIF_BYTE_ORDER_II,
@@ -457,6 +461,15 @@ public class ExifInterfaceExtendedTest {
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, true);
+    }
+
+    // https://issuetracker.google.com/264729367
+    @Test
+    @LargeTest
+    public void testJpegWithInvalidOffset() throws Throwable {
+        readFromFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
+        // Writing doesn't work, because it re-populates the width & length that can't we fail to
+        // read from the original file.
     }
 
     @Test
