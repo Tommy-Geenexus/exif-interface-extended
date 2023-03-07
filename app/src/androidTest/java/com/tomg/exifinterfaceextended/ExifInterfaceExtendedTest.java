@@ -21,10 +21,12 @@ import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
 import static com.tomg.exifinterfaceextended.ExifInterfaceExtendedUtils.copy;
 import static com.tomg.exifinterfaceextended.test.R.*;
+import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -64,6 +66,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
@@ -88,6 +91,8 @@ public class ExifInterfaceExtendedTest {
     private static final String JPEG_WITH_EXIF_BYTE_ORDER_II = "jpeg_with_exif_byte_order_ii.jpg";
     private static final String JPEG_WITH_EXIF_BYTE_ORDER_MM = "jpeg_with_exif_byte_order_mm.jpg";
     private static final String JPEG_WITH_EXIF_INVALID_OFFSET = "jpeg_with_exif_invalid_offset.jpg";
+    private static final String JPEG_WITH_EXIF_FULL_APP1_SEGMENT =
+            "jpeg_with_exif_full_app1_segment.jpg";
 
     private static final String DNG_WITH_EXIF_WITH_XMP = "dng_with_exif_with_xmp.dng";
     private static final String JPEG_WITH_EXIF_WITH_XMP = "jpeg_with_exif_with_xmp.jpg";
@@ -118,6 +123,7 @@ public class ExifInterfaceExtendedTest {
             raw.dng_with_exif_with_xmp,
             raw.jpeg_with_exif_with_xmp,
             raw.jpeg_with_exif_invalid_offset,
+            raw.jpeg_with_exif_full_app1_segment,
             raw.png_with_exif_byte_order_ii,
             raw.png_without_exif,
             raw.webp_with_exif,
@@ -136,6 +142,7 @@ public class ExifInterfaceExtendedTest {
             JPEG_WITH_EXIF_BYTE_ORDER_II,
             JPEG_WITH_EXIF_BYTE_ORDER_MM,
             JPEG_WITH_EXIF_INVALID_OFFSET,
+            JPEG_WITH_EXIF_FULL_APP1_SEGMENT,
             DNG_WITH_EXIF_WITH_XMP,
             JPEG_WITH_EXIF_WITH_XMP,
             PNG_WITH_EXIF_BYTE_ORDER_II,
@@ -469,6 +476,28 @@ public class ExifInterfaceExtendedTest {
     public void testJpegWithInvalidOffset() throws Throwable {
         readFromFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
         writeToFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
+    }
+
+    // https://issuetracker.google.com/263747161
+    @Test
+    @LargeTest
+    public void testJpegWithFullApp1Segment() throws Throwable {
+        File srcFile = getFileFromExternalDir(JPEG_WITH_EXIF_FULL_APP1_SEGMENT);
+        File imageFile = clone(srcFile);
+        ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
+        // Add a really long string that makes the Exif data too large for the JPEG APP1 segment.
+        char[] longStringChars = new char[500];
+        Arrays.fill(longStringChars, 'a');
+        String longString = new String(longStringChars);
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, longString);
+
+        IOException expected = assertThrows(IOException.class,
+                exifInterface::saveAttributes);
+        assertThat(expected)
+                .hasCauseThat()
+                .hasMessageThat()
+                .contains("exceeds the max size of a JPEG APP1 segment");
+        assertBitmapsEquivalent(srcFile, imageFile);
     }
 
     @Test

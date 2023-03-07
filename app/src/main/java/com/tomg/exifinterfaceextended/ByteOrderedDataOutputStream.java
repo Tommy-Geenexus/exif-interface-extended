@@ -76,10 +76,18 @@ class ByteOrderedDataOutputStream extends FilterOutputStream {
     }
 
     public void writeUnsignedShort(int val) throws IOException {
+        if (val > 0xFFFF) {
+            throw new IllegalArgumentException("val is larger than the maximum value of a "
+                    + "16-bit unsigned integer");
+        }
         writeShort((short) val);
     }
 
     public void writeUnsignedInt(long val) throws IOException {
+        if (val > 0xFFFF_FFFFL) {
+            throw new IllegalArgumentException("val is larger than the maximum value of a "
+                    + "32-bit unsigned integer");
+        }
         writeInt((int) val);
     }
 
