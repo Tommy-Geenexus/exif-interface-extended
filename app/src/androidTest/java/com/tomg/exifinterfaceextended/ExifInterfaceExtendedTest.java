@@ -124,8 +124,6 @@ public class ExifInterfaceExtendedTest {
             raw.jpeg_with_exif_byte_order_mm,
             raw.dng_with_exif_with_xmp,
             raw.jpeg_with_exif_with_xmp,
-            raw.jpeg_with_exif_invalid_offset,
-            raw.jpeg_with_exif_full_app1_segment,
             raw.png_with_exif_byte_order_ii,
             raw.png_without_exif,
             raw.webp_with_exif,
@@ -139,12 +137,12 @@ public class ExifInterfaceExtendedTest {
             raw.jpeg_with_exif_with_photoshop_with_xmp,
             raw.jpeg_with_icc_with_exif_with_extended_xmp,
             raw.webp_with_icc_with_exif_with_xmp,
+            raw.jpeg_with_exif_invalid_offset,
+            raw.jpeg_with_exif_full_app1_segment
     };
     private static final String[] IMAGE_FILENAMES = new String[] {
             JPEG_WITH_EXIF_BYTE_ORDER_II,
             JPEG_WITH_EXIF_BYTE_ORDER_MM,
-            JPEG_WITH_EXIF_INVALID_OFFSET,
-            JPEG_WITH_EXIF_FULL_APP1_SEGMENT,
             DNG_WITH_EXIF_WITH_XMP,
             JPEG_WITH_EXIF_WITH_XMP,
             PNG_WITH_EXIF_BYTE_ORDER_II,
@@ -159,7 +157,9 @@ public class ExifInterfaceExtendedTest {
             HEIF_WITH_EXIF,
             JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP,
             JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
-            WEBP_WITH_ICC_WITH_EXIF_WITH_XMP
+            WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
+            JPEG_WITH_EXIF_INVALID_OFFSET,
+            JPEG_WITH_EXIF_FULL_APP1_SEGMENT
     };
 
     private static final String TEST_TEMP_FILE_NAME = "testImage";
