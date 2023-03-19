@@ -51,6 +51,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -2143,42 +2145,52 @@ public class ExifInterfaceExtended {
     /** Type is int. DNG Specification 1.4.0.0. Section 4 */
     public static final String TAG_DEFAULT_CROP_SIZE = "DefaultCropSize";
     /** Type is undefined. See Olympus MakerNote tags in http://www.exiv2.org/tags-olympus.html. */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_ORF_THUMBNAIL_IMAGE = "ThumbnailImage";
     /** Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html. */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_ORF_PREVIEW_IMAGE_START = "PreviewImageStart";
     /** Type is int. See Olympus Camera Settings tags in http://www.exiv2.org/tags-olympus.html. */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_ORF_PREVIEW_IMAGE_LENGTH = "PreviewImageLength";
     /** Type is int. See Olympus Image Processing tags in http://www.exiv2.org/tags-olympus.html. */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_ORF_ASPECT_FRAME = "AspectFrame";
     /**
      * Type is int. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_SENSOR_BOTTOM_BORDER = "SensorBottomBorder";
     /**
      * Type is int. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_SENSOR_LEFT_BORDER = "SensorLeftBorder";
     /**
      * Type is int. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_SENSOR_RIGHT_BORDER = "SensorRightBorder";
     /**
      * Type is int. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_SENSOR_TOP_BORDER = "SensorTopBorder";
     /**
      * Type is int. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_ISO = "ISO";
     /**
      * Type is undefined. See PanasonicRaw tags in
      * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/PanasonicRaw.html
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     public static final String TAG_RW2_JPG_FROM_RAW = "JpgFromRaw";
     /**
      * Type is byte[]. See <a href=
@@ -4644,6 +4656,7 @@ public class ExifInterfaceExtended {
      * Returns the thumbnail bytes inside the image file, regardless of the compression type of the
      * thumbnail image.
      */
+    @SuppressWarnings("IOStreamConstructor")
     @Nullable
     public byte[] getThumbnailBytes() {
         if (!mHasThumbnail) {
@@ -4666,7 +4679,11 @@ public class ExifInterfaceExtended {
                     return null;
                 }
             } else if (mFilename != null) {
-                in = new FileInputStream(mFilename);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    in = Files.newInputStream(Paths.get(mFilename));
+                } else {
+                    in = new FileInputStream(mFilename);
+                }
             } else {
                 // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
                 // is needed to prevent calling Os.lseek and Os.dup at runtime for SDK < 21.
@@ -5177,6 +5194,7 @@ public class ExifInterfaceExtended {
      * This method looks at the first 3 bytes to determine if this file is a JPEG file.
      * See http://www.media.mit.edu/pia/Research/deepview/exif.html, "JPEG format and Marker"
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private static boolean isJpegFormat(byte[] signatureCheckBytes) {
         for (int i = 0; i < JPEG_SIGNATURE.length; i++) {
             if (signatureCheckBytes[i] != JPEG_SIGNATURE[i]) {
@@ -5192,6 +5210,7 @@ public class ExifInterfaceExtended {
      * image file specifications:
      * http://fileformats.archiveteam.org/wiki/Fujifilm_RAF
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private boolean isRafFormat(byte[] signatureCheckBytes) {
         byte[] rafSignatureBytes = RAF_SIGNATURE.getBytes(Charset.defaultCharset());
         for (int i = 0; i < rafSignatureBytes.length; i++) {
@@ -5283,6 +5302,7 @@ public class ExifInterfaceExtended {
      * of image file specifications:
      * http://fileformats.archiveteam.org/wiki/Olympus_ORF
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private boolean isOrfFormat(byte[] signatureCheckBytes) throws IOException {
         ByteOrderedDataInputStream signatureInputStream = null;
 
@@ -5311,6 +5331,7 @@ public class ExifInterfaceExtended {
      * RW2 is TIFF-based, but stores 0x55 signature byte instead of 0x42 at the header
      * See http://lclevy.free.fr/raw/
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private boolean isRw2Format(byte[] signatureCheckBytes) throws IOException {
         ByteOrderedDataInputStream signatureInputStream = null;
 
@@ -5353,6 +5374,7 @@ public class ExifInterfaceExtended {
      *   'RIFF' (4 bytes) + file length value (4 bytes) + 'WEBP' (4 bytes)
      * See https://developers.google.com/speed/webp/docs/riff_container, Section "WebP File Header"
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private boolean isWebpFormat(byte[] signatureCheckBytes) {
         for (int i = 0; i < WEBP_SIGNATURE_1.length; i++) {
             if (signatureCheckBytes[i] != WEBP_SIGNATURE_1[i]) {
@@ -5576,6 +5598,7 @@ public class ExifInterfaceExtended {
      * then parses the CFA metadata to retrieve the primary image length/width values.
      * For data format details, see http://fileformats.archiveteam.org/wiki/Fujifilm_RAF
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private void getRafAttributes(ByteOrderedDataInputStream in) throws IOException {
         if (DEBUG) {
             Log.d(TAG, "getRafAttributes starting with: " + in);
@@ -5835,6 +5858,7 @@ public class ExifInterfaceExtended {
      * http://fileformats.archiveteam.org/wiki/Olympus_ORF
      * https://libopenraw.freedesktop.org/wiki/Olympus_ORF
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private void getOrfAttributes(SeekableByteOrderedDataInputStream in) throws IOException {
         // Retrieve primary image data
         // Other Exif data will be located in the Makernote.
@@ -6143,6 +6167,7 @@ public class ExifInterfaceExtended {
      * @param chunkTypes The list of chunks preserving the read order
      * @throws IOException If the chunk order is invalid
      */
+    @SuppressWarnings("JavadocLinkAsPlainText")
     private void validateVp8XChunkTypeOrder(final List<String> chunkTypes) throws IOException {
         for (int i = 0; i < chunkTypes.size(); i++) {
             final Integer precedence = WEBP_VP8X_CHUNK_ORDER.get(chunkTypes.get(i));

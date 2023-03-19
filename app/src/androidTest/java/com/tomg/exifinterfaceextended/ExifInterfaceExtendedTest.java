@@ -66,6 +66,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
@@ -1346,7 +1348,7 @@ public class ExifInterfaceExtendedTest {
         InputStream in = null;
         // Creates via InputStream.
         try {
-            in = new BufferedInputStream(new FileInputStream(imageFile.getAbsolutePath()));
+            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
             exifInterface = new ExifInterfaceExtended(in);
             compareWithExpectedValue(exifInterface, expectedValue, verboseTag, true);
         } finally {
@@ -1375,7 +1377,7 @@ public class ExifInterfaceExtendedTest {
 
         InputStream in = null;
         try {
-            in = new BufferedInputStream(new FileInputStream(imageFile.getAbsolutePath()));
+            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
             if (expectedValue.hasThumbnail()) {
                 if (in.skip(expectedValue.getThumbnailOffset()) !=
                         expectedValue.getThumbnailOffset()) {
@@ -1396,7 +1398,7 @@ public class ExifInterfaceExtendedTest {
             // TODO: Creating a new input stream is a temporary
             //  workaround for BufferedInputStream#mark/reset not working properly for
             //  LG_G4_ISO_800_DNG. Need to investigate cause.
-            in = new BufferedInputStream(new FileInputStream(imageFile.getAbsolutePath()));
+            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
             if (expectedValue.hasMake()) {
                 if (in.skip(expectedValue.getMakeOffset()) != expectedValue.getMakeOffset()) {
                     throw new IOException();
@@ -1411,7 +1413,7 @@ public class ExifInterfaceExtendedTest {
                 assertEquals(expectedValue.getMake(), makeString);
             }
 
-            in = new BufferedInputStream(new FileInputStream(imageFile.getAbsolutePath()));
+            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
             if (expectedValue.hasXmp()) {
                 if (in.skip(expectedValue.getXmpOffset()) != expectedValue.getXmpOffset()) {
                     throw new IOException();
@@ -1524,8 +1526,8 @@ public class ExifInterfaceExtendedTest {
     ) throws IOException {
         File source = getFileFromExternalDir(fileName);
         File sink = getFileFromExternalDir(fileOutName);
-        InputStream in = new FileInputStream(source);
-        OutputStream out = new FileOutputStream(sink);
+        InputStream in = Files.newInputStream(source.toPath());
+        OutputStream out = Files.newOutputStream(sink.toPath());
 
         try {
             final ExifInterfaceExtended sourceExifInterface =
@@ -1694,7 +1696,7 @@ public class ExifInterfaceExtendedTest {
      * {@link StrictMode.ThreadPolicy.Builder#detectUnbufferedIo()}.
      */
     private static Bitmap decodeBitmap(File file, BitmapFactory.Options options) {
-        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
+        try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
             return BitmapFactory.decodeStream(inputStream, /* outPadding= */ null, options);
         } catch (IOException e) {
             return null;
