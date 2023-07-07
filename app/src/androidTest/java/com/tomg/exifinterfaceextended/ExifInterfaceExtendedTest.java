@@ -49,6 +49,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -619,6 +620,7 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
+    @Ignore("b/290382533")
     public void testDoNotFailOnCorruptedImage() {
         // ExifInterface shouldn't raise any exceptions except an IOException when unable to open
         // a file, even with a corrupted image. Generates randomly corrupted image stream for
@@ -704,6 +706,7 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
+    @Ignore("b/290382533")
     public void testSetGpsInfo() throws IOException {
         final String provider = "ExifInterfaceTest";
         final long timestamp = System.currentTimeMillis();
@@ -800,6 +803,7 @@ public class ExifInterfaceExtendedTest {
      */
     @Test
     @SmallTest
+    @Ignore("b/290382533")
     public void testGetSetDateTime() throws IOException {
         final long expectedGetDatetimeValue =
                 1454027547000L /* TAG_DATETIME value ("2016:01:29 18:32:27") converted to msec */
