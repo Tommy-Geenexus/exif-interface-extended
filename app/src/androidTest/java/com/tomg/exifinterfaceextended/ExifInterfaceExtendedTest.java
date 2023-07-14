@@ -171,7 +171,6 @@ public class ExifInterfaceExtendedTest {
     // We translate double to rational in a 1/10000 precision.
     private static final double RATIONAL_DELTA = 0.0001;
     private static final int TEST_LAT_LONG_VALUES_ARRAY_LENGTH = 8;
-    private static final int TEST_NUMBER_OF_CORRUPTED_IMAGE_STREAMS = 30;
     private static final double[] TEST_LATITUDE_VALID_VALUES = new double[]
             {0, 45, 90, -60, 0.00000001, -89.999999999, 14.2465923626, -68.3434534737};
     private static final double[] TEST_LONGITUDE_VALID_VALUES = new double[]
@@ -619,89 +618,29 @@ public class ExifInterfaceExtendedTest {
     }
 
     @Test
-    @LargeTest
-    @Ignore("b/290382533")
-    public void testDoNotFailOnCorruptedImage() {
-        // ExifInterface shouldn't raise any exceptions except an IOException when unable to open
-        // a file, even with a corrupted image. Generates randomly corrupted image stream for
-        // testing. Uses Epoch date count as random seed so that we can reproduce a broken test.
-        long seed = System.currentTimeMillis() / (86400 * 1000);
-        Log.d(TAG, "testDoNotFailOnCorruptedImage random seed: " + seed);
-        Random random = new Random(seed);
+    @SmallTest
+    public void testDoNotFailOnCorruptedImage() throws Throwable {
+        Random random = new Random(/* seed= */ 0);
         byte[] bytes = new byte[8096];
+        random.nextBytes(bytes);
+        // Overwrite the start of the random bytes with some JPEG-like data, so it starts like a
+        // plausible image with EXIF data.
         ByteBuffer buffer = ByteBuffer.wrap(bytes);
-        for (int i = 0; i < TEST_NUMBER_OF_CORRUPTED_IMAGE_STREAMS; i++) {
-            buffer.clear();
-            random.nextBytes(bytes);
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put(ExifInterfaceExtended.JPEG_SIGNATURE);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put(ExifInterfaceExtended.MARKER_APP1);
-            }
-            buffer.putShort((short) (random.nextInt(100) + 300));
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put(ExifInterfaceExtended.IDENTIFIER_EXIF_APP1);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putShort(ExifInterfaceExtended.BYTE_ALIGN_MM);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put((byte) 0);
-                buffer.put(ExifInterfaceExtended.START_CODE);
-            }
-            buffer.putInt(8);
+        buffer.put(ExifInterfaceExtended.JPEG_SIGNATURE);
+        buffer.put(ExifInterfaceExtended.MARKER_APP1);
+        buffer.putShort((short) 350);
+        buffer.put(ExifInterfaceExtended.IDENTIFIER_EXIF_APP1);
+        buffer.putShort(ExifInterfaceExtended.BYTE_ALIGN_MM);
+        buffer.put((byte) 0);
+        buffer.put(ExifInterfaceExtended.START_CODE);
+        buffer.putInt(8);
+        // Number of primary tag directories
+        buffer.putShort((short) 1);
+        // Corruption starts here
 
-            // Primary Tags
-            int numberOfDirectory = random.nextInt(8) + 1;
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putShort((short) numberOfDirectory);
-            }
-            for (int j = 0; j < numberOfDirectory; j++) {
-                generateRandomExifTag(buffer, ExifInterfaceExtended.IFD_TYPE_PRIMARY, random);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putInt(buffer.position() - 8);
-            }
-
-            // Thumbnail Tags
-            numberOfDirectory = random.nextInt(8) + 1;
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putShort((short) numberOfDirectory);
-            }
-            for (int j = 0; j < numberOfDirectory; j++) {
-                generateRandomExifTag(buffer, ExifInterfaceExtended.IFD_TYPE_THUMBNAIL, random);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putInt(buffer.position() - 8);
-            }
-
-            // Preview Tags
-            numberOfDirectory = random.nextInt(8) + 1;
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putShort((short) numberOfDirectory);
-            }
-            for (int j = 0; j < numberOfDirectory; j++) {
-                generateRandomExifTag(buffer, ExifInterfaceExtended.IFD_TYPE_PREVIEW, random);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.putInt(buffer.position() - 8);
-            }
-
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put(ExifInterfaceExtended.MARKER);
-            }
-            if (isNotRandomlyCorrupted(random)) {
-                buffer.put(ExifInterfaceExtended.MARKER_EOI);
-            }
-
-            try {
-                new ExifInterfaceExtended(new ByteArrayInputStream(bytes));
-                // Always success
-            } catch (IOException e) {
-                fail("Should not reach here!");
-            }
-        }
+        ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(new ByteArrayInputStream(bytes));
+        exifInterface.getAttribute(ExifInterfaceExtended.TAG_ARTIST);
+        // Test will fail if the ExifInterface constructor or getter throw an exception.
     }
 
     @Test
@@ -1584,31 +1523,6 @@ public class ExifInterfaceExtendedTest {
         assertNotNull(thumbnailBitmap);
         assertEquals(expectedValue.getThumbnailWidth(), thumbnailBitmap.getWidth());
         assertEquals(expectedValue.getThumbnailHeight(), thumbnailBitmap.getHeight());
-    }
-
-    private void generateRandomExifTag(ByteBuffer buffer, int ifdType, Random random) {
-        ExifTag[] tagGroup = ExifInterfaceExtended.EXIF_TAGS[ifdType];
-        ExifTag tag = tagGroup[random.nextInt(tagGroup.length)];
-        if (isNotRandomlyCorrupted(random)) {
-            buffer.putShort((short) tag.getNumber());
-        }
-        int dataFormat = random.nextInt(ExifInterfaceExtended.IFD_FORMAT_NAMES.length);
-        if (isNotRandomlyCorrupted(random)) {
-            buffer.putShort((short) dataFormat);
-        }
-        buffer.putInt(1);
-        int dataLength = ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[dataFormat];
-        if (dataLength > 4) {
-            buffer.putShort((short) random.nextInt(8096 - dataLength));
-            buffer.position(buffer.position() + 2);
-        } else {
-            buffer.position(buffer.position() + 4);
-        }
-    }
-
-    private boolean isNotRandomlyCorrupted(Random random) {
-        // Corrupts somewhere in a possibility of 1/500.
-        return random.nextInt(500) != 0;
     }
 
     private void closeQuietly(Closeable closeable) {
