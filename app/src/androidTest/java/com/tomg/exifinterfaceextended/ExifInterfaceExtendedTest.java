@@ -860,14 +860,14 @@ public class ExifInterfaceExtendedTest {
      * Test whether ExifInterface can correctly get and set datetime value for a secondary format:
      * Primary format example: 2020:01:01 00:00:00
      * Secondary format example: 2020-01-01 00:00:00
-     *
+     * <p>
      * Getting a datetime tag value with the secondary format should work for both
      * {@link ExifInterfaceExtended#getAttribute(String)} and
      * {@link ExifInterfaceExtended#getDateTime()}.
      * Setting a datetime tag value with the secondary format with
      * {@link ExifInterfaceExtended#setAttribute(String, String)} should automatically convert it to
      * the primary format.
-     *
+     * <p>
      * JPEG_WITH_DATETIME_TAG_SECONDARY_FORMAT contains the following tags:
      *   TAG_DATETIME, TAG_DATETIME_ORIGINAL, TAG_DATETIME_DIGITIZED = "2016:01:29 18:32:27"
      *   TAG_OFFSET_TIME, TAG_OFFSET_TIME_ORIGINAL, TAG_OFFSET_TIME_DIGITIZED = "100000"

@@ -181,7 +181,7 @@ class ByteOrderedDataInputStream extends InputStream implements DataInput {
         int totalSkipped = 0;
         while (totalSkipped < n) {
             int skipped = (int) mDataInputStream.skip(n - totalSkipped);
-            if (skipped <= 0) {
+            if (skipped == 0) {
                 if (mSkipBuffer == null) {
                     mSkipBuffer = new byte[ExifInterfaceExtendedUtils.BUF_SIZE];
                 }

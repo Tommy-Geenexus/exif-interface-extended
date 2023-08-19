@@ -4527,13 +4527,13 @@ public class ExifInterfaceExtended {
     /**
      * Write the {@code source} image data to {@code sink}, excluding the EXIF segment, ICC profile,
      * XMP/ExtendedXMP as well as Photoshop image resources metadata.
-     *
+     * <p>
      * If {@code preserveOrientation} is true, an EXIF segment containing the
      * {@link #TAG_ORIENTATION} only will be written to {@code sink}.
-     *
+     * <p>
      * For WebP format, the Exif data will be stored as an Extended File Format, and it may not be
      * supported for older readers.
-     *
+     * <p>
      * This method is supported for JPEG, PNG and WebP files.
      *
      * @param source The source that contains the image data
@@ -4891,7 +4891,7 @@ public class ExifInterfaceExtended {
     /**
      * Sets the GPS-related information. It will set GPS processing method, latitude and longitude
      * values, GPS timestamp, and speed information at the same time.
-     *
+     * <p>
      * This method is a No-Op if the location parameter is null.
      *
      * @param location the {@link Location} object returned by GPS service.
@@ -7708,7 +7708,7 @@ public class ExifInterfaceExtended {
      * which results in larger values for TAG_IMAGE_WIDTH and TAG_IMAGE_LENGTH tags.
      * This method corrects those tag values by checking first the values of TAG_DEFAULT_CROP_SIZE
      * See DNG Specification 1.4.0.0. Section 4. (DefaultCropSize)
-     *
+     * <p>
      * If image is a RW2 file, valid image sizes are stored in SensorBorder tags.
      * See tiff_parser.cc GetFullDimension32()
      * */
