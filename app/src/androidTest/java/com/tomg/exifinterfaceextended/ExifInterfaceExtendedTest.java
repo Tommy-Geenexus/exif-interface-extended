@@ -1582,10 +1582,6 @@ public class ExifInterfaceExtendedTest {
      * <p>This does not check the image itself for similarity/equality.
      */
     private void assertBitmapsEquivalent(File expectedImageFile, File actualImageFile) {
-        if (Build.VERSION.SDK_INT < 16 && expectedImageFile.getName().endsWith("webp")) {
-            // BitmapFactory can't parse WebP files on API levels before 16: b/254571189
-            return;
-        }
         if (Build.VERSION.SDK_INT < 26
                 && expectedImageFile.getName().equals(WEBP_WITHOUT_EXIF_WITH_ANIM_DATA)) {
             // BitmapFactory can't parse animated WebP files on API levels before 26: b/259964971
