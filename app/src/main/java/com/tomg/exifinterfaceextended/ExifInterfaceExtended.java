@@ -6122,9 +6122,17 @@ public class ExifInterfaceExtended {
                     chunkTypes.add(new String(type));
                 } else if (Arrays.equals(WEBP_CHUNK_TYPE_EXIF, type) && exifFlagSet) {
                     // TODO: Need to handle potential OutOfMemoryError
-                    final byte[] data = new byte[chunkSizePadded];
+                    byte[] data = new byte[chunkSizePadded];
                     if (source.read(data) != chunkSizePadded) {
                         throw new IOException("Failed to read WebP EXIF chunk");
+                    }
+                    // Skip a JPEG APP1 marker that some image libraries incorrectly include in the
+                    // Exif data in WebP images (e.g.
+                    // https://github.com/ImageMagick/ImageMagick/issues/3140)
+                    if (ExifInterfaceExtendedUtils.startsWith(data, IDENTIFIER_EXIF_APP1)) {
+                        final int adjustedChunkSize = chunkSizePadded - IDENTIFIER_EXIF_APP1.length;
+                        data = Arrays.copyOfRange(data, IDENTIFIER_EXIF_APP1.length,
+                                adjustedChunkSize);
                     }
                     // Save offset to EXIF data for handling thumbnail and attribute offsets.
                     mOffsetToExifData = bytesRead;
