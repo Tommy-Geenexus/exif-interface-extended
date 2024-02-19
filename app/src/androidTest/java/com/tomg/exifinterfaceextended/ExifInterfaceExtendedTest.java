@@ -54,7 +54,6 @@ import org.junit.runner.RunWith;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.Closeable;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileDescriptor;
@@ -396,16 +395,12 @@ public class ExifInterfaceExtendedTest {
 
         for (int i = 0; i < IMAGE_RESOURCES.length; ++i) {
             File file = tempFolder.newFile(IMAGE_FILENAMES[i]);
-            InputStream inputStream = null;
-            FileOutputStream outputStream = null;
-            try {
-                inputStream = getApplicationContext()
-                        .getResources().openRawResource(IMAGE_RESOURCES[i]);
-                outputStream = new FileOutputStream(file);
+            try (InputStream inputStream =
+                            getApplicationContext()
+                                    .getResources()
+                                    .openRawResource(IMAGE_RESOURCES[i]);
+                    FileOutputStream outputStream = new FileOutputStream(file)) {
                 copy(inputStream, outputStream);
-            } finally {
-                closeQuietly(inputStream);
-                closeQuietly(outputStream);
             }
         }
     }
@@ -1253,17 +1248,18 @@ public class ExifInterfaceExtendedTest {
 
         File imageFile = resolveImageFile(fileName);
         String verboseTag = imageFile.getName();
-
-        FileInputStream fis = new FileInputStream(imageFile);
-        // Skip the following marker bytes (0xff, 0xd8, 0xff, 0xe1)
-        if (fis.skip(4) != 4) {
-            throw new IOException();
-        }
-        // Read the value of the length of the exif data
-        short length = readShort(fis);
-        byte[] exifBytes = new byte[length];
-        if (fis.read(exifBytes) != exifBytes.length) {
-            throw new IOException();
+        byte[] exifBytes;
+        try (FileInputStream fis = new FileInputStream(imageFile)) {
+            // Skip the following marker bytes (0xff, 0xd8, 0xff, 0xe1)
+            if (fis.skip(4) != 4) {
+                throw new IOException();
+            }
+            // Read the value of the length of the exif data
+            short length = readShort(fis);
+            exifBytes = new byte[length];
+            if (fis.read(exifBytes) != exifBytes.length) {
+                throw new IOException();
+            }
         }
 
         ByteArrayInputStream bin = new ByteArrayInputStream(exifBytes);
@@ -1287,14 +1283,12 @@ public class ExifInterfaceExtendedTest {
         assertNotNull(exifInterface);
         compareWithExpectedValue(exifInterface, expectedValue, verboseTag, true);
 
-        InputStream in = null;
         // Creates via InputStream.
-        try {
-            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
+        try (InputStream in = new BufferedInputStream(
+                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+        ) {
             exifInterface = new ExifInterfaceExtended(in);
             compareWithExpectedValue(exifInterface, expectedValue, verboseTag, true);
-        } finally {
-            closeQuietly(in);
         }
 
         // Creates via FileDescriptor.
@@ -1316,15 +1310,11 @@ public class ExifInterfaceExtendedTest {
     private void testExifInterfaceRange(String fileName, ExpectedValue expectedValue)
             throws IOException {
         File imageFile = resolveImageFile(fileName);
-
-        InputStream in = null;
-        try {
-            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
+        try (InputStream in = new BufferedInputStream(
+                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+        ) {
             if (expectedValue.hasThumbnail()) {
-                if (in.skip(expectedValue.getThumbnailOffset()) !=
-                        expectedValue.getThumbnailOffset()) {
-                    throw new IOException();
-                }
+                in.skip(expectedValue.getThumbnailOffset());
                 byte[] thumbnailBytes = new byte[expectedValue.getThumbnailLength()];
                 if (in.read(thumbnailBytes) != expectedValue.getThumbnailLength()) {
                     throw new IOException("Failed to read the expected thumbnail length");
@@ -1336,15 +1326,16 @@ public class ExifInterfaceExtendedTest {
                 assertEquals(expectedValue.getThumbnailWidth(), thumbnailBitmap.getWidth());
                 assertEquals(expectedValue.getThumbnailHeight(), thumbnailBitmap.getHeight());
             }
+        }
 
-            // TODO: Creating a new input stream is a temporary
-            //  workaround for BufferedInputStream#mark/reset not working properly for
-            //  LG_G4_ISO_800_DNG. Need to investigate cause.
-            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
+        // TODO: Creating a new input stream is a temporary
+        //  workaround for BufferedInputStream#mark/reset not working properly for
+        //  LG_G4_ISO_800_DNG. Need to investigate cause.
+        try (InputStream in = new BufferedInputStream(
+                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+        ) {
             if (expectedValue.hasMake()) {
-                if (in.skip(expectedValue.getMakeOffset()) != expectedValue.getMakeOffset()) {
-                    throw new IOException();
-                }
+                in.skip(expectedValue.getMakeOffset());
                 byte[] makeBytes = new byte[expectedValue.getMakeLength()];
                 if (in.read(makeBytes) != expectedValue.getMakeLength()) {
                     throw new IOException("Failed to read the expected make length");
@@ -1354,12 +1345,13 @@ public class ExifInterfaceExtendedTest {
                 makeString = makeString.replaceAll("\u0000.*", "");
                 assertEquals(expectedValue.getMake(), makeString);
             }
+        }
 
-            in = new BufferedInputStream(Files.newInputStream(Paths.get(imageFile.getAbsolutePath())));
+        try (InputStream in = new BufferedInputStream(
+                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+        ) {
             if (expectedValue.hasXmp()) {
-                if (in.skip(expectedValue.getXmpOffset()) != expectedValue.getXmpOffset()) {
-                    throw new IOException();
-                }
+                in.skip(expectedValue.getXmpOffset());
                 byte[] identifierBytes = new byte[expectedValue.getXmpLength()];
                 if (in.read(identifierBytes) != expectedValue.getXmpLength()) {
                     throw new IOException("Failed to read the expected xmp length");
@@ -1371,8 +1363,6 @@ public class ExifInterfaceExtendedTest {
                         identifier.startsWith(extendedXmpIdentifier));
             }
             // TODO: Add code for retrieving raw latitude data using offset and length
-        } finally {
-            closeQuietly(in);
         }
     }
 
@@ -1468,50 +1458,46 @@ public class ExifInterfaceExtendedTest {
     ) throws IOException {
         File source = resolveImageFile(fileName);
         File sink = resolveImageFile(fileOutName);
-        InputStream in = Files.newInputStream(source.toPath());
-        OutputStream out = Files.newOutputStream(sink.toPath());
-
-        try {
-            final ExifInterfaceExtended sourceExifInterface =
-                    new ExifInterfaceExtended(source.getAbsolutePath());
-            if (hasMetadata) {
-                assertTrue(sourceExifInterface.hasAttributes(false));
-            }
-            String orientation =
-                    sourceExifInterface.getAttribute(ExifInterfaceExtended.TAG_ORIENTATION);
-            sourceExifInterface.saveExclusive(in, out, preserveOrientation);
-            final ExifInterfaceExtended sinkExifInterface =
-                    new ExifInterfaceExtended(sink.getAbsolutePath());
-            assertFalse(sinkExifInterface.hasIccProfile());
-            assertFalse(sinkExifInterface.hasXmp());
-            assertFalse(sinkExifInterface.hasExtendedXmp());
-            assertFalse(sinkExifInterface.hasPhotoshopImageResources());
-            if (preserveOrientation) {
-                for (String tag : EXIF_TAGS) {
-                    String attribute = sinkExifInterface.getAttribute(tag);
-                    switch (tag) {
-                        case ExifInterfaceExtended.TAG_IMAGE_WIDTH:
-                        case ExifInterfaceExtended.TAG_IMAGE_LENGTH:
-                            // Ignore
-                            break;
-                        case ExifInterfaceExtended.TAG_LIGHT_SOURCE:
-                            assertEquals("0", attribute);
-                            break;
-                        case ExifInterfaceExtended.TAG_ORIENTATION:
-                            assertEquals(orientation, attribute);
-                            break;
-                        default:
-                            assertNull(attribute);
-                            break;
-
-                    }
+        try (InputStream in = Files.newInputStream(source.toPath())) {
+            try (OutputStream out = Files.newOutputStream(sink.toPath())) {
+                final ExifInterfaceExtended sourceExifInterface =
+                        new ExifInterfaceExtended(source.getAbsolutePath());
+                if (hasMetadata) {
+                    assertTrue(sourceExifInterface.hasAttributes(false));
                 }
-            } else {
-                assertFalse(sinkExifInterface.hasAttributes(true));
+                String orientation =
+                        sourceExifInterface.getAttribute(ExifInterfaceExtended.TAG_ORIENTATION);
+                sourceExifInterface.saveExclusive(in, out, preserveOrientation);
+                final ExifInterfaceExtended sinkExifInterface =
+                        new ExifInterfaceExtended(sink.getAbsolutePath());
+                assertFalse(sinkExifInterface.hasIccProfile());
+                assertFalse(sinkExifInterface.hasXmp());
+                assertFalse(sinkExifInterface.hasExtendedXmp());
+                assertFalse(sinkExifInterface.hasPhotoshopImageResources());
+                if (preserveOrientation) {
+                    for (String tag : EXIF_TAGS) {
+                        String attribute = sinkExifInterface.getAttribute(tag);
+                        switch (tag) {
+                            case ExifInterfaceExtended.TAG_IMAGE_WIDTH:
+                            case ExifInterfaceExtended.TAG_IMAGE_LENGTH:
+                                // Ignore
+                                break;
+                            case ExifInterfaceExtended.TAG_LIGHT_SOURCE:
+                                assertEquals("0", attribute);
+                                break;
+                            case ExifInterfaceExtended.TAG_ORIENTATION:
+                                assertEquals(orientation, attribute);
+                                break;
+                            default:
+                                assertNull(attribute);
+                                break;
+
+                        }
+                    }
+                } else {
+                    assertFalse(sinkExifInterface.hasAttributes(true));
+                }
             }
-        } finally {
-            closeQuietly(in);
-            closeQuietly(out);
         }
     }
 
@@ -1522,17 +1508,6 @@ public class ExifInterfaceExtendedTest {
         assertNotNull(thumbnailBitmap);
         assertEquals(expectedValue.getThumbnailWidth(), thumbnailBitmap.getWidth());
         assertEquals(expectedValue.getThumbnailHeight(), thumbnailBitmap.getHeight());
-    }
-
-    private void closeQuietly(Closeable closeable) {
-        if (closeable != null) {
-            try {
-                closeable.close();
-            } catch (RuntimeException rethrown) {
-                throw rethrown;
-            } catch (Exception ignored) {
-            }
-        }
     }
 
     private void closeQuietly(FileDescriptor fd) {
