@@ -19,7 +19,6 @@ package com.tomg.exifinterfaceextended;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtendedUtils.copy;
 import static com.tomg.exifinterfaceextended.test.R.*;
 import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -46,6 +45,9 @@ import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.GrantPermissionRule;
 
+import com.google.common.io.ByteStreams;
+import com.google.common.io.Files;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -64,7 +66,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -400,7 +401,7 @@ public class ExifInterfaceExtendedTest {
                                     .getResources()
                                     .openRawResource(IMAGE_RESOURCES[i]);
                     FileOutputStream outputStream = new FileOutputStream(file)) {
-                copy(inputStream, outputStream);
+                ByteStreams.copy(inputStream, outputStream);
             }
         }
     }
@@ -1251,15 +1252,11 @@ public class ExifInterfaceExtendedTest {
         byte[] exifBytes;
         try (FileInputStream fis = new FileInputStream(imageFile)) {
             // Skip the following marker bytes (0xff, 0xd8, 0xff, 0xe1)
-            if (fis.skip(4) != 4) {
-                throw new IOException();
-            }
+            ByteStreams.skipFully(fis, 4);
             // Read the value of the length of the exif data
             short length = readShort(fis);
             exifBytes = new byte[length];
-            if (fis.read(exifBytes) != exifBytes.length) {
-                throw new IOException();
-            }
+            ByteStreams.readFully(fis, exifBytes);
         }
 
         ByteArrayInputStream bin = new ByteArrayInputStream(exifBytes);
@@ -1285,7 +1282,7 @@ public class ExifInterfaceExtendedTest {
 
         // Creates via InputStream.
         try (InputStream in = new BufferedInputStream(
-                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
         ) {
             exifInterface = new ExifInterfaceExtended(in);
             compareWithExpectedValue(exifInterface, expectedValue, verboseTag, true);
@@ -1311,14 +1308,12 @@ public class ExifInterfaceExtendedTest {
             throws IOException {
         File imageFile = resolveImageFile(fileName);
         try (InputStream in = new BufferedInputStream(
-                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
         ) {
             if (expectedValue.hasThumbnail()) {
-                in.skip(expectedValue.getThumbnailOffset());
+                ByteStreams.skipFully(in, expectedValue.getThumbnailOffset());
                 byte[] thumbnailBytes = new byte[expectedValue.getThumbnailLength()];
-                if (in.read(thumbnailBytes) != expectedValue.getThumbnailLength()) {
-                    throw new IOException("Failed to read the expected thumbnail length");
-                }
+                ByteStreams.readFully(in, thumbnailBytes);
                 // TODO: Need a way to check uncompressed thumbnail file
                 Bitmap thumbnailBitmap = BitmapFactory.decodeByteArray(thumbnailBytes, 0,
                         thumbnailBytes.length);
@@ -1332,14 +1327,12 @@ public class ExifInterfaceExtendedTest {
         //  workaround for BufferedInputStream#mark/reset not working properly for
         //  LG_G4_ISO_800_DNG. Need to investigate cause.
         try (InputStream in = new BufferedInputStream(
-                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
         ) {
             if (expectedValue.hasMake()) {
-                in.skip(expectedValue.getMakeOffset());
+                ByteStreams.skipFully(in, expectedValue.getMakeOffset());
                 byte[] makeBytes = new byte[expectedValue.getMakeLength()];
-                if (in.read(makeBytes) != expectedValue.getMakeLength()) {
-                    throw new IOException("Failed to read the expected make length");
-                }
+                ByteStreams.readFully(in, makeBytes);
                 String makeString = new String(makeBytes);
                 // Remove null bytes
                 makeString = makeString.replaceAll("\u0000.*", "");
@@ -1348,14 +1341,12 @@ public class ExifInterfaceExtendedTest {
         }
 
         try (InputStream in = new BufferedInputStream(
-                Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
         ) {
             if (expectedValue.hasXmp()) {
-                in.skip(expectedValue.getXmpOffset());
+                ByteStreams.skipFully(in, expectedValue.getXmpOffset());
                 byte[] identifierBytes = new byte[expectedValue.getXmpLength()];
-                if (in.read(identifierBytes) != expectedValue.getXmpLength()) {
-                    throw new IOException("Failed to read the expected xmp length");
-                }
+                ByteStreams.readFully(in, identifierBytes);
                 final String identifier = new String(identifierBytes, StandardCharsets.UTF_8);
                 final String xmpIdentifier = "<?xpacket begin=";
                 final String extendedXmpIdentifier = "<x:xmpmeta xmlns:x=";
@@ -1458,8 +1449,8 @@ public class ExifInterfaceExtendedTest {
     ) throws IOException {
         File source = resolveImageFile(fileName);
         File sink = resolveImageFile(fileOutName);
-        try (InputStream in = Files.newInputStream(source.toPath())) {
-            try (OutputStream out = Files.newOutputStream(sink.toPath())) {
+        try (InputStream in = java.nio.file.Files.newInputStream(source.toPath())) {
+            try (OutputStream out = java.nio.file.Files.newOutputStream(sink.toPath())) {
                 final ExifInterfaceExtended sourceExifInterface =
                         new ExifInterfaceExtended(source.getAbsolutePath());
                 if (hasMetadata) {
@@ -1586,7 +1577,9 @@ public class ExifInterfaceExtendedTest {
      * {@link StrictMode.ThreadPolicy.Builder#detectUnbufferedIo()}.
      */
     private static Bitmap decodeBitmap(File file, BitmapFactory.Options options) {
-        try (BufferedInputStream inputStream = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+        try (BufferedInputStream inputStream = new BufferedInputStream(
+                java.nio.file.Files.newInputStream(file.toPath()))
+        ) {
             return BitmapFactory.decodeStream(inputStream, /* outPadding= */ null, options);
         } catch (IOException e) {
             return null;
@@ -1620,10 +1613,7 @@ public class ExifInterfaceExtendedTest {
     private File clone(File original) throws IOException {
         File cloned =
                 File.createTempFile("tmp_", System.nanoTime() + "_" + original.getName());
-        try (FileInputStream inputStream = new FileInputStream(original);
-             FileOutputStream outputStream = new FileOutputStream(cloned)) {
-            copy(inputStream, outputStream);
-        }
+        Files.copy(original, cloned);
         return cloned;
     }
 }
