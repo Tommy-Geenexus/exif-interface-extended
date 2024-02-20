@@ -496,6 +496,7 @@ public class ExifInterfaceExtendedTest {
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, true);
     }
 
+    // https://issuetracker.google.com/281638358
     @Test
     @LargeTest
     public void testWebpWithExifApp1() throws Throwable {
