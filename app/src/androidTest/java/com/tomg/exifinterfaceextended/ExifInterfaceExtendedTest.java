@@ -455,19 +455,24 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
-    public void testStandaloneData() throws Throwable {
-        File jpegIiImageFile = copyFromResourceToFile(
+    public void testStandaloneData_jpegIntelByteOrder() throws Throwable {
+        File imageFile = copyFromResourceToFile(
                 com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
-        File jpegMmImageFile = copyFromResourceToFile(
+        readFromStandaloneDataWithExif(
+                imageFile, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE);
+    }
+
+    @Test
+    @LargeTest
+    public void testStandaloneData_jpegMotorolaByteOrder() throws Throwable {
+        File imageFile = copyFromResourceToFile(
                 com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_mm,
                 "jpeg_with_exif_byte_order_mm.jpg"
         );
         readFromStandaloneDataWithExif(
-                jpegIiImageFile, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE);
-        readFromStandaloneDataWithExif(
-                jpegMmImageFile, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE);
+                imageFile, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE);
     }
 
     @Test
