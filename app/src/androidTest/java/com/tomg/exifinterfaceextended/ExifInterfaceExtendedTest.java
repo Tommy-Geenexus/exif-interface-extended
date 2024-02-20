@@ -409,18 +409,21 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testJpegWithExifIntelByteOrder() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_II, array.jpeg_with_exif_byte_order_ii);
-        writeToFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_II, array.jpeg_with_exif_byte_order_ii);
+        readFromFilesWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_II, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_II);
+        writeToFilesWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_II, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_II);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, false);
-        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, true);
-    }
+        writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_II, JPEG_TEST, true, true);    }
 
     @Test
     @LargeTest
     public void testJpegWithExifMotorolaByteOrder() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_MM, array.jpeg_with_exif_byte_order_mm);
-        writeToFilesWithExif(JPEG_WITH_EXIF_BYTE_ORDER_MM, array.jpeg_with_exif_byte_order_mm);
+        readFromFilesWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_MM, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_MM);
+        writeToFilesWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_MM, ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_MM);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_MM, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_BYTE_ORDER_MM, JPEG_TEST, true, true);
@@ -429,8 +432,8 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testJpegWithExifAndXmp() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
-        writeToFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, array.jpeg_with_exif_with_xmp);
+        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, ExpectedValue.JPEG_WITH_EXIF_WITH_XMP);
+        writeToFilesWithExif(JPEG_WITH_EXIF_WITH_XMP, ExpectedValue.JPEG_WITH_EXIF_WITH_XMP);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_XMP, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_XMP, JPEG_TEST, true, true);
@@ -442,8 +445,9 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testJpegWithExifAndExtendedXmp() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
-                array.jpeg_with_icc_with_exif_with_extended_xmp);
+        readFromFilesWithExif(
+                JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP,
+                ExpectedValue.JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP);
 
         writeToFilesWithoutMetadata(JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP, JPEG_TEST, true,
                 false);
@@ -454,8 +458,9 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testJpegWithExifAndPhotoshop() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP,
-                array.jpeg_with_exif_with_photoshop_with_xmp);
+        readFromFilesWithExif(
+                JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP,
+                ExpectedValue.JPEG_WITH_EXIF_WITH_PHOTSHOP_WITH_XMP);
 
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, false);
         writeToFilesWithoutMetadata(JPEG_WITH_EXIF_WITH_PHOTOSHOP_WITH_XMP, JPEG_TEST, true, true);
@@ -465,8 +470,10 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testJpegWithInvalidOffset() throws Throwable {
-        readFromFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
-        writeToFilesWithExif(JPEG_WITH_EXIF_INVALID_OFFSET, array.jpeg_with_exif_invalid_offset);
+        readFromFilesWithExif(
+                JPEG_WITH_EXIF_INVALID_OFFSET, ExpectedValue.JPEG_WITH_EXIF_INVALID_OFFSET);
+        writeToFilesWithExif(
+                JPEG_WITH_EXIF_INVALID_OFFSET, ExpectedValue.JPEG_WITH_EXIF_INVALID_OFFSET);
     }
 
     // https://issuetracker.google.com/263747161
@@ -494,14 +501,16 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testDngWithExifAndXmp() throws Throwable {
-        readFromFilesWithExif(DNG_WITH_EXIF_WITH_XMP, array.dng_with_exif_with_xmp);
+        readFromFilesWithExif(DNG_WITH_EXIF_WITH_XMP, ExpectedValue.DNG_WITH_EXIF_WITH_XMP);
     }
 
     @Test
     @LargeTest
     public void testPngWithExif() throws Throwable {
-        readFromFilesWithExif(PNG_WITH_EXIF_BYTE_ORDER_II, array.png_with_exif_byte_order_ii);
-        writeToFilesWithExif(PNG_WITH_EXIF_BYTE_ORDER_II, array.png_with_exif_byte_order_ii);
+        readFromFilesWithExif(
+                PNG_WITH_EXIF_BYTE_ORDER_II, ExpectedValue.PNG_WITH_EXIF_BYTE_ORDER_II);
+        writeToFilesWithExif(
+                PNG_WITH_EXIF_BYTE_ORDER_II, ExpectedValue.PNG_WITH_EXIF_BYTE_ORDER_II);
 
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, false);
         writeToFilesWithoutMetadata(PNG_WITH_EXIF_BYTE_ORDER_II, PNG_TEST, true, true);
@@ -519,17 +528,19 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testStandaloneData() throws Throwable {
-        readFromStandaloneDataWithExif(JPEG_WITH_EXIF_BYTE_ORDER_II,
-                array.standalone_data_with_exif_byte_order_ii);
-        readFromStandaloneDataWithExif(JPEG_WITH_EXIF_BYTE_ORDER_MM,
-                array.standalone_data_with_exif_byte_order_mm);
+        readFromStandaloneDataWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_II,
+                ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE);
+        readFromStandaloneDataWithExif(
+                JPEG_WITH_EXIF_BYTE_ORDER_MM,
+                ExpectedValue.JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE);
     }
 
     @Test
     @LargeTest
     public void testWebpWithExif() throws Throwable {
-        readFromFilesWithExif(WEBP_WITH_EXIF, array.webp_with_exif);
-        writeToFilesWithExif(WEBP_WITH_EXIF, array.webp_with_exif);
+        readFromFilesWithExif(WEBP_WITH_EXIF, ExpectedValue.WEBP_WITH_EXIF);
+        writeToFilesWithExif(WEBP_WITH_EXIF, ExpectedValue.WEBP_WITH_EXIF);
 
         writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, false);
         writeToFilesWithoutMetadata(WEBP_WITH_EXIF, WEBP_TEST, true, true);
@@ -538,10 +549,12 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testWebpWithExifAndXmp() throws Throwable {
-        readFromFilesWithExif(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
-                array.webp_with_icc_with_exif_with_xmp);
-        writeToFilesWithExif(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
-                array.webp_with_icc_with_exif_with_xmp);
+        readFromFilesWithExif(
+                WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
+                ExpectedValue.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
+        writeToFilesWithExif(
+                WEBP_WITH_ICC_WITH_EXIF_WITH_XMP,
+                ExpectedValue.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
 
         writeToFilesWithoutMetadata(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP, WEBP_TEST, true, false);
         writeToFilesWithoutMetadata(WEBP_WITH_ICC_WITH_EXIF_WITH_XMP, WEBP_TEST, true, true);
@@ -550,10 +563,12 @@ public class ExifInterfaceExtendedTest {
     @Test
     @LargeTest
     public void testWebpWithExifApp1() throws Throwable {
-        readFromFilesWithExif(INVALID_WEBP_WITH_JPEG_APP1_MARKER,
-                array.invalid_webp_with_jpeg_app1_marker);
-        writeToFilesWithExif(INVALID_WEBP_WITH_JPEG_APP1_MARKER,
-                array.invalid_webp_with_jpeg_app1_marker);
+        readFromFilesWithExif(
+                INVALID_WEBP_WITH_JPEG_APP1_MARKER,
+                ExpectedValue.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
+        writeToFilesWithExif(
+                INVALID_WEBP_WITH_JPEG_APP1_MARKER,
+                ExpectedValue.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
     }
 
     @Test
@@ -599,10 +614,11 @@ public class ExifInterfaceExtendedTest {
     public void testHeifFile() throws Throwable {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             // Reading XMP data from HEIF was added in SDK 31.
-            readFromFilesWithExif(HEIF_WITH_EXIF,
+            readFromFilesWithExif(
+                    HEIF_WITH_EXIF,
                     Build.VERSION.SDK_INT >= 31
-                            ? array.heif_with_exif_31_and_above
-                            : array.heif_with_exif);
+                            ? ExpectedValue.HEIF_WITH_EXIF_API_31_AND_ABOVE
+                            : ExpectedValue.HEIF_WITH_EXIF_BELOW_API_31);
         } else {
             // Make sure that an exception is not thrown and that image length/width tag values
             // return default values, not the actual values.
@@ -1239,11 +1255,8 @@ public class ExifInterfaceExtendedTest {
                 expectedValue.hasPhotoshopImageResources());
     }
 
-    private void readFromStandaloneDataWithExif(String fileName, int typedArrayResourceId)
+    private void readFromStandaloneDataWithExif(String fileName, ExpectedValue expectedValue)
             throws IOException {
-        ExpectedValue expectedValue = new ExpectedValue(
-                getApplicationContext().getResources().obtainTypedArray(typedArrayResourceId));
-
         File imageFile = resolveImageFile(fileName);
         String verboseTag = imageFile.getName();
         byte[] exifBytes;
@@ -1354,10 +1367,8 @@ public class ExifInterfaceExtendedTest {
         }
     }
 
-    private void writeToFilesWithExif(String fileName, int typedArrayResourceId)
+    private void writeToFilesWithExif(String fileName, ExpectedValue expectedValue)
             throws IOException {
-        ExpectedValue expectedValue = new ExpectedValue(
-                getApplicationContext().getResources().obtainTypedArray(typedArrayResourceId));
 
         File srcFile = resolveImageFile(fileName);
         File imageFile = clone(srcFile);
@@ -1409,10 +1420,8 @@ public class ExifInterfaceExtendedTest {
         }
     }
 
-    private void readFromFilesWithExif(String fileName, int typedArrayResourceId)
+    private void readFromFilesWithExif(String fileName, ExpectedValue expectedValue)
             throws IOException {
-        ExpectedValue expectedValue = new ExpectedValue(
-                getApplicationContext().getResources().obtainTypedArray(typedArrayResourceId));
 
         // Test for reading from external data storage.
         testExifInterfaceCommon(fileName, expectedValue);
