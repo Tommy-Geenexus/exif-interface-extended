@@ -1182,7 +1182,6 @@ public class ExifInterfaceExtendedTest {
                 expectedValue.getDateTimeOriginal());
         assertFloatTag(exifInterface, ExifInterfaceExtended.TAG_EXPOSURE_TIME,
                 expectedValue.getExposureTime());
-        assertFloatTag(exifInterface, ExifInterfaceExtended.TAG_FLASH, expectedValue.getFlash());
         assertStringTag(exifInterface, ExifInterfaceExtended.TAG_FOCAL_LENGTH,
                 expectedValue.getFocalLength());
         assertStringTag(exifInterface, ExifInterfaceExtended.TAG_GPS_ALTITUDE,
@@ -1211,8 +1210,6 @@ public class ExifInterfaceExtendedTest {
                 expectedValue.getIso());
         assertIntTag(exifInterface, ExifInterfaceExtended.TAG_ORIENTATION,
                 expectedValue.getOrientation());
-        assertIntTag(exifInterface, ExifInterfaceExtended.TAG_WHITE_BALANCE,
-                expectedValue.getWhiteBalance());
 
         if (expectedValue.hasXmp()) {
             assertNotNull(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP));

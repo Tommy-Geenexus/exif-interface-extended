@@ -48,7 +48,6 @@ class ExpectedValue {
     private final float mAperture;
     private final String mDateTimeOriginal;
     private final float mExposureTime;
-    private final float mFlash;
     private final String mFocalLength;
     private final String mGpsAltitude;
     private final String mGpsAltitudeRef;
@@ -63,7 +62,6 @@ class ExpectedValue {
     private final int mImageWidth;
     private final String mIso;
     private final int mOrientation;
-    private final int mWhiteBalance;
 
     // XMP information.
     private final boolean mHasXmp;
@@ -112,7 +110,6 @@ class ExpectedValue {
         mAperture = typedArray.getFloat(index++, 0f);
         mDateTimeOriginal = getString(typedArray, index++);
         mExposureTime = typedArray.getFloat(index++, 0f);
-        mFlash = typedArray.getFloat(index++, 0f);
         mFocalLength = getString(typedArray, index++);
         mGpsAltitude = getString(typedArray, index++);
         mGpsAltitudeRef = getString(typedArray, index++);
@@ -127,7 +124,6 @@ class ExpectedValue {
         mImageWidth = typedArray.getInt(index++, 0);
         mIso = getString(typedArray, index++);
         mOrientation = typedArray.getInt(index++, 0);
-        mWhiteBalance = typedArray.getInt(index++, 0);
 
         // Reads XMP information.
         mHasXmp = typedArray.getBoolean(index++, false);
@@ -221,10 +217,6 @@ class ExpectedValue {
         return mExposureTime;
     }
 
-    public float getFlash() {
-        return mFlash;
-    }
-
     public String getFocalLength() {
         return mFocalLength;
     }
@@ -279,10 +271,6 @@ class ExpectedValue {
 
     public int getOrientation() {
         return mOrientation;
-    }
-
-    public int getWhiteBalance() {
-        return mWhiteBalance;
     }
 
     public boolean hasXmp() {

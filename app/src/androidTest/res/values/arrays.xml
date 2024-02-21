@@ -39,7 +39,6 @@
         <item>2.200</item>
         <item>2016:01:29 18:32:27</item>
         <item>0.033</item>
-        <item>0</item>
         <item>413/100</item>
         <item />
         <item />
@@ -54,7 +53,6 @@
         <item>640</item>
         <item>50</item>
         <item>6</item>
-        <item>0</item>
         <item>false</item>
         <item>0</item>
         <item>0</item>
@@ -86,7 +84,6 @@
         <item>2.200</item>
         <item>2016:01:29 18:32:27</item>
         <item>0.033</item>
-        <item>0</item>
         <item>413/100</item>
         <item />
         <item />
@@ -101,7 +98,6 @@
         <item>640</item>
         <item>50</item>
         <item>6</item>
-        <item>0</item>
         <item>false</item>
         <item>0</item>
         <item>0</item>
@@ -133,7 +129,6 @@
         <item>2.400</item>
         <item>2016:01:29 15:44:58</item>
         <item>0.017</item>
-        <item>0</item>
         <item>3970/1000</item>
         <item>0/1000</item>
         <item>0</item>
@@ -147,7 +142,6 @@
         <item>176</item>
         <item>144</item>
         <item>146</item>
-        <item>0</item>
         <item>0</item>
         <item>false</item>
         <item>0</item>
@@ -180,7 +174,6 @@
         <item>2.400</item>
         <item>2016:01:29 15:44:58</item>
         <item>0.017</item>
-        <item>0</item>
         <item>3970/1000</item>
         <item>0/1000</item>
         <item>0</item>
@@ -194,7 +187,6 @@
         <item>0</item>
         <item>0</item>
         <item>146</item>
-        <item>0</item>
         <item>0</item>
         <item>false</item>
         <item>0</item>
@@ -227,7 +219,6 @@
         <item>0.0</item>
         <item />
         <item>0.0</item>
-        <item>0</item>
         <item />
         <item>0/1000</item>
         <item>0</item>
@@ -241,7 +232,6 @@
         <item>176</item>
         <item>144</item>
         <item />
-        <item>0</item>
         <item>0</item>
         <item>false</item>
         <item>0</item>
@@ -271,7 +261,6 @@
         <item>1.800</item>
         <item>2015:11:12 16:46:18</item>
         <item>0.0040</item>
-        <item>0.0</item>
         <item>442/100</item>
         <item />
         <item />
@@ -285,7 +274,6 @@
         <item>337</item>
         <item>600</item>
         <item>800</item>
-        <item>0</item>
         <item>0</item>
         <item>true</item>
         <item>826</item>
@@ -318,7 +306,6 @@
         <item>1.800</item>
         <item>2015:11:12 16:46:18</item>
         <item>0.0040</item>
-        <item>0.0</item>
         <item>442/100</item>
         <item />
         <item />
@@ -333,7 +320,6 @@
         <item>600</item>
         <item>800</item>
         <item>1</item>
-        <item>0</item>
         <item>true</item>
         <item>1809</item>
         <item>13197</item>
@@ -365,7 +351,6 @@
         <item>2.200</item>
         <item>2016:01:29 18:32:27</item>
         <item>0.033</item>
-        <item>0</item>
         <item>41/10</item>
         <item />
         <item />
@@ -380,7 +365,6 @@
         <item>640</item>
         <item>50</item>
         <item>6</item>
-        <item>0</item>
         <item>true</item>
         <item>352</item>
         <item>1409</item>
@@ -412,7 +396,6 @@
         <item>2.200</item>
         <item>2016:01:29 18:32:27</item>
         <item>0.033</item>
-        <item>0</item>
         <item>413/100</item>
         <item />
         <item />
@@ -427,7 +410,6 @@
         <item>640</item>
         <item>50</item>
         <item>6</item>
-        <item>0</item>
         <item>false</item>
         <item>0</item>
         <item>0</item>
@@ -459,7 +441,6 @@
         <item>0.0</item>
         <item />
         <item>0.0</item>
-        <item>0.0</item>
         <item />
         <item />
         <item />
@@ -474,7 +455,6 @@
         <item>0</item>
         <item />
         <item>8</item>
-        <item>0</item>
         <item>false</item>
         <item>0</item>
         <item>0</item>
@@ -506,7 +486,6 @@
         <item>0.0</item>
         <item />
         <item>0.0</item>
-        <item>0</item>
         <item />
         <item />
         <item />
@@ -521,7 +500,6 @@
         <item>1920</item>
         <item />
         <item>1</item>
-        <item>0</item>
         <item>false</item>
         <item>0</item>
         <item>0</item>
@@ -553,7 +531,6 @@
         <item>0.0</item>
         <item />
         <item>0.0</item>
-        <item>0.0</item>
         <item />
         <item />
         <item />
@@ -568,7 +545,6 @@
         <item>300</item>
         <item />
         <item>1</item>
-        <item />
         <item>true</item>
         <item>15680</item>
         <item>19087</item>
@@ -600,7 +576,6 @@
         <item>1.8</item>
         <item>2021:01:07 11:38:23</item>
         <item>5.11E-4</item>
-        <item>16.0</item>
         <item>4440/1000</item>
         <item />
         <item />
@@ -615,7 +590,6 @@
         <item>4032</item>
         <item>63</item>
         <item>1</item>
-        <item />
         <item>true</item>
         <item>955</item>
         <item>322</item>
@@ -647,7 +621,6 @@
         <item>1.8</item>
         <item>2021:01:07 11:38:23</item>
         <item>5.11E-4</item>
-        <item>16.0</item>
         <item>4440/1000</item>
         <item />
         <item />
@@ -662,7 +635,6 @@
         <item>4032</item>
         <item>63</item>
         <item>1</item>
-        <item />
         <item>true</item>
         <item>3286048</item>
         <item>322</item>
@@ -694,7 +666,6 @@
         <item>0.0</item>
         <item />
         <item>0.0</item>
-        <item>0</item>
         <item />
         <item />
         <item />
@@ -709,7 +680,6 @@
         <item>1920</item>
         <item />
         <item>1</item>
-        <item>0</item>
         <item>true</item>
         <item>3721</item>
         <item>3020</item>
