@@ -95,19 +95,6 @@ public class ExifInterfaceExtendedTest {
     private static final double DELTA = 1e-8;
     // We translate double to rational in a 1/10000 precision.
     private static final double RATIONAL_DELTA = 0.0001;
-    private static final int TEST_LAT_LONG_VALUES_ARRAY_LENGTH = 8;
-    private static final double[] TEST_LATITUDE_VALID_VALUES = new double[]
-            {0, 45, 90, -60, 0.00000001, -89.999999999, 14.2465923626, -68.3434534737};
-    private static final double[] TEST_LONGITUDE_VALID_VALUES = new double[]
-            {0, -45, 90, -120, 180, 0.00000001, -179.99999999999, -58.57834236352};
-    private static final double[] TEST_LATITUDE_INVALID_VALUES = new double[]
-            {Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 90.0000000001,
-                    263.34763236326, -1e5, 347.32525, -176.346347754};
-    private static final double[] TEST_LONGITUDE_INVALID_VALUES = new double[]
-            {Double.NaN, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, 180.0000000001,
-                    263.34763236326, -1e10, 347.325252623, -4000.346323236};
-    private static final double[] TEST_ALTITUDE_VALUES = new double[]
-            {0, -2000, 10000, -355.99999999999, 18.02038};
     private static final int[][] TEST_ROTATION_STATE_MACHINE = {
             {ExifInterfaceExtended.ORIENTATION_UNDEFINED, -90,
                     ExifInterfaceExtended.ORIENTATION_UNDEFINED},
@@ -619,88 +606,117 @@ public class ExifInterfaceExtendedTest {
         final String provider = "ExifInterfaceTest";
         final long timestamp = 1689328448000L; // 2023-07-14T09:54:32.000Z
         final float speedInMeterPerSec = 36.627533f;
+        double latitudeDegrees = -68.3434534737;
+        double longitudeDegrees = -58.57834236352;
+        double altitudeMeters = 18.02038;
         Location location = new Location(provider);
-        location.setLatitude(TEST_LATITUDE_VALID_VALUES[TEST_LATITUDE_VALID_VALUES.length - 1]);
-        location.setLongitude(TEST_LONGITUDE_VALID_VALUES[TEST_LONGITUDE_VALID_VALUES.length - 1]);
-        location.setAltitude(TEST_ALTITUDE_VALUES[TEST_ALTITUDE_VALUES.length - 1]);
+        location.setLatitude(latitudeDegrees);
+        location.setLongitude(longitudeDegrees);
+        location.setAltitude(altitudeMeters);
         location.setSpeed(speedInMeterPerSec);
         location.setTime(timestamp);
         ExifInterfaceExtended exif = createTestExifInterface();
         exif.setGpsInfo(location);
 
         double[] latLong = exif.getLatLong();
-        assertNotNull(latLong);
-        assertEquals(TEST_LATITUDE_VALID_VALUES[TEST_LATITUDE_VALID_VALUES.length - 1],
-                latLong[0], DELTA);
-        assertEquals(TEST_LONGITUDE_VALID_VALUES[TEST_LONGITUDE_VALID_VALUES.length - 1],
-                latLong[1], DELTA);
-        assertEquals(TEST_ALTITUDE_VALUES[TEST_ALTITUDE_VALUES.length - 1], exif.getAltitude(0),
-                RATIONAL_DELTA);
-        assertEquals("K", exif.getAttribute(ExifInterfaceExtended.TAG_GPS_SPEED_REF));
-        assertEquals(speedInMeterPerSec,
-                exif.getAttributeDouble(ExifInterfaceExtended.TAG_GPS_SPEED, 0.0) * 1000 /
-                        TimeUnit.HOURS.toSeconds(1), RATIONAL_DELTA);
-        assertEquals(provider, exif.getAttribute(ExifInterfaceExtended.TAG_GPS_PROCESSING_METHOD));
-        assertNotNull(exif.getGpsDateTime());
+        assertThat(latLong)
+                .usingTolerance(DELTA)
+                .containsExactly(latitudeDegrees, longitudeDegrees)
+                .inOrder();
+        assertThat(exif.getAltitude(0)).isWithin(RATIONAL_DELTA).of(altitudeMeters);
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_SPEED_REF))
+                .isEqualTo("K");
+        float speedInKmph = speedInMeterPerSec * TimeUnit.HOURS.toSeconds(1) / 1000;
+        assertThat(exif.getAttributeDouble(ExifInterfaceExtended.TAG_GPS_SPEED, 0.0))
+                .isWithin(RATIONAL_DELTA)
+                .of(speedInKmph);
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_PROCESSING_METHOD))
+                .isEqualTo(provider);
         // GPS time's precision is secs.
-        assertEquals(TimeUnit.MILLISECONDS.toSeconds(timestamp),
-                TimeUnit.MILLISECONDS.toSeconds(exif.getGpsDateTime()));
+        assertThat(TimeUnit.MILLISECONDS.toSeconds(exif.getGpsDateTime()))
+                .isEqualTo(TimeUnit.MILLISECONDS.toSeconds(timestamp));
     }
 
     @Test
     @SmallTest
     public void testSetLatLong_withValidValues() throws IOException {
-        for (int i = 0; i < TEST_LAT_LONG_VALUES_ARRAY_LENGTH; i++) {
-            ExifInterfaceExtended exif = createTestExifInterface();
-            exif.setLatLong(TEST_LATITUDE_VALID_VALUES[i], TEST_LONGITUDE_VALID_VALUES[i]);
+        testSetLatLong(0d, 0d);
+        testSetLatLong(45d, -45d);
+        testSetLatLong(90d, 90d);
+        testSetLatLong(-60d, -120d);
+        testSetLatLong(0.00000001, 180d);
+        testSetLatLong(89.999999999, 0.00000001);
+        testSetLatLong(14.2465923626, -179.99999999999);
+        testSetLatLong(-68.3434534737, -58.57834236352);
+    }
 
-            double[] latLong = exif.getLatLong();
-            assertNotNull(latLong);
-            assertEquals(TEST_LATITUDE_VALID_VALUES[i], latLong[0], DELTA);
-            assertEquals(TEST_LONGITUDE_VALID_VALUES[i], latLong[1], DELTA);
-        }
+    private void testSetLatLong(double latitude, double longitude) throws IOException {
+        ExifInterfaceExtended exif = createTestExifInterface();
+        exif.setLatLong(latitude, longitude);
+        assertThat(exif.getLatLong())
+                .usingTolerance(DELTA)
+                .containsExactly(latitude, longitude)
+                .inOrder();
     }
 
     @Test
     @SmallTest
     public void testSetLatLong_withInvalidLatitude() throws IOException {
-        for (int i = 0; i < TEST_LAT_LONG_VALUES_ARRAY_LENGTH; i++) {
-            ExifInterfaceExtended exif = createTestExifInterface();
-            try {
-                exif.setLatLong(TEST_LATITUDE_INVALID_VALUES[i], TEST_LONGITUDE_VALID_VALUES[i]);
-                fail();
-            } catch (IllegalArgumentException e) {
-                // expected
-            }
-            assertNull(exif.getLatLong());
-            assertLatLongValuesAreNotSet(exif);
-        }
+        double longitude = -5.003427;
+        assertLatLongInvalidAndNotPersisted(Double.NaN, longitude);
+        assertLatLongInvalidAndNotPersisted(Double.POSITIVE_INFINITY, longitude);
+        assertLatLongInvalidAndNotPersisted(Double.NEGATIVE_INFINITY, longitude);
+        assertLatLongInvalidAndNotPersisted(90.0000000001, longitude);
+        assertLatLongInvalidAndNotPersisted(263.34763236326, longitude);
+        assertLatLongInvalidAndNotPersisted(-1e5, longitude);
+        assertLatLongInvalidAndNotPersisted(347.32525, longitude);
+        assertLatLongInvalidAndNotPersisted(-176.346347754, longitude);
     }
 
     @Test
     @SmallTest
     public void testSetLatLong_withInvalidLongitude() throws IOException {
-        for (int i = 0; i < TEST_LAT_LONG_VALUES_ARRAY_LENGTH; i++) {
-            ExifInterfaceExtended exif = createTestExifInterface();
-            try {
-                exif.setLatLong(TEST_LATITUDE_VALID_VALUES[i], TEST_LONGITUDE_INVALID_VALUES[i]);
-                fail();
-            } catch (IllegalArgumentException e) {
-                // expected
-            }
-            assertNull(exif.getLatLong());
-            assertLatLongValuesAreNotSet(exif);
-        }
+        double latitude = 56.796626;
+        assertLatLongInvalidAndNotPersisted(latitude, Double.NaN);
+        assertLatLongInvalidAndNotPersisted(latitude, Double.POSITIVE_INFINITY);
+        assertLatLongInvalidAndNotPersisted(latitude, Double.NEGATIVE_INFINITY);
+        assertLatLongInvalidAndNotPersisted(latitude, 180.0000000001);
+        assertLatLongInvalidAndNotPersisted(latitude, 263.34763236326);
+        assertLatLongInvalidAndNotPersisted(latitude, -1e10);
+        assertLatLongInvalidAndNotPersisted(latitude, 347.325252623);
+        assertLatLongInvalidAndNotPersisted(latitude, -4000.346323236);
+    }
+
+    /**
+     * Passes the parameters to {@link ExifInterfaceExtended#setLatLong} and asserts it throws
+     * an exception because one or both are invalid, and then all the corresponding getters still
+     * return 'unset' values.
+     */
+    private void assertLatLongInvalidAndNotPersisted(double latitude, double longitude)
+            throws IOException {
+        ExifInterfaceExtended exif = createTestExifInterface();
+        assertThrows(IllegalArgumentException.class, () -> exif.setLatLong(latitude, longitude));
+        assertThat(exif.getLatLong()).isNull();
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE)).isNull();
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE_REF)).isNull();
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LONGITUDE)).isNull();
+        assertThat(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LONGITUDE_REF)).isNull();
     }
 
     @Test
     @SmallTest
     public void testSetAltitude() throws IOException {
-        for (double testAltitudeValue : TEST_ALTITUDE_VALUES) {
-            ExifInterfaceExtended exif = createTestExifInterface();
-            exif.setAltitude(testAltitudeValue);
-            assertEquals(testAltitudeValue, exif.getAltitude(Double.NaN), RATIONAL_DELTA);
-        }
+        testSetAltitudeInternal(0);
+        testSetAltitudeInternal(-2000);
+        testSetAltitudeInternal(10000);
+        testSetAltitudeInternal(-355.99999999999);
+        testSetAltitudeInternal(18.02038);
+    }
+
+    private void testSetAltitudeInternal(double altitude) throws IOException {
+        ExifInterfaceExtended exif = createTestExifInterface();
+        exif.setAltitude(altitude);
+        assertThat(exif.getAltitude(Double.NaN)).isWithin(RATIONAL_DELTA).of(altitude);
     }
 
     /**
@@ -1551,13 +1567,6 @@ public class ExifInterfaceExtendedTest {
             } catch (Exception ignored) {
             }
         }
-    }
-
-    private void assertLatLongValuesAreNotSet(ExifInterfaceExtended exif) {
-        assertNull(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE));
-        assertNull(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE_REF));
-        assertNull(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LONGITUDE));
-        assertNull(exif.getAttribute(ExifInterfaceExtended.TAG_GPS_LONGITUDE_REF));
     }
 
     private ExifInterfaceExtended createTestExifInterface() throws IOException {
