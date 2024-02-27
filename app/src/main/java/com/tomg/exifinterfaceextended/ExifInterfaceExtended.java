@@ -1858,7 +1858,8 @@ public class ExifInterfaceExtended {
      */
     public static final String TAG_GPS_SPEED_REF = "GPSSpeedRef";
     /**
-     *  <p>Indicates the speed of GPS receiver movement.</p>
+     * Indicates the speed of GPS receiver movement. The units are indicated by {@link
+     * #TAG_GPS_SPEED_REF}.
      *
      *  <ul>
      *      <li>Tag = 13</li>
