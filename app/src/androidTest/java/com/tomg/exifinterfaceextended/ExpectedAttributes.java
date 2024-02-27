@@ -1,6 +1,6 @@
 /*
- * Copyright 2018 The Android Open Source Project
- * Copyright 2020 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
+ * Copyright 2024 The Android Open Source Project
+ * Copyright 2024 Tom Geiselmann <tomgapplicationsdevelopment@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package com.tomg.exifinterfaceextended;
 
 import androidx.annotation.Nullable;
 
-import com.tomg.exifinterfaceextended.test.R;
+/** Expected Exif attributes for test images in the res/raw/ directory. */
+final class ExpectedAttributes {
 
-class ExpectedValue {
-
-    /** Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_ii}. */
-    public static final ExpectedValue JPEG_WITH_EXIF_BYTE_ORDER_II =
+    /**
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_ii}.
+     */
+    public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_II =
             new Builder()
                     .setThumbnailOffsetAndLength(3500, 6265)
                     .setThumbnailSize(512, 288)
@@ -42,18 +44,22 @@ class ExpectedValue {
                     .build();
 
     /**
-     * Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_ii} when only the Exif
-     * data is read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_ii} when only the Exif data is
+     * read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
      */
-    public static final ExpectedValue JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE =
+    public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE =
             JPEG_WITH_EXIF_BYTE_ORDER_II
                     .buildUpon()
                     .setThumbnailOffset(JPEG_WITH_EXIF_BYTE_ORDER_II.getThumbnailOffset() - 6)
                     .setMakeOffset(JPEG_WITH_EXIF_BYTE_ORDER_II.getMakeOffset() - 6)
                     .build();
 
-    /** Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_mm}. */
-    public static final ExpectedValue JPEG_WITH_EXIF_BYTE_ORDER_MM =
+    /**
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_mm}.
+     */
+    public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM =
             new Builder()
                     .setLatitudeOffsetAndLength(584, 24)
                     .setLatLong(0, 0)
@@ -79,10 +85,11 @@ class ExpectedValue {
                     .build();
 
     /**
-     * Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_mm} when only the Exif
-     * data is read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_mm} when only the Exif data is
+     * read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
      */
-    public static final ExpectedValue JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE =
+    public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE =
             JPEG_WITH_EXIF_BYTE_ORDER_MM
                     .buildUpon()
                     .setLatitudeOffset(JPEG_WITH_EXIF_BYTE_ORDER_MM.getLatitudeOffset() - 6)
@@ -90,8 +97,11 @@ class ExpectedValue {
                     .setImageSize(0, 0)
                     .build();
 
-    /** Expected attributes for {@link R.raw#jpeg_with_exif_invalid_offset}. */
-    public static final ExpectedValue JPEG_WITH_EXIF_INVALID_OFFSET =
+    /**
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_invalid_offset}.
+     */
+    public static final ExpectedAttributes JPEG_WITH_EXIF_INVALID_OFFSET =
             JPEG_WITH_EXIF_BYTE_ORDER_MM
                     .buildUpon()
                     .setAperture(0)
@@ -101,8 +111,11 @@ class ExpectedValue {
                     .setIso(null)
                     .build();
 
-    /** Expected attributes for {@link R.raw#dng_with_exif_with_xmp}. */
-    public static final ExpectedValue DNG_WITH_EXIF_WITH_XMP =
+    /**
+     * Expected attributes for
+     * {@link com.tomg.exifinterfaceextended.test.R.raw#dng_with_exif_with_xmp}.
+     */
+    public static final ExpectedAttributes DNG_WITH_EXIF_WITH_XMP =
             new Builder()
                     .setThumbnailOffsetAndLength(12570, 15179)
                     .setThumbnailSize(256, 144)
@@ -128,8 +141,11 @@ class ExpectedValue {
                     .setXmpOffsetAndLength(826, 10067)
                     .build();
 
-    /** Expected attributes for {@link R.raw#jpeg_with_exif_with_xmp}. */
-    public static final ExpectedValue JPEG_WITH_EXIF_WITH_XMP =
+    /**
+     * Expected attributes for
+     * {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_with_xmp}.
+     */
+    public static final ExpectedAttributes JPEG_WITH_EXIF_WITH_XMP =
             DNG_WITH_EXIF_WITH_XMP
                     .buildUpon()
                     .clearThumbnail()
@@ -139,8 +155,11 @@ class ExpectedValue {
                     .setXmpOffsetAndLength(1809, 13197)
                     .build();
 
-    /** Expected attributes for {@link R.raw#png_with_exif_byte_order_ii}. */
-    public static final ExpectedValue PNG_WITH_EXIF_BYTE_ORDER_II =
+    /**
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#png_with_exif_byte_order_ii}.
+     */
+    public static final ExpectedAttributes PNG_WITH_EXIF_BYTE_ORDER_II =
             JPEG_WITH_EXIF_BYTE_ORDER_II
                     .buildUpon()
                     .setThumbnailOffset(212271)
@@ -149,25 +168,29 @@ class ExpectedValue {
                     .setXmpOffsetAndLength(352, 1409)
                     .build();
 
-    /** Expected attributes for {@link R.raw#webp_with_exif}. */
-    public static final ExpectedValue WEBP_WITH_EXIF =
+    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#webp_with_exif}. */
+    public static final ExpectedAttributes WEBP_WITH_EXIF =
             JPEG_WITH_EXIF_BYTE_ORDER_II
                     .buildUpon()
                     .setThumbnailOffset(9646)
                     .setMakeOffset(6306)
                     .build();
 
-    /** Expected attributes for {@link R.raw#invalid_webp_with_jpeg_app1_marker}. */
-    public static final ExpectedValue INVALID_WEBP_WITH_JPEG_APP1_MARKER =
+    /**
+     * Expected attributes for {@link
+     * com.tomg.exifinterfaceextended.test.R.raw#invalid_webp_with_jpeg_app1_marker}.
+     */
+    public static final ExpectedAttributes INVALID_WEBP_WITH_JPEG_APP1_MARKER =
             new Builder()
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_ROTATE_270)
                     .setHasIccProfile(true)
                     .build();
 
     /**
-     * Expected attributes for {@link R.raw#heif_with_exif} when read on a device below API 31.
+     * Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#heif_with_exif}
+     * when read on a device below API 31.
      */
-    public static final ExpectedValue HEIF_WITH_EXIF_BELOW_API_31 =
+    public static final ExpectedAttributes HEIF_WITH_EXIF_BELOW_API_31 =
             new Builder()
                     .setMake("LGE")
                     .setMakeOffsetAndLength(3519, 4)
@@ -177,17 +200,14 @@ class ExpectedValue {
                     .build();
 
     /**
-     * Expected attributes for {@link R.raw#heif_with_exif} when read on a device running API 31
-     * or above.
+     * Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#heif_with_exif}
+     * when read on a device running API 31 or above.
      */
-    public static final ExpectedValue HEIF_WITH_EXIF_API_31_AND_ABOVE =
-            HEIF_WITH_EXIF_BELOW_API_31
-                    .buildUpon()
-                    .setXmpOffsetAndLength(3721, 3020)
-                    .build();
+    public static final ExpectedAttributes HEIF_WITH_EXIF_API_31_AND_ABOVE =
+            HEIF_WITH_EXIF_BELOW_API_31.buildUpon().setXmpOffsetAndLength(3721, 3020).build();
 
-    /** Expected attributes for {@link R.raw#jpeg_with_icc_with_exif_with_extended_xmp}. */
-    public static final ExpectedValue JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
+    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_icc_with_exif_with_extended_xmp}. */
+    public static final ExpectedAttributes JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
             new Builder()
                     .setMake("Google")
                     .setMakeOffsetAndLength(170, 7)
@@ -205,8 +225,8 @@ class ExpectedValue {
                     .setHasPhotoshopImageResources(false)
                     .build();
 
-    /** Expected attributes for {@link R.raw#jpeg_with_exif_with_photoshop_with_xmp}. */
-    public static final ExpectedValue JPEG_WITH_EXIF_WITH_PHOTSHOP_WITH_XMP =
+    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_with_photoshop_with_xmp}. */
+    public static final ExpectedAttributes JPEG_WITH_EXIF_WITH_PHOTSHOP_WITH_XMP =
             new Builder()
                     .setThumbnailSize(127, 160)
                     .setThumbnailOffsetAndLength(464, 6473)
@@ -218,8 +238,8 @@ class ExpectedValue {
                     .setHasPhotoshopImageResources(true)
                     .build();
 
-    /** Expected attributes for {@link R.raw#webp_with_icc_with_exif_with_xmp}. */
-    public static final ExpectedValue WEBP_WITH_ICC_WITH_EXIF_WITH_XMP =
+    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#webp_with_icc_with_exif_with_xmp}. */
+    public static final ExpectedAttributes WEBP_WITH_ICC_WITH_EXIF_WITH_XMP =
             new Builder()
                     .setMake("Google")
                     .setMakeOffsetAndLength(3285288, 7)
@@ -278,8 +298,7 @@ class ExpectedValue {
         @Nullable private String mGpsTimestamp;
         private int mImageLength;
         private int mImageWidth;
-        @Nullable
-        private String mIso;
+        @Nullable private String mIso;
         private int mOrientation;
         private int mWhiteBalance;
 
@@ -293,7 +312,7 @@ class ExpectedValue {
 
         Builder() {}
 
-        private Builder(ExpectedValue attributes) {
+        private Builder(ExpectedAttributes attributes) {
             mHasThumbnail = attributes.hasThumbnail();
             mThumbnailOffset = attributes.getThumbnailOffset();
             mThumbnailLength = attributes.getThumbnailLength();
@@ -578,10 +597,12 @@ class ExpectedValue {
             return this;
         }
 
-        ExpectedValue build() {
-            return new ExpectedValue(this);
+        ExpectedAttributes build() {
+            return new ExpectedAttributes(this);
         }
     }
+
+    // TODO: b/270554381 - Add nullability annotations below.
 
     // Thumbnail information.
     private final boolean mHasThumbnail;
@@ -642,7 +663,7 @@ class ExpectedValue {
     private final boolean mHasIccProfile;
     private final boolean mHasPhotoshopImageResources;
 
-    ExpectedValue(Builder builder) {
+    private ExpectedAttributes(Builder builder) {
         // TODO: b/270554381 - Re-order these assignments to match the fields above.
         mHasThumbnail = builder.mHasThumbnail;
         mThumbnailOffset = builder.mThumbnailOffset;
