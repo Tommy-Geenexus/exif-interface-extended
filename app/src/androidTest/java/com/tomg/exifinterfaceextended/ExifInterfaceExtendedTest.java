@@ -45,6 +45,7 @@ import androidx.test.rule.GrantPermissionRule;
 
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
+import com.google.common.primitives.Ints;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -1507,7 +1508,8 @@ public class ExifInterfaceExtendedTest {
         ) {
             if (expectedAttributes.hasThumbnail()) {
                 ByteStreams.skipFully(in, expectedAttributes.getThumbnailOffset());
-                byte[] thumbnailBytes = new byte[expectedAttributes.getThumbnailLength()];
+                byte[] thumbnailBytes =
+                        new byte[Ints.checkedCast(expectedAttributes.thumbnailLength)];
                 ByteStreams.readFully(in, thumbnailBytes);
                 // TODO: Need a way to check uncompressed thumbnail file
                 Bitmap thumbnailBitmap = BitmapFactory.decodeByteArray(thumbnailBytes, 0,
@@ -1526,7 +1528,7 @@ public class ExifInterfaceExtendedTest {
         ) {
             if (expectedAttributes.hasMake()) {
                 ByteStreams.skipFully(in, expectedAttributes.getMakeOffset());
-                byte[] makeBytes = new byte[expectedAttributes.getMakeLength()];
+                byte[] makeBytes = new byte[Ints.checkedCast(expectedAttributes.makeLength)];
                 ByteStreams.readFully(in, makeBytes);
                 String makeString = new String(makeBytes);
                 // Remove null bytes
@@ -1540,7 +1542,7 @@ public class ExifInterfaceExtendedTest {
         ) {
             if (expectedAttributes.hasXmp()) {
                 ByteStreams.skipFully(in, expectedAttributes.getXmpOffset());
-                byte[] identifierBytes = new byte[expectedAttributes.getXmpLength()];
+                byte[] identifierBytes = new byte[Ints.checkedCast(expectedAttributes.xmpLength)];
                 ByteStreams.readFully(in, identifierBytes);
                 final String identifier = new String(identifierBytes, StandardCharsets.UTF_8);
                 final String xmpIdentifier = "<?xpacket begin=";
