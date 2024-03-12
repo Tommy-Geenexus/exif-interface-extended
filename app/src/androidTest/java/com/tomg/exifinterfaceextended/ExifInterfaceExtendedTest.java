@@ -62,7 +62,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Objects;
@@ -120,7 +119,8 @@ public class ExifInterfaceExtendedTest {
     @Rule
     public final TemporaryFolder tempFolder = new TemporaryFolder();
 
-    @Rule public final Expect expect = Expect.create();
+    @Rule
+    public final Expect expect = Expect.create();
 
     @Before
     public void setUp() {
@@ -1239,8 +1239,7 @@ public class ExifInterfaceExtendedTest {
     private void compareWithExpectedAttributes(
             ExifInterfaceExtended exifInterface,
             ExpectedAttributes expectedAttributes,
-            String verboseTag,
-            boolean assertRanges
+            String verboseTag
     ) {
         if (VERBOSE) {
             printExifTagsAndValues(verboseTag, exifInterface);
@@ -1248,35 +1247,13 @@ public class ExifInterfaceExtendedTest {
         // Checks a thumbnail image.
         expect.that(exifInterface.hasThumbnail()).isEqualTo(expectedAttributes.hasThumbnail());
         if (expectedAttributes.hasThumbnail()) {
-            expect.that(exifInterface.getThumbnailRange()).isNotNull();
-            if (assertRanges) {
-                expect.that(exifInterface.getThumbnailRange())
-                        .asList()
-                        .containsExactly(
-                                expectedAttributes.getThumbnailOffset(),
-                                expectedAttributes.getThumbnailLength())
-                        .inOrder();
-            }
-            testThumbnail(expectedAttributes, exifInterface);
-        } else {
-            expect.that(exifInterface.getThumbnailRange()).isNull();
-            expect.that(exifInterface.getThumbnail()).isNull();
+            expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
+                    expectedAttributes, exifInterface);
         }
 
         // Checks GPS information.
         double[] latLong = exifInterface.getLatLong();
-        long[] latitudeRange =
-                exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_GPS_LATITUDE);
         if (expectedAttributes.hasLatLong()) {
-            expect.that(latitudeRange).isNotNull();
-            if (assertRanges) {
-                expect.that(latitudeRange)
-                        .asList()
-                        .containsExactly(
-                                expectedAttributes.getLatitudeOffset(),
-                                expectedAttributes.getLatitudeLength())
-                        .inOrder();
-            }
             expect.that(latLong)
                     .usingTolerance(DIFFERENCE_TOLERANCE)
                     .containsExactly(
@@ -1290,7 +1267,6 @@ public class ExifInterfaceExtendedTest {
                     .isTrue();
         } else {
             expect.that(latLong).isNull();
-            expect.that(latitudeRange).isNull();
             expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE))
                     .isFalse();
             expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_GPS_LONGITUDE))
@@ -1299,27 +1275,6 @@ public class ExifInterfaceExtendedTest {
         expect.that(exifInterface.getAltitude(.0))
                 .isWithin(DIFFERENCE_TOLERANCE)
                 .of(expectedAttributes.getAltitude());
-
-        // Checks Make information.
-        String make = exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE);
-        long[] makeRange = exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_MAKE);
-        if (expectedAttributes.hasMake()) {
-            expect.that(makeRange).isNotNull();
-            if (assertRanges) {
-                expect.that(makeRange)
-                        .asList()
-                        .containsExactly(
-                                expectedAttributes.getMakeOffset(),
-                                expectedAttributes.getMakeLength()
-                        )
-                        .inOrder();
-            }
-            expect.that(make).isEqualTo(expectedAttributes.getMake());
-        } else {
-            expect.that(make).isNull();
-            expect.that(makeRange).isNull();
-            expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_MAKE)).isFalse();
-        }
 
         // Checks values.
         expectStringTag(
@@ -1403,31 +1358,8 @@ public class ExifInterfaceExtendedTest {
         );
         expect.that(exifInterface.getAttributeInt(ExifInterfaceExtended.TAG_ORIENTATION, 0))
                 .isEqualTo(expectedAttributes.getOrientation());
-
-        long[] xmpRange = exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP);
-        if (expectedAttributes.hasXmp()) {
-            expect.that(xmpRange).isNotNull();
-            if (assertRanges) {
-                expect.that(xmpRange)
-                        .asList()
-                        .containsExactly(
-                                expectedAttributes.getXmpOffset(),
-                                expectedAttributes.getXmpLength()
-                        )
-                        .inOrder();
-            }
-            final String xmp = new String(
-                    exifInterface.getAttributeBytes(ExifInterfaceExtended.TAG_XMP),
-                    Charset.forName("UTF-8")
-            );
-            // We're only interested in confirming that we were able to extract
-            // valid XMP data, which must always include this XML tag; a full
-            // XMP parser is beyond the scope of ExifInterface. See XMP
-            // Specification Part 1, Section C.2.2 for additional details.
-            expect.that(xmp).contains("<rdf:RDF");
-        } else {
-            expect.that(xmpRange).isNull();
-        }
+        expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_XMP))
+                .isEqualTo(expectedAttributes.hasXmp());
         expect.that(exifInterface.hasExtendedXmp()).isEqualTo(expectedAttributes.hasExtendedXmp());
         expect.that(exifInterface.hasIccProfile()).isEqualTo(expectedAttributes.hasIccProfile());
         expect.that(exifInterface.hasPhotoshopImageResources())
@@ -1452,7 +1384,7 @@ public class ExifInterfaceExtendedTest {
         ByteArrayInputStream bin = new ByteArrayInputStream(exifBytes);
         ExifInterfaceExtended exifInterface =
                 new ExifInterfaceExtended(bin, ExifInterfaceExtended.STREAM_TYPE_EXIF_DATA_ONLY);
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, true);
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
     }
 
     private void testExifInterfaceCommon(
@@ -1463,18 +1395,18 @@ public class ExifInterfaceExtendedTest {
 
         // Creates via file.
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, true);
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
 
         // Creates via path.
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, true);
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
 
         // Creates via InputStream.
         try (InputStream in = new BufferedInputStream(
                 java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
         ) {
             exifInterface = new ExifInterfaceExtended(in);
-            compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, true);
+            compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         }
 
         // Creates via FileDescriptor.
@@ -1484,7 +1416,7 @@ public class ExifInterfaceExtendedTest {
                 fd = Os.open(imageFile.getAbsolutePath(), OsConstants.O_RDONLY,
                         OsConstants.S_IRWXU);
                 exifInterface = new ExifInterfaceExtended(fd);
-                compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, true);
+                compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
             } catch (Exception e) {
                 throw new IOException("Failed to open file descriptor", e);
             } finally {
@@ -1493,61 +1425,97 @@ public class ExifInterfaceExtendedTest {
         }
     }
 
-    private void testExifInterfaceRange(
-            File imageFile,
-            ExpectedAttributes expectedAttributes
-    ) throws IOException {
-        try (InputStream in = new BufferedInputStream(
-                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
-        ) {
-            if (expectedAttributes.hasThumbnail()) {
-                ByteStreams.skipFully(in, expectedAttributes.getThumbnailOffset());
-                byte[] thumbnailBytes =
-                        new byte[Ints.checkedCast(expectedAttributes.getThumbnailLength())];
-                ByteStreams.readFully(in, thumbnailBytes);
-                // TODO: Need a way to check uncompressed thumbnail file
-                Bitmap thumbnailBitmap =
-                        BitmapFactory.decodeByteArray(thumbnailBytes, 0, thumbnailBytes.length);
-                expect.that(thumbnailBitmap.getWidth())
-                        .isEqualTo(expectedAttributes.getThumbnailWidth());
-                expect.that(thumbnailBitmap.getHeight())
-                        .isEqualTo(expectedAttributes.getThumbnailHeight());
-            }
+    /**
+     * Asserts (using {@link #expect}) that {@link ExifInterfaceExtended#getThumbnailRange()} and {@link
+     * ExifInterfaceExtended#getAttributeRange(String)} return ranges that match {@code expectedAttributes}
+     * and that can be used to directly read the underlying value from the file (which then also
+     * matches {@code expectedAttributes}.
+     */
+    private void testExifInterfaceRange(File imageFile, ExpectedAttributes expectedAttributes)
+            throws IOException {
+        ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
+
+        if (exifInterface.hasThumbnail()) {
+            long[] thumbnailRange = exifInterface.getThumbnailRange();
+            expect.that(thumbnailRange)
+                    .asList()
+                    .containsExactly(
+                            expectedAttributes.getThumbnailOffset(),
+                            expectedAttributes.getThumbnailLength()
+                    )
+                    .inOrder();
+            expectThumbnailMatchesFileBytes(imageFile, exifInterface, expectedAttributes);
+        } else {
+            expect.that(exifInterface.getThumbnailRange()).isNull();
         }
 
-        // TODO: Creating a new input stream is a temporary
-        //  workaround for BufferedInputStream#mark/reset not working properly for
-        //  LG_G4_ISO_800_DNG. Need to investigate cause.
-        try (InputStream in = new BufferedInputStream(
-                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
-        ) {
-            if (expectedAttributes.hasMake()) {
-                ByteStreams.skipFully(in, expectedAttributes.getMakeOffset());
-                byte[] makeBytes = new byte[Ints.checkedCast(expectedAttributes.getMakeLength())];
+        if (exifInterface.hasAttribute(ExifInterfaceExtended.TAG_MAKE)) {
+            long[] makeRange = exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_MAKE);
+            expect.that(makeRange)
+                    .asList()
+                    .containsExactly(
+                            expectedAttributes.getMakeOffset(),
+                            expectedAttributes.getMakeLength()
+                    )
+                    .inOrder();
+            try (InputStream in = new BufferedInputStream(
+                    java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+            ) {
+                ByteStreams.skipFully(in, makeRange[0]);
+                byte[] makeBytes = new byte[Ints.checkedCast(makeRange[1])];
                 ByteStreams.readFully(in, makeBytes);
                 String makeString = new String(makeBytes);
                 // Remove null bytes
                 makeString = makeString.replaceAll("\u0000.*", "");
                 expect.that(makeString).isEqualTo(expectedAttributes.getMake());
             }
+        } else {
+            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_MAKE)).isNull();
         }
 
-        try (InputStream in = new BufferedInputStream(
-                java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
-        ) {
-            if (expectedAttributes.hasXmp()) {
-                ByteStreams.skipFully(in, expectedAttributes.getXmpOffset());
-                byte[] identifierBytes =
-                        new byte[Ints.checkedCast(expectedAttributes.getXmpLength())];
-                ByteStreams.readFully(in, identifierBytes);
-                final String identifier = new String(identifierBytes, StandardCharsets.UTF_8);
+        if (exifInterface.hasAttribute(ExifInterfaceExtended.TAG_XMP)) {
+            long[] xmpRange = exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP);
+            expect.that(xmpRange)
+                    .asList()
+                    .containsExactly(
+                            expectedAttributes.getXmpOffset(),
+                            expectedAttributes.getXmpLength()
+                    )
+                    .inOrder();
+            try (InputStream in = new BufferedInputStream(
+                    java.nio.file.Files.newInputStream(Paths.get(imageFile.getAbsolutePath())))
+            ) {
+                ByteStreams.skipFully(in, xmpRange[0]);
+                byte[] xmpBytes = new byte[Ints.checkedCast(xmpRange[1])];
+                ByteStreams.readFully(in, xmpBytes);
+                String xmpData = new String(xmpBytes, Charset.forName("UTF-8"));
                 final String xmpIdentifier = "<?xpacket begin=";
                 final String extendedXmpIdentifier = "<x:xmpmeta xmlns:x=";
-                expect.that(identifier.startsWith(xmpIdentifier) ||
-                                identifier.startsWith(extendedXmpIdentifier))
+                expect.that(xmpData.startsWith(xmpIdentifier) ||
+                                xmpData.startsWith(extendedXmpIdentifier))
                         .isTrue();
+                // We're only interested in confirming that we were able to extract valid XMP data,
+                // which must always include this XML tag; a full XMP parser is beyond the scope of
+                // ExifInterface. See XMP Specification Part 1, Section C.2.2 for additional
+                // details.
+                expect.that(xmpData).contains("<rdf:RDF");
             }
+        } else {
+            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP)).isNull();
+        }
+
+        if (exifInterface.hasAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE)) {
+            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_GPS_LATITUDE))
+                    .asList()
+                    .containsExactly(
+                            expectedAttributes.getLatitudeOffset(),
+                            expectedAttributes.getLatitudeLength()
+                    )
+                    .inOrder();
             // TODO: Add code for retrieving raw latitude data using offset and length
+        } else {
+            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_GPS_LATITUDE))
+                    .isNull();
         }
     }
 
@@ -1562,7 +1530,7 @@ public class ExifInterfaceExtendedTest {
                 new ExifInterfaceExtended(imageFile.getAbsolutePath());
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, false);
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         expectBitmapsEquivalent(srcFile, imageFile);
         expectSecondSaveProducesSameSizeFile(imageFile);
 
@@ -1573,20 +1541,22 @@ public class ExifInterfaceExtendedTest {
         exifInterface.saveAttributes();
         // Check if thumbnail offset and length are properly updated without parsing the data again.
         if (expectedAttributes.hasThumbnail()) {
-            testThumbnail(expectedAttributes, exifInterface);
+            expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
+                    expectedAttributes, exifInterface);
         }
         expect.that(exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE))
                 .isEqualTo("abc");
         // Check if thumbnail bytes can be retrieved from the new thumbnail range.
         if (expectedAttributes.hasThumbnail()) {
-            testThumbnail(expectedAttributes, exifInterface);
+            expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
+                    expectedAttributes, exifInterface);
         }
 
         // Restore the backup value.
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, backupValue);
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag, false);
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
 
         // Creates via FileDescriptor.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -1676,20 +1646,64 @@ public class ExifInterfaceExtendedTest {
                         }
                     }
                 } else {
-                    expect.that(sinkExifInterface.hasAttributes(true)).isFalse();
+                    expect.that(sinkExifInterface.hasAttributes(true))
+                            .isFalse();
                 }
             }
         }
     }
 
-    private void testThumbnail(
+    /**
+     * Asserts (using {@link #expect}) that {@link ExifInterfaceExtended#getThumbnail()}, {@link
+     * ExifInterfaceExtended#getThumbnailBytes()}, and
+     * {@link ExifInterfaceExtended#getThumbnailBitmap()} all return self-consistent values that can
+     * be parsed by {@link BitmapFactory#decodeByteArray(byte[],int, int)} and match the bitmap
+     * values in {@code expectedAttributes}.
+     */
+    private void expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
             ExpectedAttributes expectedAttributes,
             ExifInterfaceExtended exifInterface
     ) {
         byte[] thumbnail = exifInterface.getThumbnail();
-        Bitmap thumbnailBitmap = BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.length);
+        byte[] thumbnailBytes = exifInterface.getThumbnailBytes();
+        expect.that(thumbnail).isEqualTo(thumbnailBytes);
+        expect.that(thumbnail.length).isEqualTo(expectedAttributes.getThumbnailLength());
+
+        Bitmap thumbnailBitmap = exifInterface.getThumbnailBitmap();
         expect.that(thumbnailBitmap.getWidth()).isEqualTo(expectedAttributes.getThumbnailWidth());
         expect.that(thumbnailBitmap.getHeight()).isEqualTo(expectedAttributes.getThumbnailHeight());
+        expectBitmapsEquivalent(
+                BitmapFactory.decodeByteArray(thumbnail, 0, thumbnail.length),
+                thumbnailBitmap
+        );
+    }
+
+    /**
+     * Asserts (using {@link #expect}) that {@link ExifInterfaceExtended#getThumbnailRange()} can be
+     * used to read the bytes for a {@link Bitmap} directly from {@code file} and the result matches
+     * both {@link ExifInterfaceExtended#getThumbnailBitmap()} and the bitmap metadata in {@code
+     * expectedAttributes}.
+     */
+    private void expectThumbnailMatchesFileBytes(
+            File file, ExifInterfaceExtended exifInterface,
+            ExpectedAttributes expectedAttributes
+    ) throws IOException {
+        byte[] thumbnailBytesFromFile;
+        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
+            long[] thumbnailRange = exifInterface.getThumbnailRange();
+            ByteStreams.skipFully(inputStream, thumbnailRange[0]);
+            thumbnailBytesFromFile = new byte[Ints.checkedCast(thumbnailRange[1])];
+            ByteStreams.readFully(inputStream, thumbnailBytesFromFile);
+        }
+        Bitmap thumbnailBitmapFromFile =
+                BitmapFactory.decodeByteArray(
+                        thumbnailBytesFromFile, 0, thumbnailBytesFromFile.length);
+        expect.that(thumbnailBitmapFromFile.getWidth())
+                .isEqualTo(expectedAttributes.getThumbnailWidth());
+        expect.that(thumbnailBitmapFromFile.getHeight())
+                .isEqualTo(expectedAttributes.getThumbnailHeight());
+
+        expectBitmapsEquivalent(thumbnailBitmapFromFile, exifInterface.getThumbnailBitmap());
     }
 
     private void closeQuietly(FileDescriptor fd) {
@@ -1723,8 +1737,8 @@ public class ExifInterfaceExtendedTest {
 
     /**
      * Asserts (using {@link #expect}) that {@code expectedImageFile} and {@code actualImageFile}
-     * can be decoded by {@link BitmapFactory} and the results have the same width, height and MIME
-     * type.
+     * can be decoded by {@link BitmapFactory} and the results have the same metadata such as width,
+     * height, and MIME type.
      *
      * <p>The assertion is skipped if the test is running on an API level where {@link
      * BitmapFactory} is known not to support the image format of {@code expectedImageFile} (as
@@ -1743,13 +1757,23 @@ public class ExifInterfaceExtendedTest {
                 decodeBitmap(expectedImageFile, expectedOptions));
         BitmapFactory.Options actualOptions = new BitmapFactory.Options();
         Bitmap actualBitmap = Objects.requireNonNull(decodeBitmap(actualImageFile, actualOptions));
-
         expect.that(actualOptions.outWidth).isEqualTo(expectedOptions.outWidth);
         expect.that(actualOptions.outHeight).isEqualTo(expectedOptions.outHeight);
         expect.that(actualOptions.outMimeType).isEqualTo(expectedOptions.outMimeType);
-        expect.that(actualBitmap.getWidth()).isEqualTo(expectedBitmap.getWidth());
-        expect.that(actualBitmap.getHeight()).isEqualTo(expectedBitmap.getHeight());
-        expect.that(actualBitmap.hasAlpha()).isEqualTo(expectedBitmap.hasAlpha());
+
+        expectBitmapsEquivalent(expectedBitmap, actualBitmap);
+    }
+
+    /**
+     * Asserts (using {@link #expect}) that {@code expected} and {@code actual} have the same width,
+     * height and alpha presence.
+     *
+     * <p>This does not check the image itself for similarity/equality.
+     */
+    private void expectBitmapsEquivalent(Bitmap expected, Bitmap actual) {
+        expect.that(actual.getWidth()).isEqualTo(expected.getWidth());
+        expect.that(actual.getHeight()).isEqualTo(expected.getHeight());
+        expect.that(actual.hasAlpha()).isEqualTo(expected.hasAlpha());
     }
 
     /**
