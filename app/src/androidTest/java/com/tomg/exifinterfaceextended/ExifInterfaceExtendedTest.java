@@ -30,6 +30,7 @@ import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Build;
 import android.os.StrictMode;
+import android.system.ErrnoException;
 import android.system.Os;
 import android.system.OsConstants;
 import android.util.Log;
@@ -67,6 +68,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Test {@link ExifInterfaceExtended}.
@@ -1523,56 +1525,84 @@ public class ExifInterfaceExtendedTest {
             File srcFile,
             ExpectedAttributes expectedAttributes
     ) throws IOException {
+        expectSavingWithNoModificationsLeavesImageIntact(srcFile, expectedAttributes);
+
+        expectSavingPersistsModifications(ExifInterfaceExtended::new, srcFile, expectedAttributes);
+
+        // Creates via FileDescriptor.
+        if (Build.VERSION.SDK_INT >= 21) {
+            AtomicReference<FileDescriptor> fileDescriptor = new AtomicReference<>();
+            ExifInterfaceExtendedFactory createFromFileDescriptor =
+                    f -> {
+                        try {
+                            fileDescriptor.set(
+                                    Os.open(
+                                            f.getAbsolutePath(),
+                                            OsConstants.O_RDWR,
+                                            OsConstants.S_IRWXU));
+                        } catch (ErrnoException e) {
+                            throw new IOException("Failed to open file descriptor", e);
+                        }
+                        return new ExifInterfaceExtended(fileDescriptor.get());
+                    };
+            try {
+                expectSavingPersistsModifications(
+                        createFromFileDescriptor, srcFile, expectedAttributes);
+            } finally {
+                closeQuietly(fileDescriptor.get());
+            }
+        }
+    }
+
+    private void expectSavingWithNoModificationsLeavesImageIntact(
+            File srcFile,
+            ExpectedAttributes expectedAttributes
+    ) throws IOException {
         File imageFile = clone(srcFile);
         String verboseTag = imageFile.getName();
-
         ExifInterfaceExtended exifInterface =
                 new ExifInterfaceExtended(imageFile.getAbsolutePath());
+
         exifInterface.saveAttributes();
+
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
         compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         expectBitmapsEquivalent(srcFile, imageFile);
         expectSecondSaveProducesSameSizeFile(imageFile);
+    }
 
-        // Test for modifying one attribute.
-        exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        String backupValue = exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE);
+    private void expectSavingPersistsModifications(
+            ExifInterfaceExtendedFactory exifInterfaceFactory,
+            File srcFile,
+            ExpectedAttributes expectedAttributes
+    ) throws IOException {
+        File imageFile = clone(srcFile);
+        String verboseTag = imageFile.getName();
+
+        ExifInterfaceExtended exifInterface = exifInterfaceFactory.create(imageFile);
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "abc");
         exifInterface.saveAttributes();
-        // Check if thumbnail offset and length are properly updated without parsing the data again.
+
+        expectedAttributes = expectedAttributes.buildUpon().setMake("abc").build();
+
+        // Check expected modifications are visible without re-parsing the file.
+        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         if (expectedAttributes.hasThumbnail()) {
             expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
                     expectedAttributes, exifInterface);
-        }
-        expect.that(exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE))
-                .isEqualTo("abc");
-        // Check if thumbnail bytes can be retrieved from the new thumbnail range.
-        if (expectedAttributes.hasThumbnail()) {
-            expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
-                    expectedAttributes, exifInterface);
+            // TODO: Check bitmap offset/length match underlying file before re-parsing (requires
+            //  relaxing preconditions of ExifInterface.getThumbnailRange()).
         }
 
-        // Restore the backup value.
-        exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, backupValue);
-        exifInterface.saveAttributes();
+        // Re-parse the file to confirm the changes are persisted to disk, and the resulting file
+        // can still be parsed as an image.
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
         compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
-
-        // Creates via FileDescriptor.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            FileDescriptor fd = null;
-            try {
-                fd = Os.open(imageFile.getAbsolutePath(), OsConstants.O_RDWR, OsConstants.S_IRWXU);
-                exifInterface = new ExifInterfaceExtended(fd);
-                exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "abc");
-                exifInterface.saveAttributes();
-                expect.that(exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE))
-                        .isEqualTo("abc");
-            } catch (Exception e) {
-                throw new IOException("Failed to open file descriptor", e);
-            } finally {
-                closeQuietly(fd);
-            }
+        expectBitmapsEquivalent(srcFile, imageFile);
+        if (expectedAttributes.hasThumbnail()) {
+            expectThumbnailGettersSelfConsistentAndMatchExpectedValues(
+                    expectedAttributes, exifInterface);
+            expectThumbnailMatchesFileBytes(imageFile, exifInterface, expectedAttributes);
         }
     }
 
@@ -1846,5 +1876,13 @@ public class ExifInterfaceExtendedTest {
      */
     private interface ExifInterfaceExtendedOperation {
         void applyTo(ExifInterfaceExtended exifInterface);
+    }
+
+    /**
+     * A functional interface to construct an {@link ExifInterfaceExtended} instance from a
+     * {@link File}.
+     */
+    private interface ExifInterfaceExtendedFactory {
+        ExifInterfaceExtended create(File file) throws IOException;
     }
 }
