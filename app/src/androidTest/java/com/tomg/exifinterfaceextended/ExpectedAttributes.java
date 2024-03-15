@@ -17,9 +17,17 @@
 
 package com.tomg.exifinterfaceextended;
 
-import androidx.annotation.Nullable;
+import android.content.res.Resources;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RawRes;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.CharStreams;
 import com.tomg.exifinterfaceextended.test.R;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 /** Expected Exif attributes for test images in the res/raw/ directory. */
 final class ExpectedAttributes {
@@ -126,6 +134,7 @@ final class ExpectedAttributes {
                     .setGpsTimestamp("18:08:10")
                     .setImageSize(600, 337)
                     .setIso("800")
+                    .setXmpResourceId(R.raw.dng_xmp)
                     .setXmpOffsetAndLength(826, 10067)
                     .build();
 
@@ -137,6 +146,7 @@ final class ExpectedAttributes {
                     .setLatitudeOffset(1692)
                     .setMakeOffset(84)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
+                    .setXmpResourceId(R.raw.jpeg_xmp)
                     .setXmpOffsetAndLength(1809, 13197)
                     .build();
 
@@ -147,6 +157,7 @@ final class ExpectedAttributes {
                     .setThumbnailOffset(212271)
                     .setMakeOffset(211525)
                     .setFocalLength("41/10")
+                    .setXmpResourceId(R.raw.png_xmp)
                     .setXmpOffsetAndLength(352, 1409)
                     .build();
 
@@ -180,7 +191,11 @@ final class ExpectedAttributes {
      * above.
      */
     public static final ExpectedAttributes HEIF_WITH_EXIF_API_31_AND_ABOVE =
-            HEIF_WITH_EXIF_BELOW_API_31.buildUpon().setXmpOffsetAndLength(3721, 3020).build();
+            HEIF_WITH_EXIF_BELOW_API_31
+                    .buildUpon()
+                    .setXmpResourceId(R.raw.heif_xmp)
+                    .setXmpOffsetAndLength(3721, 3020)
+                    .build();
 
     /** Expected attributes for {@link R.raw#jpeg_with_icc_with_exif_with_extended_xmp}. */
     public static final ExpectedAttributes JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
@@ -195,6 +210,7 @@ final class ExpectedAttributes {
                     .setImageSize(4032, 3024)
                     .setIso("63")
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
+                    .setXmpResourceId(R.raw.jpeg_xmp_3)
                     .setXmpOffsetAndLength(955, 322)
                     .setHasExtendedXmp(true)
                     .setHasIccProfile(true)
@@ -208,6 +224,7 @@ final class ExpectedAttributes {
                     .setThumbnailOffsetAndLength(464, 6473)
                     .setImageSize(300, 379)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
+                    .setXmpResourceId(R.raw.jpeg_xmp_2)
                     .setXmpOffsetAndLength(15680, 19087)
                     .setHasExtendedXmp(false)
                     .setHasIccProfile(true)
@@ -227,6 +244,7 @@ final class ExpectedAttributes {
                     .setImageSize(4032, 3024)
                     .setIso("63")
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
+                    .setXmpResourceId(R.raw.jpeg_xmp_3)
                     .setXmpOffsetAndLength(3286048, 322)
                     .setHasExtendedXmp(false)
                     .setHasIccProfile(true)
@@ -280,6 +298,7 @@ final class ExpectedAttributes {
 
         // XMP information.
         private boolean mHasXmp;
+        @Nullable private Integer mXmpResourceId;
         private long mXmpOffset;
         private long mXmpLength;
         private boolean mHasExtendedXmp;
@@ -324,6 +343,7 @@ final class ExpectedAttributes {
             mIso = attributes.getIso();
             mOrientation = attributes.getOrientation();
             mHasXmp = attributes.hasXmp();
+            mXmpResourceId = attributes.mXmpResourceId;
             mXmpOffset = attributes.getXmpOffset();
             mXmpLength = attributes.getXmpLength();
             mHasExtendedXmp = attributes.hasExtendedXmp();
@@ -534,6 +554,13 @@ final class ExpectedAttributes {
             return this;
         }
 
+        /** Sets the resource ID of the expected XMP data. */
+        public Builder setXmpResourceId(@RawRes int xmpResourceId) {
+            mHasXmp = true;
+            mXmpResourceId = xmpResourceId;
+            return this;
+        }
+
         public Builder setXmpOffsetAndLength(int offset, int length) {
             mHasXmp = true;
             mXmpOffset = offset;
@@ -553,6 +580,7 @@ final class ExpectedAttributes {
 
         public Builder clearXmp() {
             mHasXmp = false;
+            mXmpResourceId = null;
             mXmpOffset = 0;
             mXmpLength = 0;
             return this;
@@ -631,6 +659,8 @@ final class ExpectedAttributes {
     private final int mOrientation;
 
     // XMP information.
+    @Nullable private final Integer mXmpResourceId;
+    @Nullable private String mMemoizedXmp;
     private final boolean mHasXmp;
     private final long mXmpOffset;
     private final long mXmpLength;
@@ -676,6 +706,7 @@ final class ExpectedAttributes {
         mIso = builder.mIso;
         mOrientation = builder.mOrientation;
         mHasXmp = builder.mHasXmp;
+        mXmpResourceId = builder.mXmpResourceId;
         mXmpOffset = builder.mXmpOffset;
         mXmpLength = builder.mXmpLength;
         mHasExtendedXmp = builder.mHasExtendedXmp;
@@ -825,6 +856,24 @@ final class ExpectedAttributes {
 
     public boolean hasXmp() {
         return mHasXmp;
+    }
+
+    /**
+     * Returns the expected XMP data read from {@code resources} using {@link
+     * Builder#setXmpResourceId}.
+     *
+     * <p>Returns null if no expected XMP data was set.
+     */
+    @Nullable
+    public String getXmp(Resources resources) throws IOException {
+        if (mMemoizedXmp == null && mXmpResourceId != null) {
+            try (InputStreamReader inputStreamReader = new InputStreamReader(
+                    resources.openRawResource(mXmpResourceId), Charsets.UTF_8)
+            ) {
+                mMemoizedXmp = CharStreams.toString(inputStreamReader);
+            }
+        }
+        return mMemoizedXmp;
     }
 
     public long getXmpOffset() {

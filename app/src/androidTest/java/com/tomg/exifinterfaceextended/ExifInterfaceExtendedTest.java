@@ -1243,7 +1243,7 @@ public class ExifInterfaceExtendedTest {
             ExifInterfaceExtended exifInterface,
             ExpectedAttributes expectedAttributes,
             String verboseTag
-    ) {
+    ) throws IOException {
         if (VERBOSE) {
             printExifTagsAndValues(verboseTag, exifInterface);
         }
@@ -1361,8 +1361,27 @@ public class ExifInterfaceExtendedTest {
         );
         expect.that(exifInterface.getAttributeInt(ExifInterfaceExtended.TAG_ORIENTATION, 0))
                 .isEqualTo(expectedAttributes.getOrientation());
-        expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_XMP))
-                .isEqualTo(expectedAttributes.hasXmp());
+        // ExifInterface.TAG_XMP is documented as type byte[], so we access it using
+        // getAttributeBytes instead of getAttribute, which would unavoidably convert it to an
+        // ASCII string.
+        //
+        // The XMP spec (part 1, section 7.1) doesn't enforce a specific character encoding, but
+        // part 3 requires that UTF-8 is used in the following formats supported by ExifInterface:
+        // * DNG and other raw formats (as TIFF, section 3.2.3.1)
+        // * JPEG (table 6)
+        // * PNG (table 9)
+        // * HEIF (as MP4, section 1.2.7.1)
+        //
+        // The WebP spec doesn't seem to specify the character encoding for XMP, but none of the
+        // current test assets have XMP-in-WebP so we assume UTF-8 here too.
+        String xmp =
+                exifInterface.hasAttribute(ExifInterfaceExtended.TAG_XMP)
+                        ? new String(
+                        exifInterface.getAttributeBytes(ExifInterfaceExtended.TAG_XMP),
+                        Charsets.UTF_8)
+                        : null;
+        expect.that(xmp)
+                .isEqualTo(expectedAttributes.getXmp(getApplicationContext().getResources()));
         expect.that(exifInterface.hasExtendedXmp()).isEqualTo(expectedAttributes.hasExtendedXmp());
         expect.that(exifInterface.hasIccProfile()).isEqualTo(expectedAttributes.hasIccProfile());
         expect.that(exifInterface.hasPhotoshopImageResources())
@@ -1498,16 +1517,14 @@ public class ExifInterfaceExtendedTest {
                 byte[] xmpBytes = new byte[Ints.checkedCast(xmpRange[1])];
                 ByteStreams.readFully(in, xmpBytes);
                 String xmpData = new String(xmpBytes, Charset.forName("UTF-8"));
-                final String xmpIdentifier = "<?xpacket begin=";
-                final String extendedXmpIdentifier = "<x:xmpmeta xmlns:x=";
-                expect.that(xmpData.startsWith(xmpIdentifier) ||
-                                xmpData.startsWith(extendedXmpIdentifier))
-                        .isTrue();
-                // We're only interested in confirming that we were able to extract valid XMP data,
-                // which must always include this XML tag; a full XMP parser is beyond the scope of
-                // ExifInterface. See XMP Specification Part 1, Section C.2.2 for additional
-                // details.
-                expect.that(xmpData).contains("<rdf:RDF");
+                expect.that(xmpData)
+                        .isEqualTo(
+                                expectedAttributes.getXmp(getApplicationContext().getResources())
+                        );
+                if (expectedAttributes.hasExtendedXmp()) {
+                    final String extendedXmpIdentifier = "<x:xmpmeta xmlns:x=";
+                    expect.that(xmpData.startsWith(extendedXmpIdentifier)).isTrue();
+                }
             }
         } else {
             expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP)).isNull();
