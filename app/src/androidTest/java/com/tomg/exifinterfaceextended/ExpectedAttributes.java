@@ -19,13 +19,12 @@ package com.tomg.exifinterfaceextended;
 
 import androidx.annotation.Nullable;
 
+import com.tomg.exifinterfaceextended.test.R;
+
 /** Expected Exif attributes for test images in the res/raw/ directory. */
 final class ExpectedAttributes {
 
-    /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_ii}.
-     */
+    /** Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_ii}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_II =
             new Builder()
                     .setThumbnailOffsetAndLength(3500, 6265)
@@ -44,8 +43,7 @@ final class ExpectedAttributes {
                     .build();
 
     /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_ii} when only the Exif data is
+     * Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_ii} when only the Exif data is
      * read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
      */
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_II_STANDALONE =
@@ -55,10 +53,7 @@ final class ExpectedAttributes {
                     .setMakeOffset(JPEG_WITH_EXIF_BYTE_ORDER_II.getMakeOffset() - 6)
                     .build();
 
-    /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_mm}.
-     */
+    /** Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_mm}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM =
             new Builder()
                     .setLatitudeOffsetAndLength(584, 24)
@@ -85,8 +80,7 @@ final class ExpectedAttributes {
                     .build();
 
     /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_byte_order_mm} when only the Exif data is
+     * Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_mm} when only the Exif data is
      * read using {@link ExifInterfaceExtended#STREAM_TYPE_EXIF_DATA_ONLY}.
      */
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE =
@@ -97,10 +91,7 @@ final class ExpectedAttributes {
                     .setImageSize(0, 0)
                     .build();
 
-    /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_invalid_offset}.
-     */
+    /** Expected attributes for {@link R.raw#jpeg_with_exif_invalid_offset}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_INVALID_OFFSET =
             JPEG_WITH_EXIF_BYTE_ORDER_MM
                     .buildUpon()
@@ -111,10 +102,7 @@ final class ExpectedAttributes {
                     .setIso(null)
                     .build();
 
-    /**
-     * Expected attributes for
-     * {@link com.tomg.exifinterfaceextended.test.R.raw#dng_with_exif_with_xmp}.
-     */
+    /** Expected attributes for {@link R.raw#dng_with_exif_with_xmp}. */
     public static final ExpectedAttributes DNG_WITH_EXIF_WITH_XMP =
             new Builder()
                     .setThumbnailOffsetAndLength(12570, 15179)
@@ -141,10 +129,7 @@ final class ExpectedAttributes {
                     .setXmpOffsetAndLength(826, 10067)
                     .build();
 
-    /**
-     * Expected attributes for
-     * {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_with_xmp}.
-     */
+    /** Expected attributes for {@link R.raw#jpeg_with_exif_with_xmp}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_WITH_XMP =
             DNG_WITH_EXIF_WITH_XMP
                     .buildUpon()
@@ -155,10 +140,7 @@ final class ExpectedAttributes {
                     .setXmpOffsetAndLength(1809, 13197)
                     .build();
 
-    /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#png_with_exif_byte_order_ii}.
-     */
+    /** Expected attributes for {@link R.raw#png_with_exif_byte_order_ii}. */
     public static final ExpectedAttributes PNG_WITH_EXIF_BYTE_ORDER_II =
             JPEG_WITH_EXIF_BYTE_ORDER_II
                     .buildUpon()
@@ -168,7 +150,7 @@ final class ExpectedAttributes {
                     .setXmpOffsetAndLength(352, 1409)
                     .build();
 
-    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#webp_with_exif}. */
+    /** Expected attributes for {@link R.raw#webp_with_exif}. */
     public static final ExpectedAttributes WEBP_WITH_EXIF =
             JPEG_WITH_EXIF_BYTE_ORDER_II
                     .buildUpon()
@@ -176,20 +158,14 @@ final class ExpectedAttributes {
                     .setMakeOffset(6306)
                     .build();
 
-    /**
-     * Expected attributes for {@link
-     * com.tomg.exifinterfaceextended.test.R.raw#invalid_webp_with_jpeg_app1_marker}.
-     */
+    /** Expected attributes for {@link R.raw#invalid_webp_with_jpeg_app1_marker}. */
     public static final ExpectedAttributes INVALID_WEBP_WITH_JPEG_APP1_MARKER =
             new Builder()
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_ROTATE_270)
                     .setHasIccProfile(true)
                     .build();
 
-    /**
-     * Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#heif_with_exif}
-     * when read on a device below API 31.
-     */
+    /** Expected attributes for {@link R.raw#heif_with_exif} when read on a device below API 31. */
     public static final ExpectedAttributes HEIF_WITH_EXIF_BELOW_API_31 =
             new Builder()
                     .setMake("LGE")
@@ -200,13 +176,13 @@ final class ExpectedAttributes {
                     .build();
 
     /**
-     * Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#heif_with_exif}
-     * when read on a device running API 31 or above.
+     * Expected attributes for {@link R.raw#heif_with_exif} when read on a device running API 31 or
+     * above.
      */
     public static final ExpectedAttributes HEIF_WITH_EXIF_API_31_AND_ABOVE =
             HEIF_WITH_EXIF_BELOW_API_31.buildUpon().setXmpOffsetAndLength(3721, 3020).build();
 
-    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_icc_with_exif_with_extended_xmp}. */
+    /** Expected attributes for {@link R.raw#jpeg_with_icc_with_exif_with_extended_xmp}. */
     public static final ExpectedAttributes JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
             new Builder()
                     .setMake("Google")
@@ -225,7 +201,7 @@ final class ExpectedAttributes {
                     .setHasPhotoshopImageResources(false)
                     .build();
 
-    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#jpeg_with_exif_with_photoshop_with_xmp}. */
+    /** Expected attributes for {@link R.raw#jpeg_with_exif_with_photoshop_with_xmp}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_WITH_PHOTSHOP_WITH_XMP =
             new Builder()
                     .setThumbnailSize(127, 160)
@@ -238,7 +214,7 @@ final class ExpectedAttributes {
                     .setHasPhotoshopImageResources(true)
                     .build();
 
-    /** Expected attributes for {@link com.tomg.exifinterfaceextended.test.R.raw#webp_with_icc_with_exif_with_xmp}. */
+    /** Expected attributes for {@link R.raw#webp_with_icc_with_exif_with_xmp}. */
     public static final ExpectedAttributes WEBP_WITH_ICC_WITH_EXIF_WITH_XMP =
             new Builder()
                     .setMake("Google")
