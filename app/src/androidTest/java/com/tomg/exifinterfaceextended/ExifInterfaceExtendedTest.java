@@ -35,6 +35,7 @@ import android.system.Os;
 import android.system.OsConstants;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
@@ -156,9 +157,10 @@ public class ExifInterfaceExtendedTest {
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II);
+        testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, false);
-        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);    }
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
+    }
 
     @Test
     @LargeTest
@@ -168,7 +170,7 @@ public class ExifInterfaceExtendedTest {
                 "jpeg_with_exif_byte_order_mm.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_MM);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_MM);
+        testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_MM);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
     }
@@ -181,7 +183,7 @@ public class ExifInterfaceExtendedTest {
                 "jpeg_with_exif_with_xmp.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_WITH_XMP);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_WITH_XMP);
+        testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_WITH_XMP);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
     }
@@ -269,7 +271,7 @@ public class ExifInterfaceExtendedTest {
                 "jpeg_with_exif_invalid_offset.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
+        testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
     }
 
     // https://issuetracker.google.com/263747161
@@ -315,7 +317,7 @@ public class ExifInterfaceExtendedTest {
                 "png_with_exif_byte_order_ii.png"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
+        testWritingExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), true, true);
     }
@@ -327,7 +329,7 @@ public class ExifInterfaceExtendedTest {
                 com.tomg.exifinterfaceextended.test.R.raw.png_without_exif,
                 "png_without_exif.png"
         );
-        writeToFilesWithoutExif(imageFile);
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), false, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), false, true);
     }
@@ -362,7 +364,7 @@ public class ExifInterfaceExtendedTest {
                 "webp_with_exif.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_EXIF);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_EXIF);
+        testWritingExif(imageFile, ExpectedAttributes.WEBP_WITH_EXIF);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, true);
     }
@@ -375,7 +377,7 @@ public class ExifInterfaceExtendedTest {
                 "webp_with_icc_with_exif_with_xmp.webp"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
+        testWritingExif(imageFile, ExpectedAttributes.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, true);
     }
@@ -389,7 +391,7 @@ public class ExifInterfaceExtendedTest {
                 "invalid_webp_with_jpeg_app1_marker.webp"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
-        writeToFilesWithExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
+        testWritingExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
     }
 
     @Test
@@ -399,7 +401,7 @@ public class ExifInterfaceExtendedTest {
                 com.tomg.exifinterfaceextended.test.R.raw.webp_without_exif,
                 "webp_without_exif.webp"
         );
-        writeToFilesWithoutExif(imageFile);
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
@@ -411,7 +413,7 @@ public class ExifInterfaceExtendedTest {
                 com.tomg.exifinterfaceextended.test.R.raw.webp_with_anim_without_exif,
                 WEBP_WITHOUT_EXIF_WITH_ANIM_DATA
         );
-        writeToFilesWithoutExif(imageFile);
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
@@ -423,7 +425,7 @@ public class ExifInterfaceExtendedTest {
                 com.tomg.exifinterfaceextended.test.R.raw.webp_lossless_without_exif,
                 "webp_lossless_without_exif.webp"
         );
-        writeToFilesWithoutExif(imageFile);
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
@@ -435,7 +437,7 @@ public class ExifInterfaceExtendedTest {
                 com.tomg.exifinterfaceextended.test.R.raw.webp_lossless_alpha_without_exif,
                 "webp_lossless_alpha_without_exif.webp"
         );
-        writeToFilesWithoutExif(imageFile);
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
     }
 
     /**
@@ -1607,10 +1609,16 @@ public class ExifInterfaceExtendedTest {
         }
     }
 
-    private void writeToFilesWithExif(
-            File srcFile,
-            ExpectedAttributes expectedAttributes
-    ) throws IOException {
+    /**
+     * Copies {@code srcFile} to a new location, modifies the Exif data, and asserts the resulting
+     * file has the expected modifications.
+     *
+     * @param srcFile The file to copy and make changes to.
+     * @param expectedAttributes The expected Exif values already present in {@code srcFile}, or
+     *     {@code null} if none are present.
+     */
+    private void testWritingExif(File srcFile, @Nullable ExpectedAttributes expectedAttributes)
+            throws IOException {
         expectSavingWithNoModificationsLeavesImageIntact(srcFile, expectedAttributes);
 
         expectSavingPersistsModifications(ExifInterfaceExtended::new, srcFile, expectedAttributes);
@@ -1652,7 +1660,9 @@ public class ExifInterfaceExtendedTest {
         exifInterface.saveAttributes();
 
         exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
+        if (expectedAttributes != null) {
+            compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
+        }
         expectBitmapsEquivalent(srcFile, imageFile);
         expectSecondSaveProducesSameSizeFile(imageFile);
     }
@@ -1660,7 +1670,7 @@ public class ExifInterfaceExtendedTest {
     private void expectSavingPersistsModifications(
             ExifInterfaceExtendedFactory exifInterfaceFactory,
             File srcFile,
-            ExpectedAttributes expectedAttributes
+            @Nullable ExpectedAttributes expectedAttributes
     ) throws IOException {
         File imageFile = clone(srcFile);
         String verboseTag = imageFile.getName();
@@ -1675,16 +1685,20 @@ public class ExifInterfaceExtendedTest {
             exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
         }
         exifInterface.saveAttributes();
+
+        ExpectedAttributes.Builder expectedAttributesBuilder =
+                expectedAttributes != null
+                        ? expectedAttributes.buildUpon()
+                        : new ExpectedAttributes.Builder();
         // XMP is not updated for WebP files
         if (!isWebP) {
-            expectedAttributes = expectedAttributes
-                    .buildUpon()
+            expectedAttributes = expectedAttributesBuilder
                     .setMake("abc")
                     .clearXmp()
                     .setXmp(TEST_XMP)
                     .build();
         } else {
-            expectedAttributes = expectedAttributes.buildUpon().setMake("abc").build();
+            expectedAttributes = expectedAttributesBuilder.setMake("abc").build();
         }
 
         // Check expected modifications are visible without re-parsing the file.
@@ -1716,22 +1730,6 @@ public class ExifInterfaceExtendedTest {
         testExifInterfaceCommon(imageFile, expectedAttributes);
         // Test for checking expected range by retrieving raw data with given offset and length.
         testExifInterfaceRange(imageFile, expectedAttributes);
-    }
-
-    private void writeToFilesWithoutExif(File srcFile) throws IOException {
-        File imageFile = clone(srcFile);
-
-        ExifInterfaceExtended exifInterface =
-                new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "abc");
-        exifInterface.saveAttributes();
-
-        expectBitmapsEquivalent(srcFile, imageFile);
-        exifInterface = new ExifInterfaceExtended(imageFile.getAbsolutePath());
-        String make = exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE);
-        expect.that(make).isEqualTo("abc");
-
-        expectSecondSaveProducesSameSizeFile(imageFile);
     }
 
     private void writeToFilesWithoutMetadata(
