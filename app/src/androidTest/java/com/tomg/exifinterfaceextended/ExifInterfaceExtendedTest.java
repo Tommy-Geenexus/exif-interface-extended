@@ -324,7 +324,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testPngWithoutExif() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.png_with_exif_byte_order_ii,
+                com.tomg.exifinterfaceextended.test.R.raw.png_without_exif,
                 "png_without_exif.png"
         );
         writeToFilesWithoutExif(imageFile);
