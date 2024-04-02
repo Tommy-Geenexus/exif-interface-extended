@@ -81,7 +81,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ExifInterfaceExtendedTest {
     private static final String TAG = ExifInterfaceExtended.class.getSimpleName();
     private static final boolean VERBOSE = false;  // lots of logging
-    private static final double DIFFERENCE_TOLERANCE = .001;
     private static final boolean ENABLE_STRICT_MODE_FOR_UNBUFFERED_IO = true;
 
     /** Test XMP value that is different to all the XMP values embedded in the test images. */
@@ -1322,7 +1321,7 @@ public class ExifInterfaceExtendedTest {
         double[] latLong = exifInterface.getLatLong();
         if (expectedAttributes.hasLatLong()) {
             expect.that(latLong)
-                    .usingTolerance(DIFFERENCE_TOLERANCE)
+                    .usingExactEquality()
                     .containsExactly(
                             expectedAttributes.getLatitude(),
                             expectedAttributes.getLongitude()
@@ -1340,8 +1339,7 @@ public class ExifInterfaceExtendedTest {
                     .isFalse();
         }
         expect.that(exifInterface.getAltitude(.0))
-                .isWithin(DIFFERENCE_TOLERANCE)
-                .of(expectedAttributes.getAltitude());
+                .isEqualTo(expectedAttributes.getAltitude());
 
         // Checks values.
         expectStringTag(
@@ -1355,15 +1353,13 @@ public class ExifInterfaceExtendedTest {
                 expectedAttributes.getModel()
         );
         expect.that(exifInterface.getAttributeDouble(ExifInterfaceExtended.TAG_F_NUMBER, 0.0))
-                .isWithin(DIFFERENCE_TOLERANCE)
-                .of(expectedAttributes.getAperture());
+                .isEqualTo(expectedAttributes.getAperture());
         expectStringTag(
                 exifInterface,
                 ExifInterfaceExtended.TAG_DATETIME_ORIGINAL,
                 expectedAttributes.getDateTimeOriginal());
         expect.that(exifInterface.getAttributeDouble(ExifInterfaceExtended.TAG_EXPOSURE_TIME, 0.0))
-                .isWithin(DIFFERENCE_TOLERANCE)
-                .of(expectedAttributes.getExposureTime());
+                .isEqualTo(expectedAttributes.getExposureTime());
         expectStringTag(
                 exifInterface,
                 ExifInterfaceExtended.TAG_FOCAL_LENGTH,

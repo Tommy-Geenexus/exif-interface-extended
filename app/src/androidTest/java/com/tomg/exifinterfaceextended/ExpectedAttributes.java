@@ -42,9 +42,9 @@ final class ExpectedAttributes {
                     .setMake("SAMSUNG")
                     .setMakeOffsetAndLength(160, 8)
                     .setModel("SM-N900S")
-                    .setAperture(2.2f)
+                    .setAperture(2.2)
                     .setDateTimeOriginal("2016:01:29 18:32:27")
-                    .setExposureTime(0.033f)
+                    .setExposureTime(1.0 / 30)
                     .setFocalLength("413/100")
                     .setImageSize(640, 480)
                     .setIso("50")
@@ -71,9 +71,9 @@ final class ExpectedAttributes {
                     .setMake("LGE")
                     .setMakeOffsetAndLength(414, 4)
                     .setModel("Nexus 5")
-                    .setAperture(2.4f)
+                    .setAperture(2.4)
                     .setDateTimeOriginal("2016:01:29 15:44:58")
-                    .setExposureTime(0.017f)
+                    .setExposureTime(1.0 / 60)
                     .setFocalLength("3970/1000")
                     .setGpsAltitude("0/1000")
                     .setGpsAltitudeRef("0")
@@ -118,14 +118,14 @@ final class ExpectedAttributes {
                     .setThumbnailSize(256, 144)
                     .setIsThumbnailCompressed(true)
                     .setLatitudeOffsetAndLength(12486, 24)
-                    .setLatLong(53.834507f, 10.69585f)
+                    .setLatLong(53.83450833333334, 10.69585)
                     .setAltitude(0)
                     .setMake("LGE")
                     .setMakeOffsetAndLength(102, 4)
                     .setModel("LG-H815")
-                    .setAperture(1.8f)
+                    .setAperture(1.8)
                     .setDateTimeOriginal("2015:11:12 16:46:18")
-                    .setExposureTime(0.0040f)
+                    .setExposureTime(0.0040)
                     .setFocalLength("442/100")
                     .setGpsDatestamp("1970:01:17")
                     .setGpsLatitude("53/1,50/1,423/100")
@@ -204,9 +204,9 @@ final class ExpectedAttributes {
                     .setMake("Google")
                     .setMakeOffsetAndLength(170, 7)
                     .setModel("Pixel 3a")
-                    .setAperture(1.8f)
+                    .setAperture(1.8)
                     .setDateTimeOriginal("2021:01:07 11:38:23")
-                    .setExposureTime(Float.parseFloat("5.11e-4"))
+                    .setExposureTime(Double.parseDouble("5.11e-4"))
                     .setFocalLength("4440/1000")
                     .setImageSize(4032, 3024)
                     .setIso("63")
@@ -238,9 +238,9 @@ final class ExpectedAttributes {
                     .setMake("Google")
                     .setMakeOffsetAndLength(3285288, 7)
                     .setModel("Pixel 3a")
-                    .setAperture(1.8f)
+                    .setAperture(1.8)
                     .setDateTimeOriginal("2021:01:07 11:38:23")
-                    .setExposureTime(Float.parseFloat("5.11e-4"))
+                    .setExposureTime(Double.parseDouble("5.11e-4"))
                     .setFocalLength("4440/1000")
                     .setImageSize(4032, 3024)
                     .setIso("63")
@@ -265,9 +265,9 @@ final class ExpectedAttributes {
         private boolean mHasLatLong;
         private long mLatitudeOffset;
         private long mLatitudeLength;
-        private float mLatitude;
-        private float mLongitude;
-        private float mAltitude;
+        private double mLatitude;
+        private double mLongitude;
+        private double mAltitude;
 
         // Make information
         private boolean mHasMake;
@@ -277,10 +277,10 @@ final class ExpectedAttributes {
 
         // Values.
         @Nullable private String mModel;
-        private float mAperture;
+        private double mAperture;
         @Nullable private String mDateTimeOriginal;
-        private float mExposureTime;
-        private float mFlash;
+        private double mExposureTime;
+        private double mFlash;
         @Nullable private String mFocalLength;
         @Nullable private String mGpsAltitude;
         @Nullable private String mGpsAltitudeRef;
@@ -394,7 +394,7 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setLatLong(float latitude, float longitude) {
+        public Builder setLatLong(double latitude, double longitude) {
             mHasLatLong = true;
             mLatitude = latitude;
             mLongitude = longitude;
@@ -425,7 +425,7 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setAltitude(float altitude) {
+        public Builder setAltitude(double altitude) {
             mAltitude = altitude;
             return this;
         }
@@ -466,7 +466,7 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setAperture(float aperture) {
+        public Builder setAperture(double aperture) {
             mAperture = aperture;
             return this;
         }
@@ -476,12 +476,12 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setExposureTime(float exposureTime) {
+        public Builder setExposureTime(double exposureTime) {
             mExposureTime = exposureTime;
             return this;
         }
 
-        public Builder setFlash(float flash) {
+        public Builder setFlash(double flash) {
             mFlash = flash;
             return this;
         }
@@ -643,11 +643,11 @@ final class ExpectedAttributes {
     // GPS information.
     private final boolean mHasLatLong;
     // TODO: b/270554381 - Merge this and longitude into a double[]
-    private final float mLatitude;
+    private final double mLatitude;
     private final long mLatitudeOffset;
     private final long mLatitudeLength;
-    private final float mLongitude;
-    private final float mAltitude;
+    private final double mLongitude;
+    private final double mAltitude;
 
     // Make information
     private final boolean mHasMake;
@@ -657,9 +657,9 @@ final class ExpectedAttributes {
 
     // Values.
     private final String mModel;
-    private final float mAperture;
+    private final double mAperture;
     private final String mDateTimeOriginal;
-    private final float mExposureTime;
+    private final double mExposureTime;
     private final String mFocalLength;
     // TODO: b/270554381 - Rename these to make them clear they're strings, or original values,
     //  and move them closer to the (computed) latitude/longitude/altitude values. Consider
@@ -773,7 +773,7 @@ final class ExpectedAttributes {
         return mHasLatLong;
     }
 
-    public float getLatitude() {
+    public double getLatitude() {
         return mLatitude;
     }
 
@@ -785,11 +785,11 @@ final class ExpectedAttributes {
         return mLatitudeLength;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return mLongitude;
     }
 
-    public float getAltitude() {
+    public double getAltitude() {
         return mAltitude;
     }
 
@@ -813,7 +813,7 @@ final class ExpectedAttributes {
         return mModel;
     }
 
-    public float getAperture() {
+    public double getAperture() {
         return mAperture;
     }
 
@@ -821,7 +821,7 @@ final class ExpectedAttributes {
         return mDateTimeOriginal;
     }
 
-    public float getExposureTime() {
+    public double getExposureTime() {
         return mExposureTime;
     }
 
