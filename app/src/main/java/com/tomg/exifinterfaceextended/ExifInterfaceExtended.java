@@ -33,6 +33,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+import androidx.annotation.VisibleForTesting;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -3994,7 +3995,7 @@ public class ExifInterfaceExtended {
             } else {
                 try {
                     double doubleValue = Double.parseDouble(value);
-                    value = new Rational(doubleValue).toString();
+                    value = Rational.createFromDouble(doubleValue).toString();
                 } catch (NumberFormatException e) {
                     Log.w(TAG, "Invalid value for " + tag + " : " + value);
                     return;
@@ -4913,8 +4914,10 @@ public class ExifInterfaceExtended {
         setAltitude(location.getAltitude());
         // Location objects store speeds in m/sec. Translates it to km/hr here.
         setAttribute(TAG_GPS_SPEED_REF, "K");
-        setAttribute(TAG_GPS_SPEED, new Rational(location.getSpeed()
-                * TimeUnit.HOURS.toSeconds(1) / 1000).toString());
+        setAttribute(
+                TAG_GPS_SPEED,
+                Rational.createFromDouble(location.getSpeed() * TimeUnit.HOURS.toSeconds(1) / 1000)
+                        .toString());
         String[] dateTime = sFormatterPrimary.format(
                 new Date(location.getTime())).split("\\s+", -1);
         setAttribute(ExifInterfaceExtended.TAG_GPS_DATESTAMP, dateTime[0]);
@@ -4966,7 +4969,7 @@ public class ExifInterfaceExtended {
      */
     public void setAltitude(double altitude) {
         String ref = altitude >= 0 ? "0" : "1";
-        setAttribute(TAG_GPS_ALTITUDE, new Rational(Math.abs(altitude)).toString());
+        setAttribute(TAG_GPS_ALTITUDE, Rational.createFromDouble(Math.abs(altitude)).toString());
         setAttribute(TAG_GPS_ALTITUDE_REF, ref);
     }
 

@@ -727,6 +727,36 @@ public class ExifInterfaceExtendedTest {
         assertThat(exif.getDateTime()).isEqualTo(newDateTimeLongValue);
     }
 
+    // https://issuetracker.google.com/312680558
+    @Test
+    @SmallTest
+    public void testSetExposureTime_decimalString() throws Exception {
+        File imageFile = copyFromResourceToFile(
+                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                "jpeg_with_exif_byte_order_ii.jpg"
+        );
+        ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
+
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME, "0.000625");
+
+        assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME))
+                .isEqualTo("6.25E-4");
+        double result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_EXPOSURE_TIME, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(0.000625);
+
+        exifInterface.saveAttributes();
+        exifInterface = new ExifInterfaceExtended(imageFile);
+
+        assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME))
+                .isEqualTo("6.25E-4");
+        result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_EXPOSURE_TIME, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(0.000625);
+    }
+
     @Test
     @LargeTest
     public void testAddDefaultValuesForCompatibility() throws Exception {
@@ -1242,6 +1272,136 @@ public class ExifInterfaceExtendedTest {
         exif.setAttribute(newTag, isoValue);
         assertThat(exif.getAttribute(oldTag)).isEqualTo(isoValue);
         assertThat(exif.getAttribute(newTag)).isEqualTo(isoValue);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble() {
+        double value = 0.12345678;
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(150549);
+        expect.that(result.getDenominator()).isEqualTo(1219447);
+        expect.that((double) result.getNumerator() / result.getDenominator())
+                .isWithin(0.00000000001)
+                .of(value);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_niceFraction() {
+        double value = 1.0 / 1600;
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(1);
+        expect.that(result.getDenominator()).isEqualTo(1600);
+        expect.that((double) result.getNumerator() / result.getDenominator()).isEqualTo(value);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_recurringDecimal() {
+        double value = 1.0 / 3;
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(1);
+        expect.that(result.getDenominator()).isEqualTo(3);
+        expect.that((double) result.getNumerator() / result.getDenominator()).isEqualTo(value);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_negative() {
+        double value = -0.12345678;
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(-150549);
+        expect.that(result.getDenominator()).isEqualTo(1219447);
+        expect.that((double) result.getNumerator() / result.getDenominator())
+                .isWithin(0.00000000001)
+                .of(value);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_maxLong() {
+        double value = Long.MAX_VALUE;
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MAX_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_justLargerThanMaxLong() {
+        double value = Math.nextUp(Long.MAX_VALUE);
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MAX_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_muchLargerThanMaxLong() {
+        double value = Long.MAX_VALUE + 10000.0;
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MAX_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_minLong() {
+        double value = Math.nextDown(Long.MIN_VALUE);
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MIN_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    // Ensure that a very large negative number, which is just higher (closer to positive infinity)
+    // than Long.MIN_VALUE doesn't cause overflow.
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_justHigherThanMinLong() {
+        double value = Math.nextUp(Long.MIN_VALUE);
+
+        Rational result = Rational.createFromDouble(value);
+
+        long expectedNumerator = Math.round(value);
+        expect.that(result.getNumerator()).isEqualTo(expectedNumerator);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_justLowerThanMinLong() {
+        double value = Math.nextDown(Long.MIN_VALUE);
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MIN_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testRationalFromDouble_muchLowerThanMinLong() {
+        double value = Long.MIN_VALUE - 1000.0;
+
+        Rational result = Rational.createFromDouble(value);
+
+        expect.that(result.getNumerator()).isEqualTo(Long.MIN_VALUE);
+        expect.that(result.getDenominator()).isEqualTo(1);
     }
 
     private void printExifTagsAndValues(String fileName, ExifInterfaceExtended exifInterface) {
