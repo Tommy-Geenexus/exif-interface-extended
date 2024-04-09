@@ -757,32 +757,31 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
-    public void testSetFNumber_rationalString_failsSilently() throws Exception {
+    public void testSetFNumber_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii, "jpeg_with_exif_byte_order_ii.jpg"
+                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
 
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_F_NUMBER, "7/5");
 
-        double expectedAperture = ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II.getAperture();
-        String expectedApertureString = String.valueOf(expectedAperture);
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_F_NUMBER))
-                .isEqualTo(expectedApertureString);
+                .isEqualTo("1.4");
         double result =
                 exifInterface.getAttributeDouble(
                         ExifInterfaceExtended.TAG_F_NUMBER, /* defaultValue= */ -1);
-        assertThat(result).isEqualTo(expectedAperture);
+        assertThat(result).isEqualTo(1.4);
 
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile);
 
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_F_NUMBER))
-                .isEqualTo(expectedApertureString);
+                .isEqualTo("1.4");
         result =
                 exifInterface.getAttributeDouble(
                         ExifInterfaceExtended.TAG_F_NUMBER, /* defaultValue= */ -1);
-        assertThat(result).isEqualTo(expectedAperture);
+        assertThat(result).isEqualTo(1.4);
     }
 
     @Test
@@ -817,7 +816,7 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
-    public void testSetDigitalZoomRatio_rationalString_failsSilently() throws Exception {
+    public void testSetDigitalZoomRatio_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
                 com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
@@ -827,13 +826,21 @@ public class ExifInterfaceExtendedTest {
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_DIGITAL_ZOOM_RATIO, "12/5");
 
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_DIGITAL_ZOOM_RATIO))
-                .isNull();
+                .isEqualTo("2.4");
+        double result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_DIGITAL_ZOOM_RATIO, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(2.4);
 
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile);
 
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_DIGITAL_ZOOM_RATIO))
-                .isNull();
+                .isEqualTo("2.4");
+        result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_DIGITAL_ZOOM_RATIO, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(2.4);
     }
 
     // https://issuetracker.google.com/312680558
@@ -868,7 +875,7 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
-    public void testSetExposureTime_rationalString_failsSilently() throws Exception {
+    public void testSetExposureTime_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
                 com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
@@ -877,25 +884,22 @@ public class ExifInterfaceExtendedTest {
 
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME, "1/1600");
 
-        double expectedExposureTime =
-                ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II.getExposureTime();
-        String expectedExposureTimeString = String.valueOf(expectedExposureTime);
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME))
-                .isEqualTo(expectedExposureTimeString);
+                .isEqualTo("6.25E-4");
         double result =
                 exifInterface.getAttributeDouble(
                         ExifInterfaceExtended.TAG_EXPOSURE_TIME, /* defaultValue= */ -1);
-        assertThat(result).isEqualTo(expectedExposureTime);
+        assertThat(result).isEqualTo(0.000625);
 
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile);
 
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME))
-                .isEqualTo(expectedExposureTimeString);
+                .isEqualTo("6.25E-4");
         result =
                 exifInterface.getAttributeDouble(
                         ExifInterfaceExtended.TAG_EXPOSURE_TIME, /* defaultValue= */ -1);
-        assertThat(result).isEqualTo(expectedExposureTime);
+        assertThat(result).isEqualTo(0.000625);
     }
 
     @Test
@@ -930,7 +934,7 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
-    public void testSetSubjectDistance_rationalString_failsSilently() throws Exception {
+    public void testSetSubjectDistance_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
                 com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
@@ -940,12 +944,21 @@ public class ExifInterfaceExtendedTest {
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_SUBJECT_DISTANCE, "7/2");
 
         assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_SUBJECT_DISTANCE))
-                .isNull();
+                .isEqualTo("3.5");
+        double result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_SUBJECT_DISTANCE, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(3.5);
 
         exifInterface.saveAttributes();
         exifInterface = new ExifInterfaceExtended(imageFile);
 
-        assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_SUBJECT_DISTANCE)).isNull();
+        assertThat(exifInterface.getAttribute(ExifInterfaceExtended.TAG_SUBJECT_DISTANCE))
+                .isEqualTo("3.5");
+        result =
+                exifInterface.getAttributeDouble(
+                        ExifInterfaceExtended.TAG_SUBJECT_DISTANCE, /* defaultValue= */ -1);
+        assertThat(result).isEqualTo(3.5);
     }
 
     @Test
