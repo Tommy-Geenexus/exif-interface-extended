@@ -40,7 +40,7 @@ final class ExpectedAttributes {
                     .setThumbnailSize(512, 288)
                     .setIsThumbnailCompressed(true)
                     .setMake("SAMSUNG")
-                    .setMakeOffsetAndLength(160, 8)
+                    .setMakeOffset(160)
                     .setModel("SM-N900S")
                     .setAperture(2.2)
                     .setDateTimeOriginal("2016:01:29 18:32:27")
@@ -69,7 +69,7 @@ final class ExpectedAttributes {
                     .setLatLong(0, 0)
                     .setAltitude(0)
                     .setMake("LGE")
-                    .setMakeOffsetAndLength(414, 4)
+                    .setMakeOffset(414)
                     .setModel("Nexus 5")
                     .setAperture(2.4)
                     .setDateTimeOriginal("2016:01:29 15:44:58")
@@ -121,7 +121,7 @@ final class ExpectedAttributes {
                     .setLatLong(53.83450833333334, 10.69585)
                     .setAltitude(0)
                     .setMake("LGE")
-                    .setMakeOffsetAndLength(102, 4)
+                    .setMakeOffset(102)
                     .setModel("LG-H815")
                     .setAperture(1.8)
                     .setDateTimeOriginal("2015:11:12 16:46:18")
@@ -181,7 +181,7 @@ final class ExpectedAttributes {
     public static final ExpectedAttributes HEIF_WITH_EXIF_BELOW_API_31 =
             new Builder()
                     .setMake("LGE")
-                    .setMakeOffsetAndLength(3519, 4)
+                    .setMakeOffset(3519)
                     .setModel("Nexus 5")
                     .setImageSize(1920, 1080)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
@@ -202,7 +202,7 @@ final class ExpectedAttributes {
     public static final ExpectedAttributes JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP =
             new Builder()
                     .setMake("Google")
-                    .setMakeOffsetAndLength(170, 7)
+                    .setMakeOffset(170)
                     .setModel("Pixel 3a")
                     .setAperture(1.8)
                     .setDateTimeOriginal("2021:01:07 11:38:23")
@@ -236,7 +236,7 @@ final class ExpectedAttributes {
     public static final ExpectedAttributes WEBP_WITH_ICC_WITH_EXIF_WITH_XMP =
             new Builder()
                     .setMake("Google")
-                    .setMakeOffsetAndLength(3285288, 7)
+                    .setMakeOffset(3285288)
                     .setModel("Pixel 3a")
                     .setAperture(1.8)
                     .setDateTimeOriginal("2021:01:07 11:38:23")
@@ -438,24 +438,14 @@ final class ExpectedAttributes {
             } else {
                 mHasMake = true;
                 mMake = make;
+                mMakeLength = make.length() + 1;
             }
-            return this;
-        }
-
-        // TODO: b/270554381 - consider deriving length automatically from `make.length() + 1`
-        //  (since the string is null-terminated in the format).
-        public Builder setMakeOffsetAndLength(long offset, long length) {
-            mHasMake = true;
-            mMakeOffset = offset;
-            mMakeLength = length;
             return this;
         }
 
         public Builder setMakeOffset(long offset) {
             if (!mHasMake) {
-                throw new IllegalStateException(
-                        "Make position in the file must first be set with"
-                                + " setMakeOffsetAndLength(...)");
+                throw new IllegalStateException("Make must first be set with setMake(...)");
             }
             mMakeOffset = offset;
             return this;
