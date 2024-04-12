@@ -1754,8 +1754,8 @@ public class ExifInterfaceExtendedTest {
             expect.that(latLong)
                     .usingExactEquality()
                     .containsExactly(
-                            expectedAttributes.getLatitude(),
-                            expectedAttributes.getLongitude()
+                            expectedAttributes.getComputedLatitude(),
+                            expectedAttributes.getComputedLongitude()
                     )
                     .inOrder();
             expect.that(exifInterface.hasAttribute(ExifInterfaceExtended.TAG_GPS_LATITUDE))
@@ -1770,7 +1770,7 @@ public class ExifInterfaceExtendedTest {
                     .isFalse();
         }
         expect.that(exifInterface.getAltitude(.0))
-                .isEqualTo(expectedAttributes.getAltitude());
+                .isEqualTo(expectedAttributes.getComputedAltitude());
 
         // Checks values.
         expectStringTag(
@@ -2025,8 +2025,8 @@ public class ExifInterfaceExtendedTest {
             expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_GPS_LATITUDE))
                     .asList()
                     .containsExactly(
-                            expectedAttributes.getLatitudeOffset(),
-                            expectedAttributes.getLatitudeLength()
+                            expectedAttributes.getGpsLatitudeOffset(),
+                            expectedAttributes.getGpsLatitudeLength()
                     )
                     .inOrder();
             // TODO: Add code for retrieving raw latitude data using offset and length

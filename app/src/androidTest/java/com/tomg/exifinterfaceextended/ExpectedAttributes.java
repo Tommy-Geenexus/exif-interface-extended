@@ -65,9 +65,9 @@ final class ExpectedAttributes {
     /** Expected attributes for {@link R.raw#jpeg_with_exif_byte_order_mm}. */
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM =
             new Builder()
-                    .setLatitudeOffsetAndLength(584, 24)
-                    .setLatLong(0, 0)
-                    .setAltitude(0)
+                    .setGpsLatitudeOffsetAndLength(584, 24)
+                    .setComputedLatLong(0, 0)
+                    .setComputedAltitude(0)
                     .setMake("LGE")
                     .setMakeOffset(414)
                     .setModel("Nexus 5")
@@ -95,7 +95,7 @@ final class ExpectedAttributes {
     public static final ExpectedAttributes JPEG_WITH_EXIF_BYTE_ORDER_MM_STANDALONE =
             JPEG_WITH_EXIF_BYTE_ORDER_MM
                     .buildUpon()
-                    .setLatitudeOffset(JPEG_WITH_EXIF_BYTE_ORDER_MM.getLatitudeOffset() - 6)
+                    .setGpsLatitudeOffset(JPEG_WITH_EXIF_BYTE_ORDER_MM.getGpsLatitudeOffset() - 6)
                     .setMakeOffset(JPEG_WITH_EXIF_BYTE_ORDER_MM.getMakeOffset() - 6)
                     .setImageSize(0, 0)
                     .build();
@@ -117,9 +117,9 @@ final class ExpectedAttributes {
                     .setThumbnailOffsetAndLength(12570, 15179)
                     .setThumbnailSize(256, 144)
                     .setIsThumbnailCompressed(true)
-                    .setLatitudeOffsetAndLength(12486, 24)
-                    .setLatLong(53.83450833333334, 10.69585)
-                    .setAltitude(0)
+                    .setGpsLatitudeOffsetAndLength(12486, 24)
+                    .setComputedLatLong(53.83450833333334, 10.69585)
+                    .setComputedAltitude(0)
                     .setMake("LGE")
                     .setMakeOffset(102)
                     .setModel("LG-H815")
@@ -144,7 +144,7 @@ final class ExpectedAttributes {
             DNG_WITH_EXIF_WITH_XMP
                     .buildUpon()
                     .clearThumbnail()
-                    .setLatitudeOffset(1692)
+                    .setGpsLatitudeOffset(1692)
                     .setMakeOffset(84)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
                     .setXmpResourceId(R.raw.jpeg_xmp)
@@ -263,11 +263,20 @@ final class ExpectedAttributes {
 
         // GPS information.
         private boolean mHasLatLong;
-        private long mLatitudeOffset;
-        private long mLatitudeLength;
-        private double mLatitude;
-        private double mLongitude;
-        private double mAltitude;
+        private double mComputedLatitude;
+        private double mComputedLongitude;
+        private double mComputedAltitude;
+        @Nullable private String mGpsAltitude;
+        @Nullable private String mGpsAltitudeRef;
+        @Nullable private String mGpsDatestamp;
+        @Nullable private String mGpsLatitude;
+        private long mGpsLatitudeOffset;
+        private long mGpsLatitudeLength;
+        @Nullable private String mGpsLatitudeRef;
+        @Nullable private String mGpsLongitude;
+        @Nullable private String mGpsLongitudeRef;
+        @Nullable private String mGpsProcessingMethod;
+        @Nullable private String mGpsTimestamp;
 
         // Make information
         private boolean mHasMake;
@@ -282,15 +291,6 @@ final class ExpectedAttributes {
         private double mExposureTime;
         private double mFlash;
         @Nullable private String mFocalLength;
-        @Nullable private String mGpsAltitude;
-        @Nullable private String mGpsAltitudeRef;
-        @Nullable private String mGpsDatestamp;
-        @Nullable private String mGpsLatitude;
-        @Nullable private String mGpsLatitudeRef;
-        @Nullable private String mGpsLongitude;
-        @Nullable private String mGpsLongitudeRef;
-        @Nullable private String mGpsProcessingMethod;
-        @Nullable private String mGpsTimestamp;
         private int mImageLength;
         private int mImageWidth;
         @Nullable private String mIso;
@@ -317,11 +317,20 @@ final class ExpectedAttributes {
             mThumbnailHeight = attributes.getThumbnailHeight();
             mIsThumbnailCompressed = attributes.isIsThumbnailCompressed();
             mHasLatLong = attributes.hasLatLong();
-            mLatitude = attributes.getLatitude();
-            mLatitudeOffset = attributes.getLatitudeOffset();
-            mLatitudeLength = attributes.getLatitudeLength();
-            mLongitude = attributes.getLongitude();
-            mAltitude = attributes.getAltitude();
+            mComputedLatitude = attributes.getComputedLatitude();
+            mComputedLongitude = attributes.getComputedLongitude();
+            mComputedAltitude = attributes.getComputedAltitude();
+            mGpsAltitude = attributes.getGpsAltitude();
+            mGpsAltitudeRef = attributes.getGpsAltitudeRef();
+            mGpsDatestamp = attributes.getGpsDatestamp();
+            mGpsLatitude = attributes.getGpsLatitude();
+            mGpsLatitudeOffset = attributes.getGpsLatitudeOffset();
+            mGpsLatitudeLength = attributes.getGpsLatitudeLength();
+            mGpsLatitudeRef = attributes.getGpsLatitudeRef();
+            mGpsLongitude = attributes.getGpsLongitude();
+            mGpsLongitudeRef = attributes.getGpsLongitudeRef();
+            mGpsProcessingMethod = attributes.getGpsProcessingMethod();
+            mGpsTimestamp = attributes.getGpsTimestamp();
             mHasMake = attributes.hasMake();
             mMakeOffset = attributes.getMakeOffset();
             mMakeLength = attributes.getMakeLength();
@@ -331,15 +340,6 @@ final class ExpectedAttributes {
             mDateTimeOriginal = attributes.getDateTimeOriginal();
             mExposureTime = attributes.getExposureTime();
             mFocalLength = attributes.getFocalLength();
-            mGpsAltitude = attributes.getGpsAltitude();
-            mGpsAltitudeRef = attributes.getGpsAltitudeRef();
-            mGpsDatestamp = attributes.getGpsDatestamp();
-            mGpsLatitude = attributes.getGpsLatitude();
-            mGpsLatitudeRef = attributes.getGpsLatitudeRef();
-            mGpsLongitude = attributes.getGpsLongitude();
-            mGpsLongitudeRef = attributes.getGpsLongitudeRef();
-            mGpsProcessingMethod = attributes.getGpsProcessingMethod();
-            mGpsTimestamp = attributes.getGpsTimestamp();
             mImageLength = attributes.getImageLength();
             mImageWidth = attributes.getImageWidth();
             mIso = attributes.getIso();
@@ -394,39 +394,84 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setLatLong(double latitude, double longitude) {
+        public Builder setComputedLatLong(double computedLatitude, double computedLongitude) {
             mHasLatLong = true;
-            mLatitude = latitude;
-            mLongitude = longitude;
+            mComputedLatitude = computedLatitude;
+            mComputedLongitude = computedLongitude;
             return this;
         }
 
-        public Builder setLatitudeOffsetAndLength(long offset, long length) {
-            mHasLatLong = true;
-            mLatitudeOffset = offset;
-            mLatitudeLength = length;
+        public Builder clearComputedLatLong() {
+            mHasLatLong = false;
+            mComputedLatitude = 0;
+            mComputedLongitude = 0;
             return this;
         }
 
-        public Builder setLatitudeOffset(long offset) {
+        public Builder setGpsAltitude(@Nullable String gpsAltitude) {
+            mGpsAltitude = gpsAltitude;
+            return this;
+        }
+
+        public Builder setGpsAltitudeRef(@Nullable String gpsAltitudeRef) {
+            mGpsAltitudeRef = gpsAltitudeRef;
+            return this;
+        }
+
+        public Builder setGpsDatestamp(@Nullable String gpsDatestamp) {
+            mGpsDatestamp = gpsDatestamp;
+            return this;
+        }
+
+        public Builder setGpsLatitude(@Nullable String gpsLatitude) {
+            mGpsLatitude = gpsLatitude;
+            return this;
+        }
+
+        public Builder setGpsLatitudeOffsetAndLength(long offset, long length) {
+            mHasLatLong = true;
+            mGpsLatitudeOffset = offset;
+            mGpsLatitudeLength = length;
+            return this;
+        }
+
+        public Builder setGpsLatitudeOffset(long offset) {
             if (!mHasLatLong) {
                 throw new IllegalStateException(
                         "Latitude position in the file must first be "
                                 + "set with setLatitudeOffsetAndLength(...)");
             }
-            mLatitudeOffset = offset;
+            mGpsLatitudeOffset = offset;
             return this;
         }
 
-        public Builder clearLatLong() {
-            mHasLatLong = false;
-            mLatitude = 0;
-            mLongitude = 0;
+        public Builder setGpsLatitudeRef(@Nullable String gpsLatitudeRef) {
+            mGpsLatitudeRef = gpsLatitudeRef;
             return this;
         }
 
-        public Builder setAltitude(double altitude) {
-            mAltitude = altitude;
+        public Builder setGpsLongitude(@Nullable String gpsLongitude) {
+            mGpsLongitude = gpsLongitude;
+            return this;
+        }
+
+        public Builder setGpsLongitudeRef(@Nullable String gpsLongitudeRef) {
+            mGpsLongitudeRef = gpsLongitudeRef;
+            return this;
+        }
+
+        public Builder setGpsProcessingMethod(@Nullable String gpsProcessingMethod) {
+            mGpsProcessingMethod = gpsProcessingMethod;
+            return this;
+        }
+
+        public Builder setGpsTimestamp(@Nullable String gpsTimestamp) {
+            mGpsTimestamp = gpsTimestamp;
+            return this;
+        }
+
+        public Builder setComputedAltitude(double computedAltitude) {
+            mComputedAltitude = computedAltitude;
             return this;
         }
 
@@ -478,51 +523,6 @@ final class ExpectedAttributes {
 
         public Builder setFocalLength(@Nullable String focalLength) {
             mFocalLength = focalLength;
-            return this;
-        }
-
-        public Builder setGpsAltitude(@Nullable String gpsAltitude) {
-            mGpsAltitude = gpsAltitude;
-            return this;
-        }
-
-        public Builder setGpsAltitudeRef(@Nullable String gpsAltitudeRef) {
-            mGpsAltitudeRef = gpsAltitudeRef;
-            return this;
-        }
-
-        public Builder setGpsDatestamp(@Nullable String gpsDatestamp) {
-            mGpsDatestamp = gpsDatestamp;
-            return this;
-        }
-
-        public Builder setGpsLatitude(@Nullable String gpsLatitude) {
-            mGpsLatitude = gpsLatitude;
-            return this;
-        }
-
-        public Builder setGpsLatitudeRef(@Nullable String gpsLatitudeRef) {
-            mGpsLatitudeRef = gpsLatitudeRef;
-            return this;
-        }
-
-        public Builder setGpsLongitude(@Nullable String gpsLongitude) {
-            mGpsLongitude = gpsLongitude;
-            return this;
-        }
-
-        public Builder setGpsLongitudeRef(@Nullable String gpsLongitudeRef) {
-            mGpsLongitudeRef = gpsLongitudeRef;
-            return this;
-        }
-
-        public Builder setGpsProcessingMethod(@Nullable String gpsProcessingMethod) {
-            mGpsProcessingMethod = gpsProcessingMethod;
-            return this;
-        }
-
-        public Builder setGpsTimestamp(@Nullable String gpsTimestamp) {
-            mGpsTimestamp = gpsTimestamp;
             return this;
         }
 
@@ -624,20 +624,25 @@ final class ExpectedAttributes {
     private final int mThumbnailWidth;
     private final int mThumbnailHeight;
     private final boolean mIsThumbnailCompressed;
-    // TODO: b/270554381 - Merge these offset and length (and others) into long[] arrays, and
-    //  move them down to their own section. This may also allow removing some of the hasXXX
-    // fields.
     private final long mThumbnailOffset;
     private final long mThumbnailLength;
 
     // GPS information.
     private final boolean mHasLatLong;
-    // TODO: b/270554381 - Merge this and longitude into a double[]
-    private final double mLatitude;
-    private final long mLatitudeOffset;
-    private final long mLatitudeLength;
-    private final double mLongitude;
-    private final double mAltitude;
+    private final double mComputedLatitude;
+    private final double mComputedLongitude;
+    private final double mComputedAltitude;
+    private final String mGpsAltitude;
+    private final String mGpsAltitudeRef;
+    private final String mGpsDatestamp;
+    private final String mGpsLatitude;
+    private final long mGpsLatitudeOffset;
+    private final long mGpsLatitudeLength;
+    private final String mGpsLatitudeRef;
+    private final String mGpsLongitude;
+    private final String mGpsLongitudeRef;
+    private final String mGpsProcessingMethod;
+    private final String mGpsTimestamp;
 
     // Make information
     private final boolean mHasMake;
@@ -651,19 +656,6 @@ final class ExpectedAttributes {
     private final String mDateTimeOriginal;
     private final double mExposureTime;
     private final String mFocalLength;
-    // TODO: b/270554381 - Rename these to make them clear they're strings, or original values,
-    //  and move them closer to the (computed) latitude/longitude/altitude values. Consider
-    //  also having a verification check that they are consistent with latitude/longitude (but
-    //  not sure how to reconcile that with "don't duplicate business logic in tests").
-    private final String mGpsAltitude;
-    private final String mGpsAltitudeRef;
-    private final String mGpsDatestamp;
-    private final String mGpsLatitude;
-    private final String mGpsLatitudeRef;
-    private final String mGpsLongitude;
-    private final String mGpsLongitudeRef;
-    private final String mGpsProcessingMethod;
-    private final String mGpsTimestamp;
     private final int mImageLength;
     private final int mImageWidth;
     private final String mIso;
@@ -690,11 +682,20 @@ final class ExpectedAttributes {
         mThumbnailHeight = builder.mThumbnailHeight;
         mIsThumbnailCompressed = builder.mIsThumbnailCompressed;
         mHasLatLong = builder.mHasLatLong;
-        mLatitudeOffset = builder.mLatitudeOffset;
-        mLatitudeLength = builder.mLatitudeLength;
-        mLatitude = builder.mLatitude;
-        mLongitude = builder.mLongitude;
-        mAltitude = builder.mAltitude;
+        mComputedLatitude = builder.mComputedLatitude;
+        mComputedLongitude = builder.mComputedLongitude;
+        mComputedAltitude = builder.mComputedAltitude;
+        mGpsAltitude = builder.mGpsAltitude;
+        mGpsAltitudeRef = builder.mGpsAltitudeRef;
+        mGpsDatestamp = builder.mGpsDatestamp;
+        mGpsLatitude = builder.mGpsLatitude;
+        mGpsLatitudeOffset = builder.mGpsLatitudeOffset;
+        mGpsLatitudeLength = builder.mGpsLatitudeLength;
+        mGpsLatitudeRef = builder.mGpsLatitudeRef;
+        mGpsLongitude = builder.mGpsLongitude;
+        mGpsLongitudeRef = builder.mGpsLongitudeRef;
+        mGpsProcessingMethod = builder.mGpsProcessingMethod;
+        mGpsTimestamp = builder.mGpsTimestamp;
         mHasMake = builder.mHasMake;
         mMakeOffset = builder.mMakeOffset;
         mMakeLength = builder.mMakeLength;
@@ -704,15 +705,6 @@ final class ExpectedAttributes {
         mDateTimeOriginal = builder.mDateTimeOriginal;
         mExposureTime = builder.mExposureTime;
         mFocalLength = builder.mFocalLength;
-        mGpsAltitude = builder.mGpsAltitude;
-        mGpsAltitudeRef = builder.mGpsAltitudeRef;
-        mGpsDatestamp = builder.mGpsDatestamp;
-        mGpsLatitude = builder.mGpsLatitude;
-        mGpsLatitudeRef = builder.mGpsLatitudeRef;
-        mGpsLongitude = builder.mGpsLongitude;
-        mGpsLongitudeRef = builder.mGpsLongitudeRef;
-        mGpsProcessingMethod = builder.mGpsProcessingMethod;
-        mGpsTimestamp = builder.mGpsTimestamp;
         mImageLength = builder.mImageLength;
         mImageWidth = builder.mImageWidth;
         mIso = builder.mIso;
@@ -763,24 +755,24 @@ final class ExpectedAttributes {
         return mHasLatLong;
     }
 
-    public double getLatitude() {
-        return mLatitude;
+    public double getComputedLatitude() {
+        return mComputedLatitude;
     }
 
-    public long getLatitudeOffset() {
-        return mLatitudeOffset;
+    public double getComputedLongitude() {
+        return mComputedLongitude;
     }
 
-    public long getLatitudeLength() {
-        return mLatitudeLength;
+    public double getComputedAltitude() {
+        return mComputedAltitude;
     }
 
-    public double getLongitude() {
-        return mLongitude;
+    public long getGpsLatitudeOffset() {
+        return mGpsLatitudeOffset;
     }
 
-    public double getAltitude() {
-        return mAltitude;
+    public long getGpsLatitudeLength() {
+        return mGpsLatitudeLength;
     }
 
     public boolean hasMake() {
