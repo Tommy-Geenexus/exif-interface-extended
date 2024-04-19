@@ -108,8 +108,11 @@ class ExifInterfaceExtendedUtils {
         return true;
     }
 
-    static int calculateCrc32IntValue(byte[] type, byte[] data) {
+    static int calculateCrc32IntValue(int type, byte[] data) {
         final CRC32 crc = new CRC32();
+        crc.update(type >>> 24);
+        crc.update(type >>> 16);
+        crc.update(type >>> 8);
         crc.update(type);
         crc.update(data);
         return (int) crc.getValue();

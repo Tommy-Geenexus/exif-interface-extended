@@ -3213,16 +3213,16 @@ public class ExifInterfaceExtended {
     };
     // See "Extensions to the PNG 1.2 Specification, Version 1.5.0",
     // 3.7. eXIf Exchangeable Image File (Exif) Profile
-    private static final byte[] PNG_CHUNK_TYPE_EXIF = "eXIf".getBytes(ASCII);
+    private static final int PNG_CHUNK_TYPE_EXIF = intFromBytes('e', 'X', 'I', 'f');
     // See https://www.w3.org/TR/PNG
-    private static final byte[] PNG_CHUNK_TYPE_ICCP = "iCCP".getBytes(ASCII);
-    private static final byte[] PNG_CHUNK_TYPE_TEXT = "tEXt".getBytes(ASCII);
+    private static final int PNG_CHUNK_TYPE_ICCP = intFromBytes('i', 'C', 'C', 'P');
+    private static final int PNG_CHUNK_TYPE_TEXT = intFromBytes('t', 'E', 'X', 't');
     // See https://wwwimages2.adobe.com/content/dam/acom/en/devnet/xmp/pdfs/
     // XMP%20SDK%20Release%20cc-2016-08/XMPSpecificationPart3.pdf
-    private static final byte[] PNG_CHUNK_TYPE_ITXT = "iTXt".getBytes(ASCII);
-    private static final byte[] PNG_CHUNK_TYPE_ZTXT = "zTXt".getBytes(ASCII);
-    private static final byte[] PNG_CHUNK_TYPE_IHDR = "IHDR".getBytes(ASCII);
-    private static final byte[] PNG_CHUNK_TYPE_IEND = "IEND".getBytes(ASCII);
+    private static final int PNG_CHUNK_TYPE_ITXT = intFromBytes('i', 'T', 'X', 't');
+    private static final int PNG_CHUNK_TYPE_ZTXT = intFromBytes('z', 'T', 'X', 't');
+    private static final int PNG_CHUNK_TYPE_IHDR = intFromBytes('I', 'H', 'D', 'R');
+    private static final int PNG_CHUNK_TYPE_IEND = intFromBytes('I', 'E', 'N', 'D');
     // Identifier for XMP chunk in PNG
     private static final byte[] IDENTIFIER_XMP_CHUNK =
             "XML:com.adobe.xmp\0\0\0\0\0".getBytes(ASCII);
@@ -6137,22 +6137,20 @@ public class ExifInterfaceExtended {
         try {
             while (true) {
                 final int length = source.readInt();
-
-                final byte[] type = new byte[PNG_CHUNK_TYPE_BYTE_LENGTH];
-                source.readFully(type);
+                final int type = source.readInt();
 
                 // The first chunk must be the IHDR chunk
                 if (source.getPosition() - startPosition == PNG_CHUNK_TYPE_IHDR_OFFSET &&
-                        !Arrays.equals(type, PNG_CHUNK_TYPE_IHDR)) {
+                        type != PNG_CHUNK_TYPE_IHDR) {
                     throw new IOException(
                             "Encountered invalid PNG file--IHDR chunk should appear as the first "
                                     + "chunk");
                 }
 
-                if (Arrays.equals(type, PNG_CHUNK_TYPE_IEND)) {
+                if (type == PNG_CHUNK_TYPE_IEND) {
                     // IEND marks the end of the image.
                     break;
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_EXIF)) {
+                } else if (type == PNG_CHUNK_TYPE_EXIF) {
                     // Save offset to EXIF data for handling thumbnail and attribute offsets.
                     mOffsetToExifData = source.getPosition() - startPosition;
 
@@ -6167,7 +6165,7 @@ public class ExifInterfaceExtended {
                     readExifSegment(data, IFD_TYPE_PRIMARY);
                     validateImages();
                     setThumbnailData(new ByteOrderedDataInputStream(data));
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ICCP)) {
+                } else if (type == PNG_CHUNK_TYPE_ICCP) {
                     // TODO: Need to handle potential OutOfMemoryError
                     final byte[] data = new byte[length];
                     source.readFully(data);
@@ -6177,7 +6175,7 @@ public class ExifInterfaceExtended {
                         throw new IOException("Invalid CRC value for iCCP PNG chunk");
                     }
                     mHasIccProfile = true;
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ITXT)) {
+                } else if (type == PNG_CHUNK_TYPE_ITXT) {
                     final int bytesRead = source.getPosition();
                     // TODO: Need to handle potential OutOfMemoryError
                     final byte[] data = new byte[length];
@@ -6741,16 +6739,15 @@ public class ExifInterfaceExtended {
             // Copy PNG chunks
             while (true) {
                 final int length = dataInputStream.readInt();
-                final byte[] type = new byte[PNG_CHUNK_TYPE_BYTE_LENGTH];
-                dataInputStream.readFully(type);
+                final int type = dataInputStream.readInt();
 
                 // The first chunk must be the IHDR chunk
                 if (dataInputStream.getPosition() == PNG_CHUNK_TYPE_IHDR_OFFSET &&
-                        !Arrays.equals(type, PNG_CHUNK_TYPE_IHDR)) {
+                        type != PNG_CHUNK_TYPE_IHDR) {
                     throw new IOException("IHDR chunk must be the first chunk");
                 }
 
-                if (Arrays.equals(type, PNG_CHUNK_TYPE_EXIF)) {
+                if (type == PNG_CHUNK_TYPE_EXIF) {
                     // Skip original eXIf PNG chunk
                     final int skip = length + PNG_CHUNK_CRC_BYTE_LENGTH;
                     dataInputStream.skipFully(skip);
@@ -6770,18 +6767,18 @@ public class ExifInterfaceExtended {
                     dataOutputStream.writeInt(
                             ExifInterfaceExtendedUtils.calculateCrc32IntValue(type, data)
                     );
-                } else if (Arrays.equals(type, PNG_CHUNK_TYPE_ICCP) ||
-                        Arrays.equals(type, PNG_CHUNK_TYPE_TEXT) ||
-                        Arrays.equals(type, PNG_CHUNK_TYPE_ITXT) ||
-                        Arrays.equals(type, PNG_CHUNK_TYPE_ZTXT)) {
+                } else if (type == PNG_CHUNK_TYPE_ICCP ||
+                        type == PNG_CHUNK_TYPE_TEXT ||
+                        type == PNG_CHUNK_TYPE_ITXT ||
+                        type == PNG_CHUNK_TYPE_ZTXT) {
                     final int skip = length + PNG_CHUNK_CRC_BYTE_LENGTH;
                     dataInputStream.skipFully(skip);
                 } else {
                     final int remainder = length + PNG_CHUNK_CRC_BYTE_LENGTH;
                     dataOutputStream.writeInt(length);
-                    dataOutputStream.write(type);
+                    dataOutputStream.writeInt(type);
                     ExifInterfaceExtendedUtils.copy(dataInputStream, dataOutputStream, remainder);
-                    if (Arrays.equals(type, PNG_CHUNK_TYPE_IEND)) {
+                    if (type == PNG_CHUNK_TYPE_IEND) {
                         break;
                     }
                 }
@@ -8078,7 +8075,7 @@ public class ExifInterfaceExtended {
             case IMAGE_TYPE_PNG:
                 // Write PNG specific data (chunk size, chunk type)
                 dataOutputStream.writeInt(totalSize);
-                dataOutputStream.write(PNG_CHUNK_TYPE_EXIF);
+                dataOutputStream.writeInt(PNG_CHUNK_TYPE_EXIF);
                 break;
             case IMAGE_TYPE_WEBP:
                 // Write WebP specific data (chunk type, chunk size)
@@ -8192,7 +8189,7 @@ public class ExifInterfaceExtended {
             case IMAGE_TYPE_PNG:
                 // Write PNG specific data (chunk size, chunk type)
                 dataOutputStream.writeInt(totalSize);
-                dataOutputStream.write(PNG_CHUNK_TYPE_EXIF);
+                dataOutputStream.writeInt(PNG_CHUNK_TYPE_EXIF);
                 break;
             case IMAGE_TYPE_WEBP:
                 // Write WebP specific data (chunk type, chunk size)
@@ -8394,5 +8391,13 @@ public class ExifInterfaceExtended {
     private static boolean isSupportedFormatForSavingIgnoringAttributes(int mimeType) {
         return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
                 || mimeType == IMAGE_TYPE_WEBP;
+    }
+
+    /*
+     * Combines the lower eight bits of each parameter into a 32-bit int. {@code b1} is the highest
+     * byte of the result, {@code b4} is the lowest.
+     */
+    private static int intFromBytes(int b1, int b2, int b3, int b4) {
+        return ((b1 & 0xFF) << 24) | ((b2 & 0xFF) << 16) | ((b3 & 0xFF) << 8) | (b4 & 0xFF);
     }
 }
