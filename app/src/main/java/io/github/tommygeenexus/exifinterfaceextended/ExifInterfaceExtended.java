@@ -5522,6 +5522,7 @@ public class ExifInterfaceExtended {
                     bytesRead += length;
                     length = 0;
                     if (ExifInterfaceExtendedUtils.startsWith(bytes, IDENTIFIER_EXIF_APP1)) {
+                        byte[] xmpBeforeReadingExif = getAttributeBytes(TAG_XMP);
                         final byte[] value = Arrays.copyOfRange(bytes, IDENTIFIER_EXIF_APP1.length,
                                 bytes.length);
                         // Save offset to EXIF data for handling thumbnail and attribute offsets.
@@ -5530,6 +5531,9 @@ public class ExifInterfaceExtended {
                                 + IDENTIFIER_EXIF_APP1.length;
                         readExifSegment(value, imageType);
                         setThumbnailData(new ByteOrderedDataInputStream(value));
+                        if (xmpBeforeReadingExif != getAttributeBytes(TAG_XMP)) {
+                            mXmpIsFromSeparateMarker = false;
+                        }
                     } else if (ExifInterfaceExtendedUtils.startsWith(bytes, IDENTIFIER_XMP_APP1)) {
                         // See XMP Specification Part 3: Storage in Files, 1.1.3 JPEG, Table 6
                         final int offset = start + IDENTIFIER_XMP_APP1.length;
@@ -6346,8 +6350,9 @@ public class ExifInterfaceExtended {
                     if (identifier != null) {
                         dataInputStream.readFully(identifier);
                         if (ExifInterfaceExtendedUtils.startsWith(identifier, IDENTIFIER_EXIF_APP1)
-                                || ExifInterfaceExtendedUtils.startsWith(
-                                        identifier, IDENTIFIER_XMP_APP1)) {
+                                || (ExifInterfaceExtendedUtils
+                                .startsWith(identifier, IDENTIFIER_XMP_APP1) &&
+                                mXmpIsFromSeparateMarker)) {
                             // Skip the original EXIF or XMP APP1 segment.
                             dataInputStream.skipFully(length - identifier.length);
                             break;
