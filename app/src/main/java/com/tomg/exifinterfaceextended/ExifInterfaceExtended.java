@@ -7119,7 +7119,7 @@ public class ExifInterfaceExtended {
                                              byte[] firstGivenType,
                                              byte[] secondGivenType,
                                              boolean copyIccpChunk,
-                                             List<String> chunkTypes) throws IOException {
+                                             @Nullable List<String> chunkTypes) throws IOException {
         int bytesRead = 0;
         while (true) {
             final byte[] type = new byte[WEBP_CHUNK_TYPE_BYTE_LENGTH];
@@ -7130,7 +7130,9 @@ public class ExifInterfaceExtended {
                     || (secondGivenType != null && Arrays.equals(type, secondGivenType))) {
                 break;
             }
-            chunkTypes.add(new String(type));
+            if (chunkTypes != null) {
+                chunkTypes.add(new String(type));
+            }
         }
         return bytesRead;
     }
