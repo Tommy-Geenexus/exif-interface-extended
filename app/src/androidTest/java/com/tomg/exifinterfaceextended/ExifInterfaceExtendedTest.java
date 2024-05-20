@@ -1667,11 +1667,25 @@ public class ExifInterfaceExtendedTest {
 
         ExifInterfaceExtended exifInterface = exifInterfaceFactory.create(imageFile);
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "abc");
-        exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
-        exifInterface.saveAttributes();
 
-        expectedAttributes =
-                expectedAttributes.buildUpon().setMake("abc").clearXmp().setXmp(TEST_XMP).build();
+        final String extension = verboseTag.substring(verboseTag.lastIndexOf("."));
+        final boolean isWebP = extension.equalsIgnoreCase(".webp");
+        // XMP is not updated for WebP files
+        if (!isWebP) {
+            exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
+        }
+        exifInterface.saveAttributes();
+        // XMP is not updated for WebP files
+        if (!isWebP) {
+            expectedAttributes = expectedAttributes
+                    .buildUpon()
+                    .setMake("abc")
+                    .clearXmp()
+                    .setXmp(TEST_XMP)
+                    .build();
+        } else {
+            expectedAttributes = expectedAttributes.buildUpon().setMake("abc").build();
+        }
 
         // Check expected modifications are visible without re-parsing the file.
         compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
