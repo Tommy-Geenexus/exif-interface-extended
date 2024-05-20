@@ -15,15 +15,7 @@
  * limitations under the License.
  */
 
-package com.tomg.exifinterfaceextended;
-
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_DOUBLE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SINGLE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SLONG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SSHORT;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_ULONG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_UNDEFINED;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_USHORT;
+package io.github.tommygeenexus.exifinterfaceextended;
 
 /**
  * A class for indicating EXIF tag.
@@ -50,19 +42,19 @@ class ExifTag {
     }
 
     public boolean isFormatCompatible(int format) {
-        if (mPrimaryFormat == IFD_FORMAT_UNDEFINED || format == IFD_FORMAT_UNDEFINED) {
+        if (mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED || format == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED) {
             return true;
         } else if (mPrimaryFormat == format || mSecondaryFormat == format) {
             return true;
-        } else if ((mPrimaryFormat == IFD_FORMAT_ULONG || mSecondaryFormat == IFD_FORMAT_ULONG)
-                && format == IFD_FORMAT_USHORT) {
+        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG || mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG)
+                && format == ExifInterfaceExtended.IFD_FORMAT_USHORT) {
             return true;
-        } else if ((mPrimaryFormat == IFD_FORMAT_SLONG || mSecondaryFormat == IFD_FORMAT_SLONG)
-                && format == IFD_FORMAT_SSHORT) {
+        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG || mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG)
+                && format == ExifInterfaceExtended.IFD_FORMAT_SSHORT) {
             return true;
         } else {
-            return (mPrimaryFormat == IFD_FORMAT_DOUBLE ||
-                    mSecondaryFormat == IFD_FORMAT_DOUBLE) && format == IFD_FORMAT_SINGLE;
+            return (mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_DOUBLE ||
+                    mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_DOUBLE) && format == ExifInterfaceExtended.IFD_FORMAT_SINGLE;
         }
     }
 

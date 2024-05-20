@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.tomg.exifinterfaceextended;
+package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;

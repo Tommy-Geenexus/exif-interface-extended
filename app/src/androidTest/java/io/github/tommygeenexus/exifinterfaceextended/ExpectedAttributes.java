@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.tomg.exifinterfaceextended;
+package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.content.res.Resources;
 
@@ -25,7 +25,8 @@ import androidx.annotation.RawRes;
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.CharStreams;
-import com.tomg.exifinterfaceextended.test.R;
+
+import io.github.tommygeenexus.exifinterfaceextended.test.R;
 
 import java.io.IOException;
 import java.io.InputStreamReader;

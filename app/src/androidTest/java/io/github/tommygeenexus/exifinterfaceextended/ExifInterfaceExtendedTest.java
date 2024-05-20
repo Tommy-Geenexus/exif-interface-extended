@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.tomg.exifinterfaceextended;
+package io.github.tommygeenexus.exifinterfaceextended;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
@@ -52,6 +52,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+
+import io.github.tommygeenexus.exifinterfaceextended.test.R;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -152,7 +154,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifIntelByteOrder() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                io.github.tommygeenexus.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_II);
@@ -165,7 +167,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifMotorolaByteOrder() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_mm,
+                R.raw.jpeg_with_exif_byte_order_mm,
                 "jpeg_with_exif_byte_order_mm.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_BYTE_ORDER_MM);
@@ -178,7 +180,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifAndXmp() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_xmp,
+                R.raw.jpeg_with_exif_with_xmp,
                 "jpeg_with_exif_with_xmp.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_WITH_XMP);
@@ -191,7 +193,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifAndExtendedXmp() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_icc_with_exif_with_extended_xmp,
+                R.raw.jpeg_with_icc_with_exif_with_extended_xmp,
                 "jpeg_with_icc_with_exif_with_extended_xmp.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_ICC_WITH_EXIF_WITH_EXTENDED_XMP);
@@ -203,7 +205,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifAndPhotoshop() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_photoshop_with_xmp,
+                io.github.tommygeenexus.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_photoshop_with_xmp,
                 "jpeg_with_exif_with_photoshop_with_xmp.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_WITH_PHOTSHOP_WITH_XMP);
@@ -216,7 +218,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithExifAndXmp_doesntDuplicateXmp() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_xmp,
+                R.raw.jpeg_with_exif_with_xmp,
                 "jpeg_with_exif_with_xmp.jpg"
         );
         ExifInterfaceExtended exifInterface =
@@ -266,7 +268,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithInvalidOffset() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_invalid_offset,
+                R.raw.jpeg_with_exif_invalid_offset,
                 "jpeg_with_exif_invalid_offset.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
@@ -278,7 +280,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testJpegWithFullApp1Segment() throws Throwable {
         File srcFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_full_app1_segment,
+                R.raw.jpeg_with_exif_full_app1_segment,
                 "jpeg_with_exif_full_app1_segment.jpg"
         );
         File imageFile = clone(srcFile);
@@ -302,7 +304,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testDngWithExifAndXmp() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.dng_with_exif_with_xmp,
+                R.raw.dng_with_exif_with_xmp,
                 "dng_with_exif_with_xmp.dng"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.DNG_WITH_EXIF_WITH_XMP);
@@ -312,7 +314,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testPngWithExif() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.png_with_exif_byte_order_ii,
+                R.raw.png_with_exif_byte_order_ii,
                 "png_with_exif_byte_order_ii.png"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
@@ -325,7 +327,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testPngWithoutExif() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.png_without_exif,
+                R.raw.png_without_exif,
                 "png_without_exif.png"
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
@@ -337,7 +339,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testStandaloneData_jpegIntelByteOrder() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         readFromStandaloneDataWithExif(
@@ -348,7 +350,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testStandaloneData_jpegMotorolaByteOrder() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_mm,
+                R.raw.jpeg_with_exif_byte_order_mm,
                 "jpeg_with_exif_byte_order_mm.jpg"
         );
         readFromStandaloneDataWithExif(
@@ -359,7 +361,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithExif() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_with_exif,
+                R.raw.webp_with_exif,
                 "webp_with_exif.jpg"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_EXIF);
@@ -372,7 +374,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithExifAndXmp() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_with_icc_with_exif_with_xmp,
+                R.raw.webp_with_icc_with_exif_with_xmp,
                 "webp_with_icc_with_exif_with_xmp.webp"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.WEBP_WITH_ICC_WITH_EXIF_WITH_XMP);
@@ -386,7 +388,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithExifApp1() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.invalid_webp_with_jpeg_app1_marker,
+                R.raw.invalid_webp_with_jpeg_app1_marker,
                 "invalid_webp_with_jpeg_app1_marker.webp"
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
@@ -397,7 +399,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithoutExif() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_without_exif,
+                R.raw.webp_without_exif,
                 "webp_without_exif.webp"
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
@@ -409,7 +411,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithoutExifWithAnimData() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_with_anim_without_exif,
+                R.raw.webp_with_anim_without_exif,
                 WEBP_WITHOUT_EXIF_WITH_ANIM_DATA
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
@@ -421,7 +423,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithoutExifWithLosslessEncoding() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_lossless_without_exif,
+                R.raw.webp_lossless_without_exif,
                 "webp_lossless_without_exif.webp"
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
@@ -433,7 +435,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testWebpWithoutExifWithLosslessEncodingAndAlpha() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.webp_lossless_alpha_without_exif,
+                R.raw.webp_lossless_alpha_without_exif,
                 "webp_lossless_alpha_without_exif.webp"
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
@@ -446,7 +448,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testHeifFile() throws Throwable {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.heif_with_exif,
+                R.raw.heif_with_exif,
                 "heif_with_exif.heic"
         );
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -633,7 +635,7 @@ public class ExifInterfaceExtendedTest {
         final String expectedDatetimeOffsetStringValue = "+09:00";
 
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_datetime_tag_primary_format,
+                R.raw.jpeg_with_datetime_tag_primary_format,
                 "jpeg_with_datetime_tag_primary_format.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -703,7 +705,7 @@ public class ExifInterfaceExtendedTest {
         final String expectedDateTimeStringValue = "2016-01-29 18:32:27";
 
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_datetime_tag_secondary_format,
+                R.raw.jpeg_with_datetime_tag_secondary_format,
                 "jpeg_with_datetime_tag_secondary_format.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -731,7 +733,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetFNumber_decimalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -759,7 +761,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetFNumber_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -788,7 +790,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetDigitalZoomRatio_decimalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -818,7 +820,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetDigitalZoomRatio_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -848,7 +850,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetExposureTime_decimalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -877,7 +879,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetExposureTime_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -906,7 +908,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetSubjectDistance_decimalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -936,7 +938,7 @@ public class ExifInterfaceExtendedTest {
     @SmallTest
     public void testSetSubjectDistance_rationalString() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -966,7 +968,7 @@ public class ExifInterfaceExtendedTest {
     public void testSetGpsTimestamp_integers() throws Exception {
         // Deliberately use an image with an existing GPS timestamp value to overwrite.
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_xmp,
+                R.raw.jpeg_with_exif_with_xmp,
                 "jpeg_with_exif_with_xmp.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -989,7 +991,7 @@ public class ExifInterfaceExtendedTest {
     public void testSetGpsTimestamp_rationals_failsSilently() throws Exception {
         // Deliberately use an image with an existing GPS timestamp value to overwrite.
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_xmp,
+                R.raw.jpeg_with_exif_with_xmp,
                 "jpeg_with_exif_with_xmp.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -1011,7 +1013,7 @@ public class ExifInterfaceExtendedTest {
     public void testSetGpsTimestamp_decimals_failsSilently() throws Exception {
         // Deliberately use an image with an existing GPS timestamp value to overwrite.
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_with_xmp,
+                R.raw.jpeg_with_exif_with_xmp,
                 "jpeg_with_exif_with_xmp.jpg"
         );
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFile);
@@ -1032,7 +1034,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testAddDefaultValuesForCompatibility() throws Exception {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_datetime_tag_primary_format,
+                R.raw.jpeg_with_datetime_tag_primary_format,
                 "jpeg_with_datetime_tag_primary_format.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -1061,7 +1063,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testSubsec() throws IOException {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_datetime_tag_primary_format,
+                R.raw.jpeg_with_datetime_tag_primary_format,
                 "jpeg_with_datetime_tag_primary_format.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -1448,7 +1450,7 @@ public class ExifInterfaceExtendedTest {
             int expectedOrientation)
             throws IOException {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -1466,7 +1468,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testRotation_byDegrees_invalid() throws IOException {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -1493,7 +1495,7 @@ public class ExifInterfaceExtendedTest {
             int expectedDegrees
     ) throws IOException {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());
@@ -1509,7 +1511,7 @@ public class ExifInterfaceExtendedTest {
     @LargeTest
     public void testResetOrientation() throws IOException {
         File imageFile = copyFromResourceToFile(
-                com.tomg.exifinterfaceextended.test.R.raw.jpeg_with_exif_byte_order_ii,
+                R.raw.jpeg_with_exif_byte_order_ii,
                 "jpeg_with_exif_byte_order_ii.jpg"
         );
         ExifInterfaceExtended exif = new ExifInterfaceExtended(imageFile.getAbsolutePath());

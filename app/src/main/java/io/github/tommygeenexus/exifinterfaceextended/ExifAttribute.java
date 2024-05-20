@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.tomg.exifinterfaceextended;
+package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.util.Log;
 
@@ -24,23 +24,6 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.ASCII;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.EXIF_ASCII_PREFIX;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_BYTE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_DOUBLE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_NAMES;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SBYTE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SINGLE;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SLONG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SRATIONAL;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_SSHORT;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_STRING;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_ULONG;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_UNDEFINED;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_URATIONAL;
-import static com.tomg.exifinterfaceextended.ExifInterfaceExtended.IFD_FORMAT_USHORT;
 
 /**
  * A class for indicating EXIF attribute.
@@ -69,12 +52,12 @@ class ExifAttribute {
 
     public static ExifAttribute createUShort(int[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_USHORT] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_USHORT] * values.length]);
         buffer.order(byteOrder);
         for (int value : values) {
             buffer.putShort((short) value);
         }
-        return new ExifAttribute(IFD_FORMAT_USHORT, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_USHORT, values.length, buffer.array());
     }
 
     public static ExifAttribute createUShort(int value, ByteOrder byteOrder) {
@@ -83,12 +66,12 @@ class ExifAttribute {
 
     public static ExifAttribute createULong(long[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_ULONG] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_ULONG] * values.length]);
         buffer.order(byteOrder);
         for (long value : values) {
             buffer.putInt((int) value);
         }
-        return new ExifAttribute(IFD_FORMAT_ULONG, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_ULONG, values.length, buffer.array());
     }
 
     public static ExifAttribute createULong(long value, ByteOrder byteOrder) {
@@ -97,38 +80,38 @@ class ExifAttribute {
 
     public static ExifAttribute createSLong(int[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SLONG] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_SLONG] * values.length]);
         buffer.order(byteOrder);
         for (int value : values) {
             buffer.putInt(value);
         }
-        return new ExifAttribute(IFD_FORMAT_SLONG, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_SLONG, values.length, buffer.array());
     }
 
     public static ExifAttribute createByte(String value) {
         // Exception for GPSAltitudeRef tag
         if (value.length() == 1 && value.charAt(0) >= '0' && value.charAt(0) <= '1') {
             final byte[] bytes = new byte[]{(byte) (value.charAt(0) - '0')};
-            return new ExifAttribute(IFD_FORMAT_BYTE, bytes.length, bytes);
+            return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_BYTE, bytes.length, bytes);
         }
-        final byte[] ascii = value.getBytes(ASCII);
-        return new ExifAttribute(IFD_FORMAT_BYTE, ascii.length, ascii);
+        final byte[] ascii = value.getBytes(ExifInterfaceExtended.ASCII);
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_BYTE, ascii.length, ascii);
     }
 
     public static ExifAttribute createString(String value) {
-        final byte[] ascii = (value + '\0').getBytes(ASCII);
-        return new ExifAttribute(IFD_FORMAT_STRING, ascii.length, ascii);
+        final byte[] ascii = (value + '\0').getBytes(ExifInterfaceExtended.ASCII);
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_STRING, ascii.length, ascii);
     }
 
     public static ExifAttribute createURational(Rational[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_URATIONAL] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_URATIONAL] * values.length]);
         buffer.order(byteOrder);
         for (Rational value : values) {
             buffer.putInt((int) value.getNumerator());
             buffer.putInt((int) value.getDenominator());
         }
-        return new ExifAttribute(IFD_FORMAT_URATIONAL, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_URATIONAL, values.length, buffer.array());
     }
 
     public static ExifAttribute createURational(Rational value, ByteOrder byteOrder) {
@@ -137,29 +120,29 @@ class ExifAttribute {
 
     public static ExifAttribute createSRational(Rational[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_SRATIONAL] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_SRATIONAL] * values.length]);
         buffer.order(byteOrder);
         for (Rational value : values) {
             buffer.putInt((int) value.getNumerator());
             buffer.putInt((int) value.getDenominator());
         }
-        return new ExifAttribute(IFD_FORMAT_SRATIONAL, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_SRATIONAL, values.length, buffer.array());
     }
 
     public static ExifAttribute createDouble(double[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
-                new byte[IFD_FORMAT_BYTES_PER_FORMAT[IFD_FORMAT_DOUBLE] * values.length]);
+                new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_DOUBLE] * values.length]);
         buffer.order(byteOrder);
         for (double value : values) {
             buffer.putDouble(value);
         }
-        return new ExifAttribute(IFD_FORMAT_DOUBLE, values.length, buffer.array());
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_DOUBLE, values.length, buffer.array());
     }
 
     @Override
     @NonNull
     public String toString() {
-        return "(" + IFD_FORMAT_NAMES[mFormat] + ", data length:" + mBytes.length + ")";
+        return "(" + ExifInterfaceExtended.IFD_FORMAT_NAMES[mFormat] + ", data length:" + mBytes.length + ")";
     }
 
     @SuppressWarnings("WeakerAccess") /* synthetic access */
@@ -169,27 +152,27 @@ class ExifAttribute {
             inputStream = new ByteOrderedDataInputStream(mBytes);
             inputStream.setByteOrder(byteOrder);
             switch (mFormat) {
-                case IFD_FORMAT_BYTE:
-                case IFD_FORMAT_SBYTE: {
+                case ExifInterfaceExtended.IFD_FORMAT_BYTE:
+                case ExifInterfaceExtended.IFD_FORMAT_SBYTE: {
                     // Exception for GPSAltitudeRef tag
                     if (mBytes.length == 1 && mBytes[0] >= 0 && mBytes[0] <= 1) {
                         return String.valueOf((char) (mBytes[0] + '0'));
                     }
-                    return new String(mBytes, ASCII);
+                    return new String(mBytes, ExifInterfaceExtended.ASCII);
                 }
-                case IFD_FORMAT_UNDEFINED:
-                case IFD_FORMAT_STRING: {
+                case ExifInterfaceExtended.IFD_FORMAT_UNDEFINED:
+                case ExifInterfaceExtended.IFD_FORMAT_STRING: {
                     int index = 0;
-                    if (mNumberOfComponents >= EXIF_ASCII_PREFIX.length) {
+                    if (mNumberOfComponents >= ExifInterfaceExtended.EXIF_ASCII_PREFIX.length) {
                         boolean same = true;
-                        for (int i = 0; i < EXIF_ASCII_PREFIX.length; ++i) {
-                            if (mBytes[i] != EXIF_ASCII_PREFIX[i]) {
+                        for (int i = 0; i < ExifInterfaceExtended.EXIF_ASCII_PREFIX.length; ++i) {
+                            if (mBytes[i] != ExifInterfaceExtended.EXIF_ASCII_PREFIX[i]) {
                                 same = false;
                                 break;
                             }
                         }
                         if (same) {
-                            index = EXIF_ASCII_PREFIX.length;
+                            index = ExifInterfaceExtended.EXIF_ASCII_PREFIX.length;
                         }
                     }
 
@@ -208,21 +191,21 @@ class ExifAttribute {
                     }
                     return stringBuilder.toString();
                 }
-                case IFD_FORMAT_USHORT: {
+                case ExifInterfaceExtended.IFD_FORMAT_USHORT: {
                     final int[] values = new int[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readUnsignedShort();
                     }
                     return values;
                 }
-                case IFD_FORMAT_ULONG: {
+                case ExifInterfaceExtended.IFD_FORMAT_ULONG: {
                     final long[] values = new long[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readUnsignedInt();
                     }
                     return values;
                 }
-                case IFD_FORMAT_URATIONAL: {
+                case ExifInterfaceExtended.IFD_FORMAT_URATIONAL: {
                     final Rational[] values = new Rational[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         final long numerator = inputStream.readUnsignedInt();
@@ -231,21 +214,21 @@ class ExifAttribute {
                     }
                     return values;
                 }
-                case IFD_FORMAT_SSHORT: {
+                case ExifInterfaceExtended.IFD_FORMAT_SSHORT: {
                     final int[] values = new int[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readShort();
                     }
                     return values;
                 }
-                case IFD_FORMAT_SLONG: {
+                case ExifInterfaceExtended.IFD_FORMAT_SLONG: {
                     final int[] values = new int[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readInt();
                     }
                     return values;
                 }
-                case IFD_FORMAT_SRATIONAL: {
+                case ExifInterfaceExtended.IFD_FORMAT_SRATIONAL: {
                     final Rational[] values = new Rational[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         final long numerator = inputStream.readInt();
@@ -254,14 +237,14 @@ class ExifAttribute {
                     }
                     return values;
                 }
-                case IFD_FORMAT_SINGLE: {
+                case ExifInterfaceExtended.IFD_FORMAT_SINGLE: {
                     final double[] values = new double[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readFloat();
                     }
                     return values;
                 }
-                case IFD_FORMAT_DOUBLE: {
+                case ExifInterfaceExtended.IFD_FORMAT_DOUBLE: {
                     final double[] values = new double[mNumberOfComponents];
                     for (int i = 0; i < mNumberOfComponents; ++i) {
                         values[i] = inputStream.readDouble();
@@ -405,7 +388,7 @@ class ExifAttribute {
     }
 
     public int size() {
-        return IFD_FORMAT_BYTES_PER_FORMAT[mFormat] * mNumberOfComponents;
+        return ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[mFormat] * mNumberOfComponents;
     }
 
     public byte[] getBytes() {

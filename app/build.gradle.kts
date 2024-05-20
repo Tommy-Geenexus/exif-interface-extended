@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.tomg.exifinterfaceextended"
+    namespace = "io.github.tommygeenexus.exifinterfaceextended"
     compileSdk = 34
 
     defaultConfig {
