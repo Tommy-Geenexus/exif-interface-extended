@@ -17,6 +17,8 @@
 
 package io.github.tommygeenexus.exifinterfaceextended;
 
+import static java.lang.annotation.ElementType.TYPE_USE;
+
 import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -49,6 +51,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
@@ -3164,6 +3167,36 @@ public class ExifInterfaceExtended {
     @IntDef({STREAM_TYPE_FULL_IMAGE_DATA, STREAM_TYPE_EXIF_DATA_ONLY})
     public @interface ExifStreamType {}
 
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(TYPE_USE)
+    @IntDef({
+        XMP_HANDLING_TIFF_700_ONLY,
+        XMP_HANDLING_PREFER_SEPARATE,
+        XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT
+    })
+    private @interface XmpHandling {}
+
+    /**
+     * The format only supports XMP data stored in the TIFF/Exif 700 tag (or it supports storing XMP
+     * in a separate segment but this should never be used).
+     */
+    private static final int XMP_HANDLING_TIFF_700_ONLY = 1;
+
+    /**
+     * The format supports XMP data stored in a separate segment, and this should always be
+     * preferred if present.
+     *
+     * <p>If XMP data is only present in the TIFF/Exif 700 tag it will be read and written from
+     * there.
+     */
+    private static final int XMP_HANDLING_PREFER_SEPARATE = 2;
+
+    /**
+     * The format supports XMP data stored in a separate segment, and this should be preferred
+     * unless XMP is also present in the TIFF/Exif 700 tag.
+     */
+    private static final int XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT = 3;
+
     // Maximum size for checking file type signature (see image_type_recognition_lite.cc)
     private static final int SIGNATURE_CHECK_SIZE = 5000;
 
@@ -3566,12 +3599,13 @@ public class ExifInterfaceExtended {
     private static final int IFD_TYPE_ORF_IMAGE_PROCESSING = 8;
     private static final int IFD_TYPE_PEF = 9;
 
-    // List of Exif tag groups
-    static final ExifTag[][] EXIF_TAGS = new ExifTag[][] {
-            IFD_TIFF_TAGS, IFD_EXIF_TAGS, IFD_GPS_TAGS, IFD_INTEROPERABILITY_TAGS,
-            IFD_THUMBNAIL_TAGS, IFD_TIFF_TAGS, ORF_MAKER_NOTE_TAGS, ORF_CAMERA_SETTINGS_TAGS,
-            ORF_IMAGE_PROCESSING_TAGS, PEF_TAGS
-    };
+    // List of Exif tag groups, indexed by the IDF_TYPE_* constants above.
+    static final ExifTag[][] EXIF_TAGS =
+            new ExifTag[][] {
+                IFD_TIFF_TAGS, IFD_EXIF_TAGS, IFD_GPS_TAGS, IFD_INTEROPERABILITY_TAGS,
+                IFD_THUMBNAIL_TAGS, IFD_TIFF_TAGS, ORF_MAKER_NOTE_TAGS, ORF_CAMERA_SETTINGS_TAGS,
+                ORF_IMAGE_PROCESSING_TAGS, PEF_TAGS
+            };
     // List of tags for pointing to the other image file directory offset.
     private static final ExifTag[] EXIF_POINTER_TAGS = new ExifTag[] {
             new ExifTag(TAG_SUB_IFD_POINTER, 330, IFD_FORMAT_ULONG),
@@ -3750,9 +3784,15 @@ public class ExifInterfaceExtended {
     @SuppressWarnings("FieldCanBeLocal")
     private int mOrfThumbnailLength;
     private boolean mModified;
-    // XMP data can be contained as either part of the EXIF data (tag number 700), or as a
-    // separate data marker (a separate MARKER_APP1).
-    private boolean mXmpIsFromSeparateMarker;
+
+    /**
+     * XMP data can occur as either part of the TIFF/Exif data (tag number 700), or as a separate
+     * section of the file (e.g. a separate APP1 segment in JPEG). XMP read from within the
+     * TIFF/Exif data is stored in {@link #mAttributes}, while XMP read from a separate section is
+     * here. If both are present, the disambiguation rules vary per file format, see
+     * {@link #getXmpHandlingForImageType(int)}.
+     */
+    @Nullable private ExifAttribute mXmpFromSeparateMarker;
 
     // Pattern to check non zero timestamp
     private static final Pattern NON_ZERO_TIME_PATTERN = Pattern.compile(".*[1-9].*");
@@ -3932,6 +3972,11 @@ public class ExifInterfaceExtended {
             }
             tag = TAG_PHOTOGRAPHIC_SENSITIVITY;
         }
+        if (TAG_XMP.equals(tag)
+                && getXmpHandlingForImageType(mMimeType) == XMP_HANDLING_PREFER_SEPARATE
+                && mXmpFromSeparateMarker != null) {
+            return mXmpFromSeparateMarker;
+        }
         // Retrieves all tag groups. The value from primary image tag group has a higher priority
         // than the value from the thumbnail tag group if there are more than one candidates.
         for (int i = 0; i < EXIF_TAGS.length; ++i) {
@@ -3940,7 +3985,38 @@ public class ExifInterfaceExtended {
                 return value;
             }
         }
+        if (TAG_XMP.equals(tag) && mXmpFromSeparateMarker != null) {
+            return mXmpFromSeparateMarker;
+        }
         return null;
+    }
+
+    private static @XmpHandling int getXmpHandlingForImageType(int imageType) {
+        switch (imageType) {
+            // ExifInterface has a documented (but spec-violating) preference for reading and
+            // writing JPEG and HEIC XMP data from Exif/TIFF tag 700 instead of a separate XMP
+            // APP1 segment (for JPEG) or a top-level XMP UUID box (for HEIC) if both are present.
+            case IMAGE_TYPE_JPEG:
+            case IMAGE_TYPE_HEIC:
+                return XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT;
+            // RAF stores XMP/Exif in JPEG, but we have no documented backwards-compat obligations
+            // so we can implement the spec to store XMP in a separate APP1 segment.
+            case IMAGE_TYPE_RAF:
+            case IMAGE_TYPE_AVIF:
+                return XMP_HANDLING_PREFER_SEPARATE;
+            case IMAGE_TYPE_DNG:
+            case IMAGE_TYPE_ORF:
+            case IMAGE_TYPE_PEF:
+            case IMAGE_TYPE_RW2:
+            case IMAGE_TYPE_UNKNOWN:
+            // PNG and WebP support a separate XMP chunk (so should be
+            // XMP_HANDLING_PREFER_SEPARATE), but ExifInterface doesn't currently read or write
+            // them.
+            case IMAGE_TYPE_PNG:
+            case IMAGE_TYPE_WEBP:
+            default:
+                return XMP_HANDLING_TIFF_700_ONLY;
+        }
     }
 
     /**
@@ -4099,15 +4175,22 @@ public class ExifInterfaceExtended {
             }
         }
 
-        for (int i = 0 ; i < EXIF_TAGS.length; ++i) {
-            if (i == IFD_TYPE_THUMBNAIL && !mHasThumbnail) {
-                continue;
+        if (TAG_XMP.equals(tag)) {
+            boolean containsTiff700Xmp =
+                    mAttributes[IFD_TYPE_PRIMARY].containsKey(TAG_XMP)
+                            || mAttributes[IFD_TYPE_PREVIEW].containsKey(TAG_XMP);
+            @XmpHandling int xmpHandling = getXmpHandlingForImageType(mMimeType);
+            if ((xmpHandling == XMP_HANDLING_PREFER_SEPARATE
+                            && (mXmpFromSeparateMarker != null || !containsTiff700Xmp))
+                    || (xmpHandling == XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT
+                            && !containsTiff700Xmp)) {
+                mXmpFromSeparateMarker = ExifAttribute.createByte(value);
+                return;
             }
-            if (tag.equals(TAG_XMP) && i == IFD_TYPE_PREVIEW && mXmpIsFromSeparateMarker) {
-                // XMP was read from a standalone XMP APP1 segment in the source file, and only
-                // stored in sExifTagMapsForWriting[IFD_TYPE_PRIMARY], so we shouldn't store the
-                // updated value in sExifTagMapsForWriting[IFD_TYPE_PREVIEW] here, otherwise we risk
-                // incorrectly writing the updated value twice in the resulting file.
+        }
+
+        for (int i = 0; i < EXIF_TAGS.length; ++i) {
+            if (i == IFD_TYPE_THUMBNAIL && !mHasThumbnail) {
                 continue;
             }
             final ExifTag exifTag = sExifTagMapsForWriting[i].get(tag);
@@ -5564,7 +5647,6 @@ public class ExifInterfaceExtended {
                     bytesRead += length;
                     length = 0;
                     if (ExifInterfaceExtendedUtils.startsWith(bytes, IDENTIFIER_EXIF_APP1)) {
-                        byte[] xmpBeforeReadingExif = getAttributeBytes(TAG_XMP);
                         final byte[] value = Arrays.copyOfRange(bytes, IDENTIFIER_EXIF_APP1.length,
                                 bytes.length);
                         // Save offset to EXIF data for handling thumbnail and attribute offsets.
@@ -5573,27 +5655,13 @@ public class ExifInterfaceExtended {
                                 + IDENTIFIER_EXIF_APP1.length;
                         readExifSegment(value, imageType);
                         setThumbnailData(new ByteOrderedDataInputStream(value));
-                        if (getAttributeBytes(TAG_XMP) == null) {
-                            // XMP should be stored in a separate APP1 segment (see XMP spec part 3
-                            // section 3.3.2). If the Exif segment didn't contain XMP then we set
-                            // this to true to ensure any XMP data added will get written out to a
-                            // separate segment.
-                            mXmpIsFromSeparateMarker = true;
-                        } else if (xmpBeforeReadingExif != getAttributeBytes(TAG_XMP)) {
-                            mXmpIsFromSeparateMarker = false;
-                        }
                     } else if (ExifInterfaceExtendedUtils.startsWith(bytes, IDENTIFIER_XMP_APP1)) {
                         // See XMP Specification Part 3: Storage in Files, 1.1.3 JPEG, Table 6
                         final int offset = start + IDENTIFIER_XMP_APP1.length;
                         final byte[] value = Arrays.copyOfRange(bytes,
                                 IDENTIFIER_XMP_APP1.length, bytes.length);
-                        // TODO: check if ignoring separate XMP data when tag 700 already exists is
-                        //  valid.
-                        if (getAttribute(TAG_XMP) == null) {
-                            mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP,
-                                    new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value));
-                            mXmpIsFromSeparateMarker = true;
-                        }
+                        mXmpFromSeparateMarker =
+                                new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value);
                     } else if (ExifInterfaceExtendedUtils.startsWith(bytes,
                             IDENTIFIER_EXTENDED_XMP_APP1) && !mHasExtendedXmp) {
                         mHasExtendedXmp = true;
@@ -5950,10 +6018,8 @@ public class ExifInterfaceExtended {
                     in.seek(offset);
                     byte[] xmpBytes = new byte[length];
                     in.readFully(xmpBytes);
-                    if (getAttribute(TAG_XMP) == null) {
-                        mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP, new ExifAttribute(
-                                IFD_FORMAT_BYTE, xmpBytes.length, offset, xmpBytes));
-                    }
+                    mXmpFromSeparateMarker =
+                            new ExifAttribute(IFD_FORMAT_BYTE, xmpBytes.length, offset, xmpBytes);
                 }
 
                 if (DEBUG) {
@@ -6183,9 +6249,8 @@ public class ExifInterfaceExtended {
                     final int xmpChunkLength = IDENTIFIER_XMP_CHUNK.length;
                     final int offset = bytesRead + xmpChunkLength;
                     final byte[] value = Arrays.copyOfRange(data, xmpChunkLength, data.length);
-                    mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP,
-                            new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value));
-                    mXmpIsFromSeparateMarker = true;
+                    mXmpFromSeparateMarker =
+                            new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value);
                 } else {
                     // Skip to next chunk
                     source.skipFully(length + PNG_CHUNK_CRC_BYTE_LENGTH);
@@ -6279,9 +6344,8 @@ public class ExifInterfaceExtended {
                     if (source.read(data) != chunkSizePadded) {
                         throw new IOException("Failed to read WebP XMP chunk");
                     }
-                    mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP,
-                            new ExifAttribute(IFD_FORMAT_BYTE, data.length, bytesRead, data));
-                    mXmpIsFromSeparateMarker = true;
+                    mXmpFromSeparateMarker =
+                            new ExifAttribute(IFD_FORMAT_BYTE, data.length, bytesRead, data);
                     bytesRead += chunkSizePadded;
                     chunkTypes.add(new String(type));
                 } else {
@@ -6350,33 +6414,20 @@ public class ExifInterfaceExtended {
         }
         dataOutputStream.writeByte(MARKER_SOI);
 
-        // Remove XMP data if it is from a separate marker (IDENTIFIER_XMP_APP1, not
-        // IDENTIFIER_EXIF_APP1)
-        // Will re-add it later after the rest of the file is written
-        ExifAttribute xmpAttribute = null;
-        if (getAttribute(TAG_XMP) != null && mXmpIsFromSeparateMarker) {
-            xmpAttribute = mAttributes[IFD_TYPE_PRIMARY].remove(TAG_XMP);
-        }
-
         // Write EXIF APP1 segment
         dataOutputStream.writeByte(MARKER);
         dataOutputStream.writeByte(MARKER_APP1);
         writeExifSegment(dataOutputStream);
 
-        if (xmpAttribute != null && mXmpIsFromSeparateMarker) {
+        if (mXmpFromSeparateMarker != null) {
             // Write XMP APP1 segment. The XMP spec (part 3, section 1.1.3) recommends for this to
             // directly follow the Exif APP1 segment.
             dataOutputStream.write(MARKER);
             dataOutputStream.writeByte(MARKER_APP1);
-            int length = 2 + IDENTIFIER_XMP_APP1.length + xmpAttribute.getBytes().length;
+            int length = 2 + IDENTIFIER_XMP_APP1.length + mXmpFromSeparateMarker.getBytes().length;
             dataOutputStream.writeUnsignedShort(length);
             dataOutputStream.write(IDENTIFIER_XMP_APP1);
-            dataOutputStream.write(xmpAttribute.getBytes());
-        }
-
-        // Re-add previously removed XMP data.
-        if (xmpAttribute != null) {
-            mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP, xmpAttribute);
+            dataOutputStream.write(mXmpFromSeparateMarker.getBytes());
         }
 
         byte[] bytes = new byte[4096];
@@ -6406,9 +6457,8 @@ public class ExifInterfaceExtended {
                     if (identifier != null) {
                         dataInputStream.readFully(identifier);
                         if (ExifInterfaceExtendedUtils.startsWith(identifier, IDENTIFIER_EXIF_APP1)
-                                || (ExifInterfaceExtendedUtils
-                                .startsWith(identifier, IDENTIFIER_XMP_APP1) &&
-                                mXmpIsFromSeparateMarker)) {
+                                || ExifInterfaceExtendedUtils
+                                .startsWith(identifier, IDENTIFIER_XMP_APP1)) {
                             // Skip the original EXIF or XMP APP1 segment.
                             dataInputStream.skipFully(length - identifier.length);
                             break;
@@ -6511,7 +6561,8 @@ public class ExifInterfaceExtended {
                             final int skip = length - exifIdentifierLength;
                             dataInputStream.skipFully(skip);
                             break;
-                        } else if (mXmpIsFromSeparateMarker && length >= xmpIdentifierLength) {
+                        } else if (mXmpFromSeparateMarker != null &&
+                                length >= xmpIdentifierLength) {
                             dataInputStream.seek(dataInputStream.getPosition() -
                                     exifIdentifierLength);
                             final byte[] xmpIdentifier = new byte[xmpIdentifierLength];
