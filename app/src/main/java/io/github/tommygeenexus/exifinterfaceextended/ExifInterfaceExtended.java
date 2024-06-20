@@ -5565,7 +5565,13 @@ public class ExifInterfaceExtended {
                                 + IDENTIFIER_EXIF_APP1.length;
                         readExifSegment(value, imageType);
                         setThumbnailData(new ByteOrderedDataInputStream(value));
-                        if (xmpBeforeReadingExif != getAttributeBytes(TAG_XMP)) {
+                        if (getAttributeBytes(TAG_XMP) == null) {
+                            // XMP should be stored in a separate APP1 segment (see XMP spec part 3
+                            // section 3.3.2). If the Exif segment didn't contain XMP then we set
+                            // this to true to ensure any XMP data added will get written out to a
+                            // separate segment.
+                            mXmpIsFromSeparateMarker = true;
+                        } else if (xmpBeforeReadingExif != getAttributeBytes(TAG_XMP)) {
                             mXmpIsFromSeparateMarker = false;
                         }
                     } else if (ExifInterfaceExtendedUtils.startsWith(bytes, IDENTIFIER_XMP_APP1)) {
