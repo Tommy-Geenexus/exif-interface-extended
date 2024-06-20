@@ -19,6 +19,7 @@ package io.github.tommygeenexus.exifinterfaceextended;
 
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.truth.Truth.assertThat;
 
 import static org.junit.Assert.assertThrows;
@@ -301,6 +302,24 @@ public class ExifInterfaceExtendedTest {
         assertThat(xmp).isEqualTo(expectedXmp);
         byte[] imageBytes = Files.toByteArray(imageFile);
         assertThat(countOccurrences(imageBytes, TEST_XMP.getBytes(Charsets.UTF_8))).isEqualTo(1);
+    }
+
+    @Test
+    @LargeTest
+    public void testJpeg_noXmp_addXmp_writtenInSeparateSegment() throws Throwable {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.jpeg_with_exif_byte_order_ii, "jpeg_with_exif_byte_order_ii.jpg");
+        ExifInterfaceExtended exifInterface =
+                new ExifInterfaceExtended(imageFile.getAbsolutePath());
+
+        checkState(!exifInterface.hasAttribute(ExifInterfaceExtended.TAG_XMP));
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
+        exifInterface.saveAttributes();
+
+        byte[] imageBytes = Files.toByteArray(imageFile);
+        byte[] xmpApp1SegmentMarker = "http://ns.adobe.com/xap/1.0/\0".getBytes(Charsets.US_ASCII);
+        assertThat(countOccurrences(imageBytes, xmpApp1SegmentMarker)).isEqualTo(1);
     }
 
     // https://issuetracker.google.com/264729367

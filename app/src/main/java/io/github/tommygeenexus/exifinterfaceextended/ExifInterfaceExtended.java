@@ -72,11 +72,42 @@ import java.util.regex.Pattern;
 
 /**
  * This is a class for reading and writing Exif tags in various image file formats.
+ *
+ * <p>Supported for reading: JPEG, PNG, WebP, HEIF, DNG, CR2, NEF, NRW, ARW, RW2, ORF, PEF, SRW,
+ * RAF.
+ *
+ * <p>Supported for writing: JPEG, PNG, WebP.
+ *
  * <p>
- * Supported for reading: JPEG, PNG, WebP, HEIF, DNG, CR2, NEF, NRW, ARW, RW2, ORF, PEF, SRW, RAF.
- * <p>
- * Supported for writing: JPEG, PNG, WebP.
- * <p>
+ *
+ * <h3>XMP Support</h3>
+ *
+ * This class can read raw XMP data from the supported image file formats.
+ *
+ * <p>XMP data can be stored within Exif data (under tag 700), but many of the formats also define a
+ * separate storage location for XMP. ExifInterface handles this ambiguity as follows:
+ *
+ * <ul>
+ *   <li>JPEG
+ *       <ul>
+ *         <li>The XMP spec part 3 section 3.3.2 forbids the XMP tag (700) being present in the Exif
+ *             segment of JPEG files (i.e. XMP should always be in a separate APP1 segment).
+ *         <li>If XMP is present in both Exif and separate segments, the XMP from the Exif segment
+ *             is returned from {@link #getAttributeBytes} and modifications to the XMP with {@link
+ *             #setAttribute} are written back to the XMP in the Exif segment, the XMP in the
+ *             separate segment is preserved unmodified. This is contrary to the spec described
+ *             above (which suggests the standalone XMP should be preferred over the XMP in the Exif
+ *             segment).
+ *         <li>If XMP is not present in either location, and is added with {@link #setAttribute}, it
+ *             is written as a standalone segment, in line with the spec described above.
+ *       </ul>
+ *   <li>HEIF
+ *       <ul>
+ *         <li>If XMP is present in both Exif and separate segments, the XMP from the Exif segment
+ *             is returned from {@link #getAttributeBytes}.
+ *       </ul>
+ * </ul>
+ *
  * Note: JPEG and HEIF files may contain XMP data either inside the Exif data chunk or outside of
  * it. This class will search both locations for XMP data, but if XMP data exist both inside and
  * outside Exif, will favor the XMP data inside Exif over the one outside.
@@ -2233,8 +2264,11 @@ public class ExifInterfaceExtended {
     public static final String TAG_RW2_JPG_FROM_RAW = "JpgFromRaw";
     /**
      * Type is byte[]. See <a href=
-     * "https://en.wikipedia.org/wiki/Extensible_Metadata_Platform">Extensible
-     * Metadata Platform (XMP)</a> for details on contents.
+     * "https://en.wikipedia.org/wiki/Extensible_Metadata_Platform">Extensible Metadata Platform
+     * (XMP)</a> for details on contents.
+     *
+     * <p>See also notes about XMP handling in different containers in the class-level javadoc of
+     * this class.
      */
     public static final String TAG_XMP = "Xmp";
     /** Type is int. See JEITA CP-3451C Spec Section 3: Bilevel Images. */
@@ -5539,9 +5573,13 @@ public class ExifInterfaceExtended {
                         final int offset = start + IDENTIFIER_XMP_APP1.length;
                         final byte[] value = Arrays.copyOfRange(bytes,
                                 IDENTIFIER_XMP_APP1.length, bytes.length);
-                        mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP,
-                                new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value));
-                        mXmpIsFromSeparateMarker = true;
+                        // TODO: check if ignoring separate XMP data when tag 700 already exists is
+                        //  valid.
+                        if (getAttribute(TAG_XMP) == null) {
+                            mAttributes[IFD_TYPE_PRIMARY].put(TAG_XMP,
+                                    new ExifAttribute(IFD_FORMAT_BYTE, value.length, offset, value));
+                            mXmpIsFromSeparateMarker = true;
+                        }
                     } else if (ExifInterfaceExtendedUtils.startsWith(bytes,
                             IDENTIFIER_EXTENDED_XMP_APP1) && !mHasExtendedXmp) {
                         mHasExtendedXmp = true;
