@@ -49,6 +49,7 @@ import com.google.common.primitives.Ints;
 import com.google.common.truth.Expect;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -464,6 +465,18 @@ public class ExifInterfaceExtendedTest {
         testWritingExif(imageFile, /* expectedAttributes= */ null);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
+    }
+
+    // https://issuetracker.google.com/342697059
+    @Test
+    @Ignore("Enable as part of merging the fix in https://github.com/androidx/androidx/pull/683")
+    @LargeTest
+    public void testWebpWithoutExifHeight8192px() throws Throwable {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.webp_without_exif_height_8192px,
+                        "webp_without_exif_height_8192px.webp");
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
     }
 
     @Test
