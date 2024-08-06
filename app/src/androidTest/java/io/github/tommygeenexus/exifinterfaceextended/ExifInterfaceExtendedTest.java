@@ -39,6 +39,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.SdkSuppress;
 import androidx.test.filters.SmallTest;
 import androidx.test.rule.GrantPermissionRule;
 
@@ -49,7 +50,6 @@ import com.google.common.primitives.Ints;
 import com.google.common.truth.Expect;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -469,8 +469,8 @@ public class ExifInterfaceExtendedTest {
 
     // https://issuetracker.google.com/342697059
     @Test
-    @Ignore("Enable as part of merging the fix in https://github.com/androidx/androidx/pull/683")
     @LargeTest
+    @SdkSuppress(minSdkVersion = 22)
     public void testWebpWithoutExifHeight8192px() throws Throwable {
         File imageFile =
                 copyFromResourceToFile(
