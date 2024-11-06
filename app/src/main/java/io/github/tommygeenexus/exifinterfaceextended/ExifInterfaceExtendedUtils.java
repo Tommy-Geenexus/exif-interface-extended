@@ -19,7 +19,6 @@ package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
-import android.os.Build;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.util.Log;
@@ -149,17 +148,10 @@ class ExifInterfaceExtendedUtils {
      * Closes a file descriptor that has been duplicated.
      */
     static void closeFileDescriptor(FileDescriptor fd) {
-        // Os.dup and Os.close was introduced in API 21 so this method shouldn't be called
-        // in API < 21.
-        if (Build.VERSION.SDK_INT >= 21) {
-            try {
-                Api21Impl.close(fd);
-                // Catching ErrnoException will raise error in API < 21
-            } catch (Exception ex) {
-                Log.e(TAG, "Error closing fd.");
-            }
-        } else {
-            Log.e(TAG, "closeFileDescriptor is called in API < 21, which must be wrong.");
+        try {
+            Os.close(fd);
+        } catch (ErrnoException ex) {
+            Log.e(TAG, "Error closing fd.", ex);
         }
     }
 
@@ -170,24 +162,6 @@ class ExifInterfaceExtendedUtils {
     static <T> void requireNonNull(T obj, String message) {
         if (obj == null) {
             throw new NullPointerException(message);
-        }
-    }
-
-    @RequiresApi(21)
-    static class Api21Impl {
-        private Api21Impl() {}
-
-        static FileDescriptor dup(FileDescriptor fileDescriptor) throws ErrnoException {
-            return Os.dup(fileDescriptor);
-        }
-
-        @SuppressWarnings({"UnusedReturnValue", "SameParameterValue"})
-        static long lseek(FileDescriptor fd, long offset, int whence) throws ErrnoException {
-            return Os.lseek(fd, offset, whence);
-        }
-
-        static void close(FileDescriptor fd) throws ErrnoException {
-            Os.close(fd);
         }
     }
 
