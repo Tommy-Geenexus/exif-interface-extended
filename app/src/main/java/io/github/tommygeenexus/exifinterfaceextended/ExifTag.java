@@ -42,19 +42,23 @@ class ExifTag {
     }
 
     public boolean isFormatCompatible(int format) {
-        if (mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED || format == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED) {
+        if (mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED ||
+                format == ExifInterfaceExtended.IFD_FORMAT_UNDEFINED) {
             return true;
         } else if (mPrimaryFormat == format || mSecondaryFormat == format) {
             return true;
-        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG || mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG)
+        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG ||
+                mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_ULONG)
                 && format == ExifInterfaceExtended.IFD_FORMAT_USHORT) {
             return true;
-        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG || mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG)
+        } else if ((mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG ||
+                mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_SLONG)
                 && format == ExifInterfaceExtended.IFD_FORMAT_SSHORT) {
             return true;
         } else {
             return (mPrimaryFormat == ExifInterfaceExtended.IFD_FORMAT_DOUBLE ||
-                    mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_DOUBLE) && format == ExifInterfaceExtended.IFD_FORMAT_SINGLE;
+                    mSecondaryFormat == ExifInterfaceExtended.IFD_FORMAT_DOUBLE) &&
+                    format == ExifInterfaceExtended.IFD_FORMAT_SINGLE;
         }
     }
 

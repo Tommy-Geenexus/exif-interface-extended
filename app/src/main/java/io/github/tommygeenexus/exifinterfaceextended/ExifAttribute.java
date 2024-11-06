@@ -145,7 +145,6 @@ class ExifAttribute {
         return "(" + ExifInterfaceExtended.IFD_FORMAT_NAMES[mFormat] + ", data length:" + mBytes.length + ")";
     }
 
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
     Object getValue(ByteOrder byteOrder) {
         ByteOrderedDataInputStream inputStream = null;
         try {

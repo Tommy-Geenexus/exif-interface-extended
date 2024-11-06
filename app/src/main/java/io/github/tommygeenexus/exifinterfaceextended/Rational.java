@@ -26,7 +26,6 @@ class Rational {
     private final long mNumerator;
     private final long mDenominator;
 
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
     Rational(long numerator, long denominator) {
         // Handle erroneous case
         if (denominator == 0) {

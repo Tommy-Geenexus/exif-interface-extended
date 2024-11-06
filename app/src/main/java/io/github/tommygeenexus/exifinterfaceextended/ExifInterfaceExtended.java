@@ -33,6 +33,7 @@ import android.util.Pair;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.RestrictTo;
+import androidx.annotation.VisibleForTesting;
 
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
@@ -3329,16 +3330,15 @@ public class ExifInterfaceExtended {
     // Format indicating a new IFD entry (See Adobe PageMaker® 6.0 TIFF Technical Notes, "New Tag")
     static final int IFD_FORMAT_IFD = 13;
     // Names for the data formats for debugging purpose.
-    static final String[] IFD_FORMAT_NAMES = new String[]{
+    static final String[] IFD_FORMAT_NAMES = new String[] {
             "", "BYTE", "STRING", "USHORT", "ULONG", "URATIONAL", "SBYTE", "UNDEFINED", "SSHORT",
             "SLONG", "SRATIONAL", "SINGLE", "DOUBLE", "IFD"
     };
     // Sizes of the components of each IFD value format
-    static final int[] IFD_FORMAT_BYTES_PER_FORMAT = new int[]{
+    static final int[] IFD_FORMAT_BYTES_PER_FORMAT = new int[] {
             0, 1, 1, 2, 4, 8, 1, 1, 2, 4, 8, 4, 8, 1
     };
 
-    @SuppressWarnings("WeakerAccess") /* synthetic access */
     static final byte[] EXIF_ASCII_PREFIX = new byte[] {
             0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0
     };
@@ -3588,12 +3588,12 @@ public class ExifInterfaceExtended {
             IFD_TYPE_ORF_CAMERA_SETTINGS, IFD_TYPE_ORF_IMAGE_PROCESSING, IFD_TYPE_PEF})
     public @interface IfdType {}
 
-    static final int IFD_TYPE_PRIMARY = 0;
+    private static final int IFD_TYPE_PRIMARY = 0;
     private static final int IFD_TYPE_EXIF = 1;
     private static final int IFD_TYPE_GPS = 2;
     private static final int IFD_TYPE_INTEROPERABILITY = 3;
-    static final int IFD_TYPE_THUMBNAIL = 4;
-    static final int IFD_TYPE_PREVIEW = 5;
+    private static final int IFD_TYPE_THUMBNAIL = 4;
+    private static final int IFD_TYPE_PREVIEW = 5;
     private static final int IFD_TYPE_ORF_MAKER_NOTE = 6;
     private static final int IFD_TYPE_ORF_CAMERA_SETTINGS = 7;
     private static final int IFD_TYPE_ORF_IMAGE_PROCESSING = 8;
@@ -3656,7 +3656,7 @@ public class ExifInterfaceExtended {
     // not only getting information from EXIF but also from some JPEG special segments such as
     // MARKER_COM for user comment and MARKER_SOFx for image width and height.
     // Identifier for EXIF APP1 segment in JPEG
-    static final byte[] IDENTIFIER_EXIF_APP1 = "Exif\0\0".getBytes(ASCII);
+    @VisibleForTesting static final byte[] IDENTIFIER_EXIF_APP1 = "Exif\0\0".getBytes(ASCII);
     // Identifier for XMP APP1 segment in JPEG
     private static final byte[] IDENTIFIER_XMP_APP1 =
             "http://ns.adobe.com/xap/1.0/\0".getBytes(ASCII);
@@ -3674,7 +3674,7 @@ public class ExifInterfaceExtended {
     // JPEG segment markers, that each marker consumes two bytes beginning with 0xff and ending with
     // the indicator. There is no SOF4, SOF8, SOF16 markers in JPEG and SOFx markers indicates start
     // of frame(baseline DCT) and the image size info exists in its beginning part.
-    static final byte MARKER = (byte) 0xff;
+    private static final byte MARKER = (byte) 0xff;
     private static final byte MARKER_SOI = (byte) 0xd8;
     private static final byte MARKER_SOF0 = (byte) 0xc0;
     private static final byte MARKER_SOF1 = (byte) 0xc1;
@@ -3690,34 +3690,24 @@ public class ExifInterfaceExtended {
     private static final byte MARKER_SOF14 = (byte) 0xce;
     private static final byte MARKER_SOF15 = (byte) 0xcf;
     private static final byte MARKER_SOS = (byte) 0xda;
-    static final byte MARKER_APP1 = (byte) 0xe1;
+    @VisibleForTesting static final byte MARKER_APP1 = (byte) 0xe1;
     private static final byte MARKER_APP2 = (byte) 0xe2;
     private static final byte MARKER_APP13 = (byte) 0xed;
     private static final byte MARKER_COM = (byte) 0xfe;
-    static final byte MARKER_EOI = (byte) 0xd9;
+    private static final byte MARKER_EOI = (byte) 0xd9;
 
     // Supported Image File Types
-    static final int IMAGE_TYPE_UNKNOWN = 0;
-    @SuppressWarnings("unused")
-    static final int IMAGE_TYPE_ARW = 1;
-    @SuppressWarnings("unused")
-    static final int IMAGE_TYPE_CR2 = 2;
-    static final int IMAGE_TYPE_DNG = 3;
-    static final int IMAGE_TYPE_JPEG = 4;
-    @SuppressWarnings("unused")
-    static final int IMAGE_TYPE_NEF = 5;
-    @SuppressWarnings("unused")
-    static final int IMAGE_TYPE_NRW = 6;
-    static final int IMAGE_TYPE_ORF = 7;
-    static final int IMAGE_TYPE_PEF = 8;
-    static final int IMAGE_TYPE_RAF = 9;
-    static final int IMAGE_TYPE_RW2 = 10;
-    @SuppressWarnings("unused")
-    static final int IMAGE_TYPE_SRW = 11;
-    static final int IMAGE_TYPE_HEIC = 12;
-    static final int IMAGE_TYPE_PNG = 13;
-    static final int IMAGE_TYPE_WEBP = 14;
-    static final int IMAGE_TYPE_AVIF = 15;
+    private static final int IMAGE_TYPE_UNKNOWN = 0;
+    private static final int IMAGE_TYPE_DNG = 3;
+    private static final int IMAGE_TYPE_JPEG = 4;
+    private static final int IMAGE_TYPE_ORF = 7;
+    private static final int IMAGE_TYPE_PEF = 8;
+    private static final int IMAGE_TYPE_RAF = 9;
+    private static final int IMAGE_TYPE_RW2 = 10;
+    private static final int IMAGE_TYPE_HEIC = 12;
+    private static final int IMAGE_TYPE_PNG = 13;
+    private static final int IMAGE_TYPE_WEBP = 14;
+    private static final int IMAGE_TYPE_AVIF = 15;
 
     static {
         WEBP_VP8X_CHUNK_ORDER = new HashMap<>();
@@ -3960,7 +3950,6 @@ public class ExifInterfaceExtended {
      *
      * @param tag the name of the tag.
      */
-    @SuppressWarnings("deprecation")
     @Nullable
     private ExifAttribute getExifAttribute(@NonNull String tag) {
         ExifInterfaceExtendedUtils.requireNonNull(tag, "tag shouldn't be null");
