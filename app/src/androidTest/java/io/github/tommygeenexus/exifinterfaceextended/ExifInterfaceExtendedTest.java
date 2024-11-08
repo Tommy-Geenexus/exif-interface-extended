@@ -372,13 +372,13 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @LargeTest
-    public void testPngWithExif() throws Throwable {
-        File imageFile = copyFromResourceToFile(
-                R.raw.png_with_exif_byte_order_ii,
-                "png_with_exif_byte_order_ii.png"
-        );
-        readFromFilesWithExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
-        testWritingExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_BYTE_ORDER_II);
+    public void testPngWithExifAndXmp() throws Throwable {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.png_with_exif_and_xmp_byte_order_ii,
+                        "png_with_exif_and_xmp_byte_order_ii.png");
+        readFromFilesWithExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_AND_XMP_BYTE_ORDER_II);
+        testWritingExif(imageFile, ExpectedAttributes.PNG_WITH_EXIF_AND_XMP_BYTE_ORDER_II);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), true, false);
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(PNG_TEST), true, true);
     }
