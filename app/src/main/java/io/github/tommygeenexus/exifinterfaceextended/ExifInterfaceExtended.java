@@ -3245,16 +3245,16 @@ public class ExifInterfaceExtended {
     };
     // See "Extensions to the PNG 1.2 Specification, Version 1.5.0",
     // 3.7. eXIf Exchangeable Image File (Exif) Profile
-    private static final int PNG_CHUNK_TYPE_EXIF = intFromBytes('e', 'X', 'I', 'f');
+    private static final int PNG_CHUNK_TYPE_EXIF = 'e' << 24 | 'X' << 16 | 'I' << 8 | 'f';
     // See https://www.w3.org/TR/PNG
-    private static final int PNG_CHUNK_TYPE_ICCP = intFromBytes('i', 'C', 'C', 'P');
-    private static final int PNG_CHUNK_TYPE_TEXT = intFromBytes('t', 'E', 'X', 't');
+    private static final int PNG_CHUNK_TYPE_ICCP = 'i' << 24 | 'C' << 16 | 'C' << 8 | 'P';
+    private static final int PNG_CHUNK_TYPE_TEXT = 't' << 24 | 'E' << 16 | 'X' << 8 | 't';
     // See https://wwwimages2.adobe.com/content/dam/acom/en/devnet/xmp/pdfs/
     // XMP%20SDK%20Release%20cc-2016-08/XMPSpecificationPart3.pdf
-    private static final int PNG_CHUNK_TYPE_ITXT = intFromBytes('i', 'T', 'X', 't');
-    private static final int PNG_CHUNK_TYPE_ZTXT = intFromBytes('z', 'T', 'X', 't');
-    private static final int PNG_CHUNK_TYPE_IHDR = intFromBytes('I', 'H', 'D', 'R');
-    private static final int PNG_CHUNK_TYPE_IEND = intFromBytes('I', 'E', 'N', 'D');
+    private static final int PNG_CHUNK_TYPE_ITXT = 'i' << 24 | 'T' << 16 | 'X' << 8 | 't';
+    private static final int PNG_CHUNK_TYPE_ZTXT = 'z' << 24 | 'T' << 16 | 'X' << 8 | 't';
+    private static final int PNG_CHUNK_TYPE_IHDR = 'I' << 24 | 'H' << 16 | 'D' << 8 | 'R';
+    private static final int PNG_CHUNK_TYPE_IEND = 'I' << 24 | 'E' << 16 | 'N' << 8 | 'D';
     // Identifier for XMP chunk in PNG
     private static final byte[] IDENTIFIER_XMP_CHUNK =
             "XML:com.adobe.xmp\0\0\0\0\0".getBytes(ASCII);
@@ -8402,13 +8402,5 @@ public class ExifInterfaceExtended {
     private static boolean isSupportedFormatForSavingIgnoringAttributes(int mimeType) {
         return mimeType == IMAGE_TYPE_JPEG || mimeType == IMAGE_TYPE_PNG
                 || mimeType == IMAGE_TYPE_WEBP;
-    }
-
-    /*
-     * Combines the lower eight bits of each parameter into a 32-bit int. {@code b1} is the highest
-     * byte of the result, {@code b4} is the lowest.
-     */
-    private static int intFromBytes(int b1, int b2, int b3, int b4) {
-        return ((b1 & 0xFF) << 24) | ((b2 & 0xFF) << 16) | ((b3 & 0xFF) << 8) | (b4 & 0xFF);
     }
 }
