@@ -94,7 +94,7 @@ import java.util.regex.Pattern;
  * separate storage location for XMP. ExifInterface handles this ambiguity as follows:
  *
  * <ul>
- *   <li>JPEG
+ *   <li><b>JPEG</b>
  *       <ul>
  *         <li>The XMP spec part 3 section 3.3.2 forbids the XMP tag (700) being present in the Exif
  *             segment of JPEG files (i.e. XMP should always be in a separate APP1 segment).
@@ -107,16 +107,12 @@ import java.util.regex.Pattern;
  *         <li>If XMP is not present in either location, and is added with {@link #setAttribute}, it
  *             is written as a standalone segment, in line with the spec described above.
  *       </ul>
- *   <li>HEIF
+ *   <li><b>HEIC & AVIF</b>
  *       <ul>
- *         <li>If XMP is present in both Exif and separate segments, the XMP from the Exif segment
- *             is returned from {@link #getAttributeBytes}.
+ *         <li>If XMP is present in both Exif and separate segments, the XMP from the separate
+ *             segment is returned from {@link #getAttributeBytes}.
  *       </ul>
  * </ul>
- *
- * Note: JPEG and HEIF files may contain XMP data either inside the Exif data chunk or outside of
- * it. This class will search both locations for XMP data, but if XMP data exist both inside and
- * outside Exif, will favor the XMP data inside Exif over the one outside.
  */
 public class ExifInterfaceExtended {
 
@@ -3984,15 +3980,15 @@ public class ExifInterfaceExtended {
     private static @XmpHandling int getXmpHandlingForImageType(int imageType) {
         switch (imageType) {
             // ExifInterface has a documented (but spec-violating) preference for reading and
-            // writing JPEG and HEIC XMP data from Exif/TIFF tag 700 instead of a separate XMP
-            // APP1 segment (for JPEG) or a top-level XMP UUID box (for HEIC) if both are present.
+            // writing JPEG XMP data from Exif/TIFF tag 700 instead of a separate XMP APP1 segment
+            // if both are present.
             case IMAGE_TYPE_JPEG:
-            case IMAGE_TYPE_HEIC:
                 return XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT;
+            case IMAGE_TYPE_AVIF:
+            case IMAGE_TYPE_HEIC:
             // RAF stores XMP/Exif in JPEG, but we have no documented backwards-compat obligations
             // so we can implement the spec to store XMP in a separate APP1 segment.
             case IMAGE_TYPE_RAF:
-            case IMAGE_TYPE_AVIF:
                 return XMP_HANDLING_PREFER_SEPARATE;
             case IMAGE_TYPE_DNG:
             case IMAGE_TYPE_ORF:
