@@ -2204,6 +2204,19 @@ public class ExifInterfaceExtendedTest {
         if (!isWebP) {
             exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
         }
+        // Check expected modifications are visible without saving to disk (but offsets are now
+        // unknown).
+        expect.that(exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE)).isEqualTo("abc");
+        expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_MAKE))
+                .isEqualTo(new long[] {-1, 4});
+        // XMP is not updated for WebP files
+        if (!isWebP) {
+            byte[] expectedXmpBytes = TEST_XMP.getBytes(Charsets.UTF_8);
+            expect.that(exifInterface.getAttributeBytes(ExifInterfaceExtended.TAG_XMP))
+                    .isEqualTo(expectedXmpBytes);
+            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP))
+                    .isEqualTo(new long[]{-1, expectedXmpBytes.length});
+        }
         exifInterface.saveAttributes();
 
         ExpectedAttributes.Builder expectedAttributesBuilder =

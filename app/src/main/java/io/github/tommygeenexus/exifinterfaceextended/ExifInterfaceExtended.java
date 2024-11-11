@@ -4952,14 +4952,18 @@ public class ExifInterfaceExtended {
     }
 
     /**
-     * Returns the offset and length of the requested tag inside the image file,
-     * or {@code null} if the tag is not contained.
+     * Returns the offset and length of the requested tag inside the image file, or {@code null} if
+     * the tag is not contained.
      *
-     * @return two-element array, the offset in the first value, and length in
-     *         the second, or {@code null} if no tag was found.
-     * @throws IllegalStateException if {@link #saveAttributes()} has been
-     *             called since the underlying file was initially parsed, since
-     *             that means offsets may have changed.
+     * <p>If the attribute has been modified with {@link #setAttribute(String, String)} but not yet
+     * written to disk with {@link #saveAttributes()}, the returned range will have the correct
+     * length for the modified value, but an offset of {@code -1} to indicate its position in the
+     * file isn't known.
+     *
+     * @return two-element array, the offset in the first value, and length in the second, or {@code
+     *     null} if no tag was found.
+     * @throws IllegalStateException if {@link #saveAttributes()} has been called since the
+     *     underlying file was initially parsed, since that means offsets may have changed.
      */
     public long @Nullable [] getAttributeRange(@NonNull String tag) {
         ExifInterfaceExtendedUtils.requireNonNull(tag, "tag shouldn't be null");
