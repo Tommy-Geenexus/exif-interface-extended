@@ -215,6 +215,21 @@ public class ExifInterfaceExtendedTest {
         writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
     }
 
+    /**
+     * {@link R.raw#jpeg_with_app1_after_dqt} is the same as {@link
+     * R.raw#jpeg_with_exif_byte_order_ii} but with the APP1 Exif segment moved after the DQT
+     * segment.
+     */
+    @Test
+    @LargeTest
+    public void testJpegWithApp1AfterDqt() throws Throwable {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.jpeg_with_app1_after_dqt, "jpeg_with_app1_after_dqt.jpg");
+        readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_APP1_AFTER_DQT);
+        testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_APP1_AFTER_DQT);
+    }
+
     // https://issuetracker.google.com/309843390
     @Test
     @LargeTest

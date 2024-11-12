@@ -113,6 +113,13 @@ final class ExpectedAttributes {
                     .setIso(null)
                     .build();
 
+    public static final ExpectedAttributes JPEG_WITH_APP1_AFTER_DQT =
+            JPEG_WITH_EXIF_BYTE_ORDER_II
+                    .buildUpon()
+                    .setMakeOffset(294)
+                    .setThumbnailOffset(3634)
+                    .build();
+
     /** Expected attributes for {@link R.raw#dng_with_exif_with_xmp}. */
     public static final ExpectedAttributes DNG_WITH_EXIF_WITH_XMP =
             new Builder()

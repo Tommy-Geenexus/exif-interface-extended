@@ -17,6 +17,7 @@
 
 package io.github.tommygeenexus.exifinterfaceextended;
 
+import java.io.DataOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -28,12 +29,12 @@ import java.nio.ByteOrder;
  */
 class ByteOrderedDataOutputStream extends FilterOutputStream {
 
-    private final OutputStream mOutputStream;
+    private final DataOutputStream mOutputStream;
     private ByteOrder mByteOrder;
 
     public ByteOrderedDataOutputStream(OutputStream out, ByteOrder byteOrder) {
         super(out);
-        mOutputStream = out;
+        mOutputStream = new DataOutputStream(out);
         mByteOrder = byteOrder;
     }
 
@@ -91,7 +92,7 @@ class ByteOrderedDataOutputStream extends FilterOutputStream {
         writeInt((int) val);
     }
 
-    public OutputStream getOutputStream() {
+    public DataOutputStream getOutputStream() {
         return mOutputStream;
     }
 
