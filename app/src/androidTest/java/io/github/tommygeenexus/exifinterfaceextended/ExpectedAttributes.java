@@ -50,6 +50,7 @@ final class ExpectedAttributes {
                     .setFocalLength("413/100")
                     .setImageSize(640, 480)
                     .setIso("50")
+                    .setPixelYDimension(480)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_ROTATE_90)
                     .build();
 
@@ -88,6 +89,7 @@ final class ExpectedAttributes {
                     .setGpsTimestamp("00:00:00")
                     .setImageSize(144, 176)
                     .setIso("146")
+                    .setPixelYDimension(176)
                     .build();
 
     /**
@@ -111,6 +113,7 @@ final class ExpectedAttributes {
                     .setExposureTime(0)
                     .setFocalLength(null)
                     .setIso(null)
+                    .setPixelYDimension(0)
                     .build();
 
     public static final ExpectedAttributes JPEG_WITH_APP1_AFTER_DQT =
@@ -182,6 +185,7 @@ final class ExpectedAttributes {
     /** Expected attributes for {@link R.raw#invalid_webp_with_jpeg_app1_marker}. */
     public static final ExpectedAttributes INVALID_WEBP_WITH_JPEG_APP1_MARKER =
             new Builder()
+                    .setPixelYDimension(280)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_ROTATE_270)
                     .setHasIccProfile(true)
                     .build();
@@ -193,6 +197,7 @@ final class ExpectedAttributes {
                     .setMakeOffset(3519)
                     .setModel("Nexus 5")
                     .setImageSize(1920, 1080)
+                    .setPixelYDimension(1080)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
                     .build();
 
@@ -219,6 +224,7 @@ final class ExpectedAttributes {
                     .setFocalLength("4440/1000")
                     .setImageSize(4032, 3024)
                     .setIso("63")
+                    .setPixelYDimension(3024)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
                     .setXmpResourceId(R.raw.jpeg_xmp_3)
                     .setXmpOffsetAndLength(955, 322)
@@ -233,6 +239,7 @@ final class ExpectedAttributes {
                     .setThumbnailSize(127, 160)
                     .setThumbnailOffsetAndLength(464, 6473)
                     .setImageSize(300, 379)
+                    .setPixelYDimension(379)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
                     .setXmpResourceId(R.raw.jpeg_xmp_2)
                     .setXmpOffsetAndLength(15680, 19087)
@@ -253,6 +260,7 @@ final class ExpectedAttributes {
                     .setFocalLength("4440/1000")
                     .setImageSize(4032, 3024)
                     .setIso("63")
+                    .setPixelYDimension(3024)
                     .setOrientation(ExifInterfaceExtended.ORIENTATION_NORMAL)
                     .setXmpResourceId(R.raw.jpeg_xmp_3)
                     .setXmpOffsetAndLength(3286048, 322)
@@ -315,6 +323,7 @@ final class ExpectedAttributes {
         @Nullable private String mIso;
         private int mOrientation;
         private int mWhiteBalance;
+        private int mPixelYDimension;
 
         // XMP information.
         private boolean mHasXmp;
@@ -362,6 +371,7 @@ final class ExpectedAttributes {
             mImageWidth = attributes.getImageWidth();
             mIso = attributes.getIso();
             mOrientation = attributes.getOrientation();
+            mPixelYDimension = attributes.getPixelYDimension();
             mHasXmp = attributes.hasXmp();
             mXmp = attributes.getXmp();
             mXmpResourceId = attributes.getXmpResourceId();
@@ -563,6 +573,11 @@ final class ExpectedAttributes {
             return this;
         }
 
+        public Builder setPixelYDimension(int dimension) {
+            mPixelYDimension = dimension;
+            return this;
+        }
+
         /**
          * Sets the expected XMP data.
          *
@@ -673,6 +688,7 @@ final class ExpectedAttributes {
     private final int mImageWidth;
     @Nullable private final String mIso;
     private final int mOrientation;
+    private final int mPixelYDimension;
 
     // XMP information.
     private final boolean mHasXmp;
@@ -720,6 +736,7 @@ final class ExpectedAttributes {
         mImageWidth = builder.mImageWidth;
         mIso = builder.mIso;
         mOrientation = builder.mOrientation;
+        mPixelYDimension = builder.mPixelYDimension;
         mHasXmp = builder.mHasXmp;
         mXmp = builder.mXmp;
         mXmpResourceId = builder.mXmpResourceId;
@@ -868,6 +885,10 @@ final class ExpectedAttributes {
 
     public int getOrientation() {
         return mOrientation;
+    }
+
+    public int getPixelYDimension() {
+        return mPixelYDimension;
     }
 
     public boolean hasXmp() {

@@ -2086,6 +2086,9 @@ public class ExifInterfaceExtendedTest {
         );
         expect.that(exifInterface.getAttributeInt(ExifInterfaceExtended.TAG_ORIENTATION, 0))
                 .isEqualTo(expectedAttributes.getOrientation());
+        expect.that(exifInterface.getAttributeInt(ExifInterfaceExtended.TAG_PIXEL_Y_DIMENSION, 0))
+                .isEqualTo(expectedAttributes.getPixelYDimension());
+
         // ExifInterface.TAG_XMP is documented as type byte[], so we access it using
         // getAttributeBytes instead of getAttribute, which would unavoidably convert it to an
         // ASCII string.
