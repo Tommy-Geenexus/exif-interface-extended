@@ -3245,7 +3245,8 @@ public class ExifInterfaceExtended {
     private static final int WEBP_FILE_SIZE_BYTE_OFFSET = 8;
     private static final int WEBP_FILE_SIZE_BYTE_LENGTH = 4;
     private static final byte WEBP_VP8L_SIGNATURE = (byte) 0x2f;
-    private static final byte[] WEBP_VP8_SIGNATURE = "VP8 ".getBytes(ASCII);
+    private static final byte[] WEBP_VP8_SIGNATURE = new byte[]{(byte) 0x9d, (byte) 0x01,
+            (byte) 0x2a};
     private static final byte[] WEBP_CHUNK_TYPE_VP8X = "VP8X".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_VP8L = "VP8L".getBytes(ASCII);
     private static final byte[] WEBP_CHUNK_TYPE_VP8 = "VP8 ".getBytes(ASCII);
