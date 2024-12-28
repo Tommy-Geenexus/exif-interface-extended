@@ -19,12 +19,13 @@ package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RawRes;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.io.CharStreams;
+
+import org.jspecify.annotations.Nullable;
 
 import io.github.tommygeenexus.exifinterfaceextended.test.R;
 
@@ -295,7 +296,8 @@ final class ExpectedAttributes {
         @Nullable private String mMake;
 
         // Values.
-        @Nullable private String mModel;
+        @Nullable
+        private String mModel;
         private double mAperture;
         @Nullable private String mDateTimeOriginal;
         private double mExposureTime;

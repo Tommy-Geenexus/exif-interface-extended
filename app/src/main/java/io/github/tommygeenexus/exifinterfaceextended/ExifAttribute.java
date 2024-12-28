@@ -19,7 +19,7 @@ package io.github.tommygeenexus.exifinterfaceextended;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;

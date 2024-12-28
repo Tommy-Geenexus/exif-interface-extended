@@ -17,7 +17,7 @@
 
 package io.github.tommygeenexus.exifinterfaceextended;
 
-import androidx.annotation.NonNull;
+import org.jspecify.annotations.NonNull;
 
 // A class for indicating EXIF rational type.
 // TODO: b/308978831 - Migrate to android.util.Rational when the min API is 21.

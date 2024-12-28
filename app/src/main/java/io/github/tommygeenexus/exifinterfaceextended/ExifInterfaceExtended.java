@@ -30,9 +30,10 @@ import android.util.Log;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RestrictTo;
+
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -4751,8 +4752,7 @@ public class ExifInterfaceExtended {
      * The returned data can be decoded using
      * {@link BitmapFactory#decodeByteArray(byte[],int,int)}
      */
-    @Nullable
-    public byte[] getThumbnail() {
+    public byte @Nullable [] getThumbnail() {
         if (mThumbnailCompression == DATA_JPEG || mThumbnailCompression == DATA_JPEG_COMPRESSED) {
             return getThumbnailBytes();
         }
@@ -4764,8 +4764,7 @@ public class ExifInterfaceExtended {
      * thumbnail image.
      */
     @SuppressWarnings("IOStreamConstructor")
-    @Nullable
-    public byte[] getThumbnailBytes() {
+    public byte @Nullable [] getThumbnailBytes() {
         if (!mHasThumbnail) {
             return null;
         }
@@ -4889,8 +4888,7 @@ public class ExifInterfaceExtended {
      *             called since the underlying file was initially parsed, since
      *             that means offsets may have changed.
      */
-    @Nullable
-    public long[] getThumbnailRange() {
+    public long @Nullable [] getThumbnailRange() {
         if (mModified) {
             throw new IllegalStateException(
                     "The underlying file has been modified since being parsed");
@@ -4915,8 +4913,7 @@ public class ExifInterfaceExtended {
      *             called since the underlying file was initially parsed, since
      *             that means offsets may have changed.
      */
-    @Nullable
-    public long[] getAttributeRange(@NonNull String tag) {
+    public long @Nullable [] getAttributeRange(@NonNull String tag) {
         ExifInterfaceExtendedUtils.requireNonNull(tag, "tag shouldn't be null");
         if (mModified) {
             throw new IllegalStateException(
@@ -4938,8 +4935,7 @@ public class ExifInterfaceExtended {
      * @return raw bytes for the value of the requested tag, or {@code null} if
      *         no tag was found.
      */
-    @Nullable
-    public byte[] getAttributeBytes(@NonNull String tag) {
+    public byte @Nullable [] getAttributeBytes(@NonNull String tag) {
         ExifInterfaceExtendedUtils.requireNonNull(tag, "tag shouldn't be null");
         final ExifAttribute attribute = getExifAttribute(tag);
         if (attribute != null) {
@@ -4974,8 +4970,7 @@ public class ExifInterfaceExtended {
      * array where the first element is the latitude and the second element is the longitude.
      * Otherwise, it returns null.
      */
-    @Nullable
-    public double[] getLatLong() {
+    public double @Nullable [] getLatLong() {
         String latValue = getAttribute(TAG_GPS_LATITUDE);
         String latRef = getAttribute(TAG_GPS_LATITUDE_REF);
         String lngValue = getAttribute(TAG_GPS_LONGITUDE);
@@ -6400,7 +6395,7 @@ public class ExifInterfaceExtended {
                     }
                     // If the length is long enough, we read enough bytes for the XMP identifier,
                     // because it's longer than the EXIF one.
-                    @Nullable byte[] identifier;
+                    byte[] identifier;
                     if (length >= IDENTIFIER_XMP_APP1.length) {
                         identifier = new byte[IDENTIFIER_XMP_APP1.length];
                     } else if (length >= IDENTIFIER_EXIF_APP1.length) {
