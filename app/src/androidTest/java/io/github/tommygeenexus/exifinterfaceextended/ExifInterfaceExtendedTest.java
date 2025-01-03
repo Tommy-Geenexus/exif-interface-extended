@@ -655,6 +655,77 @@ public class ExifInterfaceExtendedTest {
     }
 
     /**
+     * {@code webp_without_exif_trailing_data.webp} contains the same data as {@code
+     * webp_without_exif.webp} with {@code 0xDEADBEEFDEADBEEF} appended on the end (but excluded
+     * from the RIFF length).
+     *
+     * <p>This test ensures the resulting file is valid (i.e. the trailing data is still excluded
+     * from RIFF length).
+     */
+    // https://issuetracker.google.com/385766064
+    @Test
+    @LargeTest
+    public void testWebpWithoutExifAndTrailingData() throws Throwable {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.webp_without_exif_trailing_data,
+                        "webp_without_exif_trailing_data.webp");
+        testWritingExif(imageFile, /* expectedAttributes= */ null);
+    }
+
+    /**
+     * {@code webp_without_exif_trailing_data.webp} contains the same data as {@code
+     * webp_without_exif.webp} with {@code 0xDEADBEEFDEADBEEF} appended on the end (but excluded
+     * from the RIFF length).
+     *
+     * <p>This test ensures the trailing data is preserved.
+     */
+    // https://issuetracker.google.com/385766064
+    @Test
+    @LargeTest
+    public void testWebpWithoutExifAndTrailingData_trailingDataPreserved() throws Throwable {
+        final File imageFile =
+                copyFromResourceToFile(
+                        R.raw.webp_without_exif_trailing_data,
+                        "webp_without_exif_trailing_data.webp");
+        final byte[] expectedTrailingData =
+                new byte[] {
+                        (byte) 0xDE,
+                        (byte) 0xAD,
+                        (byte) 0xBE,
+                        (byte) 0xEF,
+                        (byte) 0xDE,
+                        (byte) 0xAD,
+                        (byte) 0xBE,
+                        (byte) 0xEF
+                };
+        final ExifInterfaceExtended exifInterface =
+                new ExifInterfaceExtended(imageFile.getAbsolutePath());
+        exifInterface.saveAttributes();
+        byte[] imageData = Files.toByteArray(imageFile);
+        byte[] actualTrailingData =
+                Arrays.copyOfRange(
+                        imageData,
+                        imageData.length - expectedTrailingData.length,
+                        imageData.length);
+        assertThat(actualTrailingData).isEqualTo(expectedTrailingData);
+
+        final File sink = resolveImageFile(WEBP_TEST);
+        try (InputStream in = java.nio.file.Files.newInputStream(imageFile.toPath())) {
+            try (OutputStream out = java.nio.file.Files.newOutputStream(sink.toPath())) {
+                exifInterface.saveExclusive(in, out, false);
+                imageData = Files.toByteArray(sink);
+                actualTrailingData =
+                        Arrays.copyOfRange(
+                                imageData,
+                                imageData.length - expectedTrailingData.length,
+                                imageData.length);
+                assertThat(actualTrailingData).isEqualTo(actualTrailingData);
+            }
+        }
+    }
+
+    /**
      * Support for retrieving EXIF from HEIC was added in SDK 28.
      */
     @Test

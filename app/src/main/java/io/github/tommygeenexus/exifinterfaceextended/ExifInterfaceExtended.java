@@ -6903,8 +6903,8 @@ public class ExifInterfaceExtended {
         // WebP signature
         ExifInterfaceExtendedUtils.copy(totalInputStream,
                 totalOutputStream, WEBP_SIGNATURE_1.length);
-        // File length will be written after all the chunks have been written
-        totalInputStream.skipFully(WEBP_FILE_SIZE_BYTE_LENGTH + WEBP_SIGNATURE_2.length);
+        int riffLength = totalInputStream.readInt();
+        totalInputStream.skipFully(WEBP_SIGNATURE_2.length);
 
         // Create a separate byte array to calculate file length
         ByteArrayOutputStream nonHeaderByteArrayOutputStream = null;
@@ -7081,8 +7081,10 @@ public class ExifInterfaceExtended {
                 }
             }
 
-            // Copy the rest of the file
-            ExifInterfaceExtendedUtils.copy(totalInputStream, nonHeaderOutputStream);
+            // Copy the rest of the RIFF part of the file
+            int remainingRiffBytes = riffLength + 8 - totalInputStream.getPosition();
+            ExifInterfaceExtendedUtils.copy(totalInputStream, nonHeaderOutputStream,
+                    remainingRiffBytes);
 
             // Write file length + second signature
             totalOutputStream.writeInt(nonHeaderByteArrayOutputStream.size()
@@ -7092,6 +7094,8 @@ public class ExifInterfaceExtended {
                 mOffsetToExifData = totalOutputStream.getOutputStream().size() + exifOffset;
             }
             nonHeaderByteArrayOutputStream.writeTo(totalOutputStream);
+            // Copy any non-RIFF trailing data
+            ExifInterfaceExtendedUtils.copy(totalInputStream, totalOutputStream);
         } catch (Exception e) {
             throw new IOException("Failed to save WebP file", e);
         } finally {
@@ -7297,6 +7301,8 @@ public class ExifInterfaceExtended {
                     WEBP_SIGNATURE_2.length);
             totalOutputStream.write(WEBP_SIGNATURE_2);
             nonHeaderByteArrayOutputStream.writeTo(totalOutputStream);
+            // Copy any non-RIFF trailing data
+            ExifInterfaceExtendedUtils.copy(totalInputStream, totalOutputStream);
         } catch (final Exception e) {
             throw new IOException("Failed to save WebP file", e);
         } finally {
