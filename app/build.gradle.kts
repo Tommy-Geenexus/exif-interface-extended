@@ -1,14 +1,14 @@
 plugins {
     id("com.android.library")
-    id("com.vanniktech.maven.publish") version "0.28.0"
+    id("com.vanniktech.maven.publish") version "0.30.0"
 }
 
 android {
     namespace = "io.github.tommygeenexus.exifinterfaceextended"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
-        minSdk = 14
+        minSdk = 21
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -16,8 +16,8 @@ android {
 
 dependencies {
     api("org.jspecify:jspecify:1.0.0")
-    implementation("androidx.annotation:annotation:1.8.0")
+    implementation("androidx.annotation:annotation:1.9.1")
     androidTestImplementation("com.google.truth:truth:1.4.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test:rules:1.5.0")
+    androidTestImplementation("androidx.test.ext:junit:1.2.1")
+    androidTestImplementation("androidx.test:rules:1.6.1")
 }
