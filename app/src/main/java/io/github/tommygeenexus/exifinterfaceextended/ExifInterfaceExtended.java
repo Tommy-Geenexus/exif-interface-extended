@@ -111,6 +111,9 @@ import java.util.regex.Pattern;
  * Note: JPEG and HEIF files may contain XMP data either inside the Exif data chunk or outside of
  * it. This class will search both locations for XMP data, but if XMP data exist both inside and
  * outside Exif, will favor the XMP data inside Exif over the one outside.
+ *
+ *  * Improvements by k3b:
+ *  *  * added microsoft exiftags: TAG_WIN_xxxxx
  */
 public class ExifInterfaceExtended {
 
@@ -506,6 +509,87 @@ public class ExifInterfaceExtended {
      *  </ul>
      */
     public static final String TAG_IMAGE_DESCRIPTION = "ImageDescription";
+
+
+    /**
+     *  <p>The image title, as used by Windows XP , encoded in UCS2.
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 40091</li>
+     *      <li>Type = String, encoded in UCS2</li>
+     *      <li>Default = None</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_TITLE = "XPTitle";
+    /**
+     *  <p>The image comment, as used by Windows XP , encoded in UCS2.
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 40092</li>
+     *      <li>Type = String, encoded in UCS2</li>
+     *      <li>Default = None</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_COMMENT = "XPComment";
+    /**
+     *  <p>The image author, as used by Windows XP , encoded in UCS2.
+     *  (called Artist in the Windows shell)
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 40093</li>
+     *      <li>Type = String, encoded in UCS2</li>
+     *      <li>Default = None</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_AUTHOR = "XPAuthor";
+    /**
+     *  <p>The image keywords, as used by Windows XP , encoded in UCS2.
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 40094</li>
+     *      <li>Type = String, encoded in UCS2</li>
+     *      <li>Default = None</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_KEYWORDS = "XPKeywords";
+    /**
+     *  <p>The image subject, as used by Windows XP , encoded in UCS2.
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 40095</li>
+     *      <li>Type = String, encoded in UCS2</li>
+     *      <li>Default = None</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_SUBJECT = "XPSubject";
+    /**
+     *  <p>The image rating, as used by Windows XP. 0=none. 1=worst, ... 5=best.
+     *  (Inspired by  <a href="http://www.exiv2.org/tags.html">www.exiv2.org/tags.html</a>)
+     *  </p>
+     *  <ul>
+     *      <li>Tag = 18246</li>
+     *      <li>Type = Unsigned SHORT (0..5)</li>
+     *      <li>Default = 0</li>
+     *  </ul>
+     */
+    public static final String TAG_WIN_RATING = "Rating";
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      *  <p>The manufacturer of the recording equipment. This is the manufacturer of the DSC,
      *  scanner, video digitizer or other equipment that generated the image. When the field is left
@@ -3169,6 +3253,9 @@ public class ExifInterfaceExtended {
     @SuppressWarnings("CharsetObjectCanBeUsed")
     static final Charset ASCII = Charset.forName("US-ASCII");
 
+    @SuppressWarnings("CharsetObjectCanBeUsed")
+    static final Charset UCS2 = Charset.forName("UTF-16LE");
+
     static final byte[] JPEG_SIGNATURE = new byte[] {
             (byte) 0xff, (byte) 0xd8, (byte) 0xff
     };
@@ -3294,6 +3381,8 @@ public class ExifInterfaceExtended {
     static final int IFD_FORMAT_DOUBLE = 12;
     // Format indicating a new IFD entry (See Adobe PageMaker® 6.0 TIFF Technical Notes, "New Tag")
     static final int IFD_FORMAT_IFD = 13;
+    static final int IFD_FORMAT_UCS2LE_STRING = 13; // user defined encoded as IFD_FORMAT_BYTE = +1
+
     // Names for the data formats for debugging purpose.
     static final String[] IFD_FORMAT_NAMES = new String[]{
             "", "BYTE", "STRING", "USHORT", "ULONG", "URATIONAL", "SBYTE", "UNDEFINED", "SSHORT",
@@ -3357,6 +3446,15 @@ public class ExifInterfaceExtended {
             new ExifTag(TAG_RW2_ISO, 23, IFD_FORMAT_USHORT),
             new ExifTag(TAG_RW2_JPG_FROM_RAW, 46, IFD_FORMAT_UNDEFINED),
             new ExifTag(TAG_XMP, 700, IFD_FORMAT_BYTE),
+
+            // Microsoft specific tags inspired by http://www.exiv2.org/tags.html
+            new ExifTag(TAG_WIN_TITLE, 40091, IFD_FORMAT_UCS2LE_STRING, IFD_FORMAT_BYTE),
+            new ExifTag(TAG_WIN_COMMENT, 40092, IFD_FORMAT_UCS2LE_STRING, IFD_FORMAT_BYTE),
+            new ExifTag(TAG_WIN_AUTHOR, 40093, IFD_FORMAT_UCS2LE_STRING, IFD_FORMAT_BYTE),
+            new ExifTag(TAG_WIN_KEYWORDS, 40094, IFD_FORMAT_UCS2LE_STRING, IFD_FORMAT_BYTE),
+            new ExifTag(TAG_WIN_SUBJECT, 40095, IFD_FORMAT_UCS2LE_STRING, IFD_FORMAT_BYTE),
+            new ExifTag(TAG_WIN_RATING, 18246, IFD_FORMAT_USHORT),
+
     };
 
     // Primary image IFD Exif Private tags (See JEITA CP-3451C Section 4.6.8 Tag Support Levels)
@@ -4126,7 +4224,8 @@ public class ExifInterfaceExtended {
                     dataFormat = exifTag.getSecondaryFormat();
                 } else if (exifTag.getPrimaryFormat() == IFD_FORMAT_BYTE
                         || exifTag.getPrimaryFormat() == IFD_FORMAT_UNDEFINED
-                        || exifTag.getPrimaryFormat() == IFD_FORMAT_STRING) {
+                        || exifTag.getPrimaryFormat() == IFD_FORMAT_STRING
+                        || exifTag.getPrimaryFormat() == IFD_FORMAT_UCS2LE_STRING) {
                     dataFormat = exifTag.getPrimaryFormat();
                 } else {
                     if (DEBUG) {
@@ -4148,6 +4247,10 @@ public class ExifInterfaceExtended {
                     case IFD_FORMAT_UNDEFINED:
                     case IFD_FORMAT_STRING: {
                         mAttributes[i].put(tag, ExifAttribute.createString(value));
+                        break;
+                    }
+                    case IFD_FORMAT_UCS2LE_STRING: {
+                        mAttributes[i].put(tag, ExifAttribute.createUcs2String(value));
                         break;
                     }
                     case IFD_FORMAT_USHORT: {
