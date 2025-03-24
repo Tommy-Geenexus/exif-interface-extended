@@ -4184,7 +4184,7 @@ public class ExifInterfaceExtended {
                             && (mXmpFromSeparateMarker != null || !containsTiff700Xmp))
                     || (xmpHandling == XMP_HANDLING_PREFER_TIFF_700_IF_PRESENT
                             && !containsTiff700Xmp)) {
-                mXmpFromSeparateMarker = ExifAttribute.createByte(value);
+                mXmpFromSeparateMarker = value != null ? ExifAttribute.createByte(value) : null;
                 return;
             }
         }
@@ -6705,8 +6705,11 @@ public class ExifInterfaceExtended {
         ExifInterfaceExtendedUtils.copy(dataInputStream, dataOutputStream, PNG_SIGNATURE.length);
 
         boolean needToWriteExif = true;
-        boolean needToWriteXmp = mXmpFromSeparateMarker != null;
-        while (needToWriteExif || needToWriteXmp) {
+        // Either there's some XMP data to write, or it has been cleared locally but was present in
+        // the file when it was read (and so needs to be removed).
+        boolean needToHandleXmpChunk =
+                mXmpFromSeparateMarker != null || mFileOnDiskContainsSeparateXmpMarker;
+        while (needToWriteExif || needToHandleXmpChunk) {
             int chunkLength = dataInputStream.readInt();
             int chunkType = dataInputStream.readInt();
             if (chunkType == PNG_CHUNK_TYPE_IHDR) {
@@ -6722,7 +6725,7 @@ public class ExifInterfaceExtended {
                 }
                 if (mXmpFromSeparateMarker != null && !mFileOnDiskContainsSeparateXmpMarker) {
                     writePngXmpItxtChunk(dataOutputStream, mXmpFromSeparateMarker.getBytes());
-                    needToWriteXmp = false;
+                    needToHandleXmpChunk = false;
                 }
                 continue;
             } else if (chunkType == PNG_CHUNK_TYPE_EXIF && needToWriteExif) {
@@ -6730,14 +6733,26 @@ public class ExifInterfaceExtended {
                 dataInputStream.skipFully(chunkLength + PNG_CHUNK_CRC_BYTE_LENGTH);
                 needToWriteExif = false;
                 continue;
-            } else if (chunkType == PNG_CHUNK_TYPE_ITXT && needToWriteXmp) {
-                if (mXmpFromSeparateMarker != null) {
-                    writePngXmpItxtChunk(dataOutputStream, mXmpFromSeparateMarker.getBytes());
-                    dataInputStream.skipFully(chunkLength + PNG_CHUNK_CRC_BYTE_LENGTH);
+            } else if (chunkType == PNG_CHUNK_TYPE_ITXT
+                    && chunkLength >= PNG_ITXT_XMP_KEYWORD.length) {
+                // Read the 17 byte keyword and 5 expected null bytes.
+                byte[] keyword = new byte[PNG_ITXT_XMP_KEYWORD.length];
+                dataInputStream.readFully(keyword);
+                int remainingChunkBytes = chunkLength - keyword.length + PNG_CHUNK_CRC_BYTE_LENGTH;
+                if (Arrays.equals(keyword, PNG_ITXT_XMP_KEYWORD)) {
+                    if (mXmpFromSeparateMarker != null) {
+                        writePngXmpItxtChunk(dataOutputStream, mXmpFromSeparateMarker.getBytes());
+                    }
+                    dataInputStream.skipFully(remainingChunkBytes);
+                    needToHandleXmpChunk = false;
                 } else {
-                    throw new IOException("mXmpFromSeparateMarker is null");
+                    // This is a non-XMP iTXt chunk, so just copy it to the output and continue.
+                    dataOutputStream.writeInt(chunkLength);
+                    dataOutputStream.writeInt(chunkType);
+                    dataOutputStream.write(keyword);
+                    ExifInterfaceExtendedUtils.copy(dataInputStream, dataOutputStream,
+                            remainingChunkBytes);
                 }
-                needToWriteXmp = false;
                 continue;
             }
             dataOutputStream.writeInt(chunkLength);
@@ -6834,9 +6849,23 @@ public class ExifInterfaceExtended {
                     dataOutputStream.writeInt(
                             ExifInterfaceExtendedUtils.calculateCrc32IntValue(type, data)
                     );
+                } else if (type == PNG_CHUNK_TYPE_ITXT && length >= PNG_ITXT_XMP_KEYWORD.length) {
+                    // Read the 17 byte keyword and 5 expected null bytes.
+                    byte[] keyword = new byte[PNG_ITXT_XMP_KEYWORD.length];
+                    dataInputStream.readFully(keyword);
+                    int remainingChunkBytes = length - keyword.length + PNG_CHUNK_CRC_BYTE_LENGTH;
+                    if (Arrays.equals(keyword, PNG_ITXT_XMP_KEYWORD)) {
+                        dataInputStream.skipFully(remainingChunkBytes);
+                    } else {
+                        // This is a non-XMP iTXt chunk, so just copy it to the output and continue.
+                        dataOutputStream.writeInt(length);
+                        dataOutputStream.writeInt(type);
+                        dataOutputStream.write(keyword);
+                        ExifInterfaceExtendedUtils.copy(dataInputStream, dataOutputStream,
+                                remainingChunkBytes);
+                    }
                 } else if (type == PNG_CHUNK_TYPE_ICCP ||
                         type == PNG_CHUNK_TYPE_TEXT ||
-                        type == PNG_CHUNK_TYPE_ITXT ||
                         type == PNG_CHUNK_TYPE_ZTXT) {
                     final int skip = length + PNG_CHUNK_CRC_BYTE_LENGTH;
                     dataInputStream.skipFully(skip);

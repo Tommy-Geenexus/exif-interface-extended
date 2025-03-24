@@ -316,13 +316,11 @@ final class ExpectedAttributes {
         private double mAperture;
         @Nullable private String mDateTimeOriginal;
         private double mExposureTime;
-        private double mFlash;
         @Nullable private String mFocalLength;
         private int mImageLength;
         private int mImageWidth;
         @Nullable private String mIso;
         private int mOrientation;
-        private int mWhiteBalance;
         private int mPixelYDimension;
 
         // XMP information.
@@ -504,11 +502,11 @@ final class ExpectedAttributes {
         }
 
         public Builder setMake(@Nullable String make) {
+            mMake = make;
             if (make == null) {
                 mMakeOffset = 0;
                 mMakeLength = 0;
             } else {
-                mMake = make;
                 mMakeLength = make.length() + 1;
             }
             return this;
@@ -542,11 +540,6 @@ final class ExpectedAttributes {
             return this;
         }
 
-        public Builder setFlash(double flash) {
-            mFlash = flash;
-            return this;
-        }
-
         public Builder setFocalLength(@Nullable String focalLength) {
             mFocalLength = focalLength;
             return this;
@@ -565,11 +558,6 @@ final class ExpectedAttributes {
 
         public Builder setOrientation(int orientation) {
             mOrientation = orientation;
-            return this;
-        }
-
-        public Builder setWhiteBalance(int whiteBalance) {
-            mWhiteBalance = whiteBalance;
             return this;
         }
 
