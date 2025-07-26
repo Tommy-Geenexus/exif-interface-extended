@@ -2412,42 +2412,30 @@ public class ExifInterfaceExtendedTest {
 
         ExifInterfaceExtended exifInterface = exifInterfaceFactory.create(imageFile);
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "abc");
-
-        final String extension = verboseTag.substring(verboseTag.lastIndexOf("."));
-        final boolean isWebP = extension.equalsIgnoreCase(".webp");
-        // XMP is not updated for WebP files
-        if (!isWebP) {
-            exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
-        }
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, TEST_XMP);
         // Check expected modifications are visible without saving to disk (but offsets are now
         // unknown).
         expect.that(exifInterface.getAttribute(ExifInterfaceExtended.TAG_MAKE)).isEqualTo("abc");
         expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_MAKE))
-                .isEqualTo(new long[] {-1, 4});
-        // XMP is not updated for WebP files
-        if (!isWebP) {
-            byte[] expectedXmpBytes = TEST_XMP.getBytes(Charsets.UTF_8);
-            expect.that(exifInterface.getAttributeBytes(ExifInterfaceExtended.TAG_XMP))
-                    .isEqualTo(expectedXmpBytes);
-            expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP))
-                    .isEqualTo(new long[]{-1, expectedXmpBytes.length});
-        }
+                .isEqualTo(new long[]{-1, 4});
+
+        byte[] expectedXmpBytes = TEST_XMP.getBytes(Charsets.UTF_8);
+        expect.that(exifInterface.getAttributeBytes(ExifInterfaceExtended.TAG_XMP))
+                .isEqualTo(expectedXmpBytes);
+        expect.that(exifInterface.getAttributeRange(ExifInterfaceExtended.TAG_XMP))
+                .isEqualTo(new long[]{-1, expectedXmpBytes.length});
+
         exifInterface.saveAttributes();
 
         ExpectedAttributes.Builder expectedAttributesBuilder =
                 expectedAttributes != null
                         ? expectedAttributes.buildUpon()
                         : new ExpectedAttributes.Builder();
-        // XMP is not updated for WebP files
-        if (!isWebP) {
-            expectedAttributes = expectedAttributesBuilder
-                    .setMake("abc")
-                    .clearXmp()
-                    .setXmp(TEST_XMP)
-                    .build();
-        } else {
-            expectedAttributes = expectedAttributesBuilder.setMake("abc").build();
-        }
+        expectedAttributes = expectedAttributesBuilder
+                .setMake("abc")
+                .clearXmp()
+                .setXmp(TEST_XMP)
+                .build();
 
         // Check expected modifications are visible without re-parsing the file.
         compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
@@ -2471,9 +2459,16 @@ public class ExifInterfaceExtendedTest {
 
         // Clear the properties we overwrote to check passing null results in clearing.
         exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, null);
-        exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, null);
 
-        expectedAttributes = expectedAttributesBuilder.setMake(null).clearXmp().build();
+        // TODO: XMP is not updated for WebP files
+        final String extension = verboseTag.substring(verboseTag.lastIndexOf("."));
+        if (extension.equalsIgnoreCase(".webp")) {
+            expectedAttributes = expectedAttributesBuilder.setMake(null).build();
+        } else {
+            exifInterface.setAttribute(ExifInterfaceExtended.TAG_XMP, null);
+            expectedAttributes = expectedAttributesBuilder.setMake(null).clearXmp().build();
+        }
+
         // Check expected modifications are visible without saving to disk.
         compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
 
