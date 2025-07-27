@@ -1,11 +1,11 @@
 plugins {
     id("com.android.library")
-    id("com.vanniktech.maven.publish") version "0.30.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
     namespace = "io.github.tommygeenexus.exifinterfaceextended"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 21
