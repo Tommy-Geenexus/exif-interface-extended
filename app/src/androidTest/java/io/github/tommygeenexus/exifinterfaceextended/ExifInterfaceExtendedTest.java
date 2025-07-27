@@ -238,6 +238,8 @@ public class ExifInterfaceExtendedTest {
                         R.raw.jpeg_with_app1_after_dqt, "jpeg_with_app1_after_dqt.jpg");
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_APP1_AFTER_DQT);
         testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_APP1_AFTER_DQT);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
     }
 
     // https://issuetracker.google.com/309843390
@@ -357,6 +359,8 @@ public class ExifInterfaceExtendedTest {
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
         testWritingExif(imageFile, ExpectedAttributes.JPEG_WITH_EXIF_INVALID_OFFSET);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(JPEG_TEST), true, true);
     }
 
     // https://issuetracker.google.com/263747161
@@ -594,6 +598,8 @@ public class ExifInterfaceExtendedTest {
         );
         readFromFilesWithExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
         testWritingExif(imageFile, ExpectedAttributes.INVALID_WEBP_WITH_JPEG_APP1_MARKER);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), true, true);
     }
 
     @Test
@@ -618,6 +624,8 @@ public class ExifInterfaceExtendedTest {
                         R.raw.webp_without_exif_height_8192px,
                         "webp_without_exif_height_8192px.webp");
         testWritingExif(imageFile, /* expectedAttributes= */ null);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
 
     @Test
@@ -652,6 +660,8 @@ public class ExifInterfaceExtendedTest {
                 "webp_lossless_alpha_without_exif.webp"
         );
         testWritingExif(imageFile, /* expectedAttributes= */ null);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
 
     /**
@@ -671,6 +681,8 @@ public class ExifInterfaceExtendedTest {
                         R.raw.webp_without_exif_trailing_data,
                         "webp_without_exif_trailing_data.webp");
         testWritingExif(imageFile, /* expectedAttributes= */ null);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, false);
+        writeToFilesWithoutMetadata(imageFile, resolveImageFile(WEBP_TEST), false, true);
     }
 
     /**
