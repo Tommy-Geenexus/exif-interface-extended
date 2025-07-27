@@ -14,7 +14,7 @@ without major behavioral changes*
 
 ## Usage
 ```kotlin
-implementation("io.github.tommy-geenexus:exif-interface-extended:1.0.4")
+implementation("io.github.tommy-geenexus:exif-interface-extended:1.1.0")
 ```
 
 ## API Examples
