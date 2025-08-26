@@ -1,6 +1,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![CI status](https://github.com/Tommy-Geenexus/exif-interface-extended/workflows/Instrumentation%20Tests/badge.svg)](https://github.com/Tommy-Geenexus/exif-interface-extended/actions?query=workflow%3A%22Instrumentation+Tests%22)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.tommy-geenexus/exif-interface-extended/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.tommy-geenexus/exif-interface-extended)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.github.tommy-geenexus/exif-interface-extended)
+
 # exif-interface-extended
 This library
 - includes the full [AndroidX ExifInterface](https://developer.android.com/reference/androidx/exifinterface/media/ExifInterface) API,
