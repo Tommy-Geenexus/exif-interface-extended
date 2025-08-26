@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        api-level: [33]
+        api-level: [28]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
