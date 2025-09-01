@@ -2242,19 +2242,16 @@ public class ExifInterfaceExtendedTest {
             compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         }
 
-        // Creates via FileDescriptor.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            FileDescriptor fd = null;
-            try {
-                fd = Os.open(imageFile.getAbsolutePath(), OsConstants.O_RDONLY,
-                        OsConstants.S_IRWXU);
-                exifInterface = new ExifInterfaceExtended(fd);
-                compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
-            } catch (Exception e) {
-                throw new IOException("Failed to open file descriptor", e);
-            } finally {
-                closeQuietly(fd);
-            }
+        FileDescriptor fd = null;
+        try {
+            fd = Os.open(imageFile.getAbsolutePath(), OsConstants.O_RDONLY,
+                    OsConstants.S_IRWXU);
+            exifInterface = new ExifInterfaceExtended(fd);
+            compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
+        } catch (Exception e) {
+            throw new IOException("Failed to open file descriptor", e);
+        } finally {
+            closeQuietly(fd);
         }
     }
 
@@ -2370,28 +2367,25 @@ public class ExifInterfaceExtendedTest {
 
         expectSavingPersistsModifications(ExifInterfaceExtended::new, srcFile, expectedAttributes);
 
-        // Creates via FileDescriptor.
-        if (Build.VERSION.SDK_INT >= 21) {
-            AtomicReference<FileDescriptor> fileDescriptor = new AtomicReference<>();
-            ExifInterfaceExtendedFactory createFromFileDescriptor =
-                    f -> {
-                        try {
-                            fileDescriptor.set(
-                                    Os.open(
-                                            f.getAbsolutePath(),
-                                            OsConstants.O_RDWR,
-                                            OsConstants.S_IRWXU));
-                        } catch (ErrnoException e) {
-                            throw new IOException("Failed to open file descriptor", e);
-                        }
-                        return new ExifInterfaceExtended(fileDescriptor.get());
-                    };
-            try {
-                expectSavingPersistsModifications(
-                        createFromFileDescriptor, srcFile, expectedAttributes);
-            } finally {
-                closeQuietly(fileDescriptor.get());
-            }
+        AtomicReference<FileDescriptor> fileDescriptor = new AtomicReference<>();
+        ExifInterfaceExtendedFactory createFromFileDescriptor =
+                f -> {
+                    try {
+                        fileDescriptor.set(
+                                Os.open(
+                                        f.getAbsolutePath(),
+                                        OsConstants.O_RDWR,
+                                        OsConstants.S_IRWXU));
+                    } catch (ErrnoException e) {
+                        throw new IOException("Failed to open file descriptor", e);
+                    }
+                    return new ExifInterfaceExtended(fileDescriptor.get());
+                };
+        try {
+            expectSavingPersistsModifications(
+                    createFromFileDescriptor, srcFile, expectedAttributes);
+        } finally {
+            closeQuietly(fileDescriptor.get());
         }
     }
 
