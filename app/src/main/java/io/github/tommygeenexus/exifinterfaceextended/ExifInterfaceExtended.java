@@ -5608,8 +5608,11 @@ public class ExifInterfaceExtended {
             if (marker != MARKER) {
                 throw new IOException("Invalid marker:" + Integer.toHexString(marker & 0xff));
             }
-            ++bytesRead;
-            marker = source.readByte();
+            // JPEG spec permits padding with 0xFF fill bytes before any marker.
+            do {
+                ++bytesRead;
+                marker = source.readByte();
+            } while(marker == MARKER);
             ++bytesRead;
 
             // EOI indicates the end of an image and in case of SOS, JPEG image stream starts and
@@ -6429,7 +6432,10 @@ public class ExifInterfaceExtended {
             if (marker != MARKER) {
                 throw new IOException("Invalid marker");
             }
-            marker = dataInputStream.readByte();
+            // Skip 0xFF fill bytes
+            do {
+                marker = dataInputStream.readByte();
+            } while (marker == MARKER);
             switch (marker) {
                 case MARKER_APP1: {
                     int length = dataInputStream.readUnsignedShort() - 2;
@@ -6531,10 +6537,14 @@ public class ExifInterfaceExtended {
         }
 
         while (true) {
-            if (dataInputStream.readByte() != MARKER) {
+            byte marker = dataInputStream.readByte();
+            if (marker != MARKER) {
                 throw new IOException("Invalid marker");
             }
-            final byte marker = dataInputStream.readByte();
+            // Skip 0xFF fill bytes
+            do {
+                marker = dataInputStream.readByte();
+            } while (marker == MARKER);
             switch (marker) {
                 case MARKER_APP1: {
                     final int length = dataInputStream.readUnsignedShort() - 2;
