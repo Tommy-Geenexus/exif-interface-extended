@@ -809,6 +809,30 @@ public class ExifInterfaceExtendedTest {
 
     @Test
     @SmallTest
+    public void testIsSupportedMimeType() {
+        assertThrows(NullPointerException.class,
+                () -> ExifInterfaceExtended.isSupportedMimeType(null));
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/jpeg")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-adobe-dng")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-canon-cr2")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-nikon-nef")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-nikon-nrw")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-sony-arw")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-panasonic-rw2")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-olympus-orf")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-pentax-pef")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-samsung-srw")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-fuji-raf")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heic")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heif")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/avif")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/png")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/webp")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/gif")).isFalse();
+    }
+
+    @Test
+    @SmallTest
     public void testDoNotFailOnCorruptedImage() throws Throwable {
         Random random = new Random(/* seed= */ 0);
         byte[] bytes = new byte[8096];

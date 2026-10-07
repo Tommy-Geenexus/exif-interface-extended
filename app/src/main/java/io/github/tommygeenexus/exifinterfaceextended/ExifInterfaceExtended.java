@@ -3948,6 +3948,7 @@ public class ExifInterfaceExtended {
             case "image/x-fuji-raf":
             case "image/heic":
             case "image/heif":
+            case "image/avif":
             case "image/png":
             case "image/webp":
                 return true;
