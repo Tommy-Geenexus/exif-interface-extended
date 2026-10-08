@@ -823,9 +823,12 @@ public class ExifInterfaceExtendedTest {
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-pentax-pef")).isTrue();
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-samsung-srw")).isTrue();
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/x-fuji-raf")).isTrue();
-        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heic")).isTrue();
-        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heif")).isTrue();
-        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/avif")).isTrue();
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heic"))
+                .isEqualTo(Build.VERSION.SDK_INT >= 28);
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/heif"))
+                .isEqualTo(Build.VERSION.SDK_INT >= 28);
+        assertThat(ExifInterfaceExtended.isSupportedMimeType("image/avif"))
+                .isEqualTo(Build.VERSION.SDK_INT >= 31);
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/png")).isTrue();
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/webp")).isTrue();
         assertThat(ExifInterfaceExtended.isSupportedMimeType("image/gif")).isFalse();
