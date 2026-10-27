@@ -69,6 +69,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -2155,6 +2156,95 @@ public class ExifInterfaceExtendedTest {
         expect.that(result.getDenominator()).isEqualTo(1);
     }
 
+    @Test
+    @SmallTest
+    public void testSaveAttributes_sortsIfdEntriesByTagNumber() throws Exception {
+        File imageFile =
+                copyFromResourceToFile(
+                        R.raw.jpeg_with_exif_byte_order_ii, "jpeg_with_exif_byte_order_ii.jpg");
+
+        ExifInterfaceExtended exifInterface =
+                new ExifInterfaceExtended(imageFile.getAbsolutePath());
+        // Set multiple attributes in IFD0 and Exif SubIFD with tag numbers that are not in
+        // alphabetical order or natural hash order to ensure sorting is exercised.
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_MAKE, "CustomMake");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_MODEL, "CustomModel");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_SOFTWARE, "CustomSoftware");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_ARTIST, "CustomArtist");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_IMAGE_DESCRIPTION, "CustomDesc");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_DATETIME, "2026:01:01 00:00:00");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_COPYRIGHT, "CustomCopyright");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_EXPOSURE_TIME, "0.001");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_F_NUMBER, "2.8");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_ISO_SPEED_RATINGS, "100");
+        exifInterface.setAttribute(ExifInterfaceExtended.TAG_USER_COMMENT, "CustomComment");
+        exifInterface.saveAttributes();
+
+        byte[] bytes = Files.toByteArray(imageFile);
+
+        // Find APP1 marker (0xFF, 0xE1) and verify "Exif\0\0"
+        int app1Offset = -1;
+        for (int i = 0; i < bytes.length - 10; i++) {
+            if (bytes[i] == (byte) 0xFF
+                    && bytes[i + 1] == (byte) 0xE1
+                    && bytes[i + 4] == 'E'
+                    && bytes[i + 5] == 'x'
+                    && bytes[i + 6] == 'i'
+                    && bytes[i + 7] == 'f'
+                    && bytes[i + 8] == 0
+                    && bytes[i + 9] == 0) {
+                app1Offset = i;
+                break;
+            }
+        }
+        assertThat(app1Offset).isAtLeast(0);
+
+        int tiffOffset = app1Offset + 10;
+        ByteBuffer buffer = ByteBuffer.wrap(bytes);
+        if (bytes[tiffOffset] == 'I' && bytes[tiffOffset + 1] == 'I') {
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
+        } else if (bytes[tiffOffset] == 'M' && bytes[tiffOffset + 1] == 'M') {
+            buffer.order(ByteOrder.BIG_ENDIAN);
+        } else {
+            fail("Unexpected byte order: " + bytes[tiffOffset] + ", " + bytes[tiffOffset + 1]);
+        }
+
+        // Verify TIFF magic number 42
+        assertThat(buffer.getShort(tiffOffset + 2) & 0xFFFF).isEqualTo(42);
+
+        int ifd0Offset = buffer.getInt(tiffOffset + 4);
+        int ifd0AbsOffset = tiffOffset + ifd0Offset;
+        int ifd0EntryCount = buffer.getShort(ifd0AbsOffset) & 0xFFFF;
+        assertThat(ifd0EntryCount).isGreaterThan(1);
+
+        int previousTagNumber = -1;
+        int exifSubIfdOffset = -1;
+        for (int i = 0; i < ifd0EntryCount; i++) {
+            int entryOffset = ifd0AbsOffset + 2 + i * 12;
+            int tagNumber = buffer.getShort(entryOffset) & 0xFFFF;
+            assertThat(tagNumber).isGreaterThan(previousTagNumber);
+            previousTagNumber = tagNumber;
+
+            if (tagNumber == 0x8769) { // TAG_EXIF_IFD_POINTER
+                exifSubIfdOffset = buffer.getInt(entryOffset + 8);
+            }
+        }
+
+        // Verify Exif SubIFD directory entries are also sorted
+        assertThat(exifSubIfdOffset).isGreaterThan(0);
+        int subIfdAbsOffset = tiffOffset + exifSubIfdOffset;
+        int subIfdEntryCount = buffer.getShort(subIfdAbsOffset) & 0xFFFF;
+        assertThat(subIfdEntryCount).isGreaterThan(1);
+
+        int previousSubTagNumber = -1;
+        for (int i = 0; i < subIfdEntryCount; i++) {
+            int entryOffset = subIfdAbsOffset + 2 + i * 12;
+            int tagNumber = buffer.getShort(entryOffset) & 0xFFFF;
+            assertThat(tagNumber).isGreaterThan(previousSubTagNumber);
+            previousSubTagNumber = tagNumber;
+        }
+    }
+
     private void printExifTagsAndValues(String fileName, ExifInterfaceExtended exifInterface) {
         // Prints thumbnail information.
         if (exifInterface.hasThumbnail()) {
@@ -2568,7 +2658,7 @@ public class ExifInterfaceExtendedTest {
             compareWithExpectedAttributes(exifInterface, expectedAttributes, verboseTag);
         }
         expectBitmapsEquivalent(srcFile, imageFile);
-        expectSecondSaveProducesSameSizeFile(imageFile);
+        assertSecondSaveProducesIdenticalFile(imageFile);
     }
 
     private void expectSavingPersistsModifications(
@@ -2849,13 +2939,13 @@ public class ExifInterfaceExtendedTest {
     }
 
     /**
-     * Asserts (using {@link #expect}) that saving the file the second time (without modifying any
-     * attributes) produces exactly the same length file as the first save. The first save (with no
-     * modifications) is expected to (possibly) change the file length because
-     * {@link ExifInterfaceExtended} may move/reformat the Exif block within the file, but the
-     * second save should not make further modifications.
+     * Asserts that saving the file the second time (without modifying any attributes) produces
+     * exactly the same bytes as the first save. The first save (with no modifications) is
+     * expected to (possibly) change the file bytes because {@link ExifInterfaceExtended} may
+     * move/reformat the Exif block within the file, but the second save should not make further
+     * modifications.
      */
-    private void expectSecondSaveProducesSameSizeFile(File imageFileAfterOneSave)
+    private void assertSecondSaveProducesIdenticalFile(File imageFileAfterOneSave)
             throws IOException {
         File imageFileAfterTwoSaves = clone(imageFileAfterOneSave);
         ExifInterfaceExtended exifInterface = new ExifInterfaceExtended(imageFileAfterTwoSaves.getAbsolutePath());
@@ -2867,11 +2957,17 @@ public class ExifInterfaceExtendedTest {
             File imageFileAfterThreeSaves = clone(imageFileAfterTwoSaves);
             exifInterface = new ExifInterfaceExtended(imageFileAfterThreeSaves.getAbsolutePath());
             exifInterface.saveAttributes();
-            expect.that(imageFileAfterThreeSaves.length())
-                    .isEqualTo(imageFileAfterTwoSaves.length());
+            assertFileContentsEqual(imageFileAfterTwoSaves, imageFileAfterThreeSaves);
         } else {
-            expect.that(imageFileAfterTwoSaves.length()).isEqualTo(imageFileAfterOneSave.length());
+            assertFileContentsEqual(imageFileAfterOneSave, imageFileAfterTwoSaves);
         }
+    }
+
+    private void assertFileContentsEqual(File expectedImageFile, File actualImageFile)
+            throws IOException {
+        byte[] expectedBytes = Files.toByteArray(expectedImageFile);
+        byte[] actualBytes = Files.toByteArray(actualImageFile);
+        assertThat(actualBytes).isEqualTo(expectedBytes);
     }
 
     private File clone(File original) throws IOException {
