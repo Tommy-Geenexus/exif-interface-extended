@@ -103,6 +103,10 @@ class ExifAttribute {
         return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_STRING, ascii.length, ascii);
     }
 
+    public static ExifAttribute createUndefined(byte[] bytes) {
+        return new ExifAttribute(ExifInterfaceExtended.IFD_FORMAT_UNDEFINED, bytes.length, bytes);
+    }
+
     public static ExifAttribute createURational(Rational[] values, ByteOrder byteOrder) {
         final ByteBuffer buffer = ByteBuffer.wrap(
                 new byte[ExifInterfaceExtended.IFD_FORMAT_BYTES_PER_FORMAT[ExifInterfaceExtended.IFD_FORMAT_URATIONAL] * values.length]);
