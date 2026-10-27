@@ -3300,8 +3300,26 @@ public class ExifInterfaceExtended {
     private static final int WEBP_CHUNK_TYPE_BYTE_LENGTH = 4;
     private static final int WEBP_CHUNK_SIZE_BYTE_LENGTH = 4;
 
-    private static final SimpleDateFormat sFormatterPrimary;
-    private static final SimpleDateFormat sFormatterSecondary;
+    private static final ThreadLocal<SimpleDateFormat> sFormatterPrimary =
+            new ThreadLocal<SimpleDateFormat>() {
+                @Override
+                protected SimpleDateFormat initialValue() {
+                    SimpleDateFormat formatter =
+                            new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
+                    formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    return formatter;
+                }
+            };
+    private static final ThreadLocal<SimpleDateFormat> sFormatterSecondary =
+            new ThreadLocal<SimpleDateFormat>() {
+                @Override
+                protected SimpleDateFormat initialValue() {
+                    SimpleDateFormat formatter =
+                            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+                    formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    return formatter;
+                }
+            };
 
     // See Exchangeable image file format for digital still cameras: Exif version 2.2.
     // The following values are for parsing EXIF data area. There are tag groups in EXIF data area.
@@ -3722,11 +3740,6 @@ public class ExifInterfaceExtended {
         WEBP_VP8X_CHUNK_ORDER.put("ANMF", 3);
         WEBP_VP8X_CHUNK_ORDER.put("EXIF", 4);
         WEBP_VP8X_CHUNK_ORDER.put("XMP ", 5);
-
-        sFormatterPrimary = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.US);
-        sFormatterPrimary.setTimeZone(TimeZone.getTimeZone("UTC"));
-        sFormatterSecondary = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
-        sFormatterSecondary.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         // Build up the hash tables to look up Exif tags for reading Exif tags.
         for (int ifdType = 0; ifdType < EXIF_TAGS.length; ++ifdType) {
@@ -5080,7 +5093,7 @@ public class ExifInterfaceExtended {
                 TAG_GPS_SPEED,
                 Rational.createFromDouble(location.getSpeed() * TimeUnit.HOURS.toSeconds(1) / 1000)
                         .toString());
-        String[] dateTime = sFormatterPrimary.format(
+        String[] dateTime = sFormatterPrimary.get().format(
                 new Date(location.getTime())).split("\\s+", -1);
         setAttribute(ExifInterfaceExtended.TAG_GPS_DATESTAMP, dateTime[0]);
         setAttribute(ExifInterfaceExtended.TAG_GPS_TIMESTAMP, dateTime[1]);
@@ -5152,7 +5165,7 @@ public class ExifInterfaceExtended {
             //noinspection StringConcatenationInLoop
             subsecString = "0" + subsecString;
         }
-        setAttribute(TAG_DATETIME, sFormatterPrimary.format(new Date(timeStamp)));
+        setAttribute(TAG_DATETIME, sFormatterPrimary.get().format(new Date(timeStamp)));
         setAttribute(TAG_SUBSEC_TIME, subsecString);
     }
 
@@ -5217,9 +5230,9 @@ public class ExifInterfaceExtended {
         try {
             // The exif field is in local time. Parsing it as if it is UTC will yield time
             // since 1/1/1970 local time
-            Date dateTime = sFormatterPrimary.parse(dateTimeString, pos);
+            Date dateTime = sFormatterPrimary.get().parse(dateTimeString, pos);
             if (dateTime == null) {
-                dateTime = sFormatterSecondary.parse(dateTimeString, pos);
+                dateTime = sFormatterSecondary.get().parse(dateTimeString, pos);
                 if (dateTime == null) {
                     return null;
                 }
@@ -5265,9 +5278,9 @@ public class ExifInterfaceExtended {
 
         ParsePosition pos = new ParsePosition(0);
         try {
-            Date dateTime = sFormatterPrimary.parse(dateTimeString, pos);
+            Date dateTime = sFormatterPrimary.get().parse(dateTimeString, pos);
             if (dateTime == null) {
-                dateTime = sFormatterSecondary.parse(dateTimeString, pos);
+                dateTime = sFormatterSecondary.get().parse(dateTimeString, pos);
                 if (dateTime == null) {
                     return null;
                 }
